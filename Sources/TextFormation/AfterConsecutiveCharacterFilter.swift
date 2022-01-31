@@ -1,7 +1,7 @@
 import Foundation
 import TextStory
 
-public class ConsecutiveCharacterFilter {
+public class AfterConsecutiveCharacterFilter {
     public typealias Handler = (TextMutation, TextStoring) -> FilterAction
 
     private let recognizer: ConsecutiveCharacterRecognizer
@@ -17,7 +17,7 @@ public class ConsecutiveCharacterFilter {
     }
 }
 
-extension ConsecutiveCharacterFilter: Filter {
+extension AfterConsecutiveCharacterFilter: Filter {
     public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
         switch recognizer.state {
         case .idle, .tracking:

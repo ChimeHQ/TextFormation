@@ -2,14 +2,14 @@ import Foundation
 import TextStory
 
 public class ClosePairFilter {
-    private let innerFilter: ConsecutiveCharacterFilter
+    private let innerFilter: AfterConsecutiveCharacterFilter
     public let closeString: String
     public let indenter: IndentationProvider?
 
     init(open: String, close: String, indenter: IndentationProvider? = nil) {
         self.closeString = close
         self.indenter = indenter
-        self.innerFilter = ConsecutiveCharacterFilter(matching: open)
+        self.innerFilter = AfterConsecutiveCharacterFilter(matching: open)
 
         innerFilter.handler = { [unowned self] in self.filterHandler($0, in: $1)}
     }
