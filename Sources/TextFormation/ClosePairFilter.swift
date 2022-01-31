@@ -2,8 +2,6 @@ import Foundation
 import TextStory
 
 public class ClosePairFilter {
-    public typealias IndentationProvider = (Int) -> Result<String, Error>
-
     private let innerFilter: ConsecutiveCharacterFilter
     public let closeString: String
     public let indenter: IndentationProvider?
@@ -17,7 +15,7 @@ public class ClosePairFilter {
     }
 
     public var openString: String {
-        return innerFilter.openString
+        return innerFilter.string
     }
 
     private func filterHandler(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {

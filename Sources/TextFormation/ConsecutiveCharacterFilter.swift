@@ -4,35 +4,28 @@ import TextStory
 public class ConsecutiveCharacterFilter {
     public typealias Handler = (TextMutation, TextStoring) -> FilterAction
 
-    enum State {
-        case idle
-        case openTriggered(Int)
-    }
-
-    private let openRecognizer: ConsecutiveCharacterRecognizer
-    private var state: State
+    private let recognizer: ConsecutiveCharacterRecognizer
     public var handler: Handler
 
     init(matching string: String) {
-        self.openRecognizer = ConsecutiveCharacterRecognizer(matching: string)
-        self.state = .idle
+        self.recognizer = ConsecutiveCharacterRecognizer(matching: string)
         self.handler = { (_, _) in return .none }
     }
 
-    public var openString: String {
-        return openRecognizer.matchingString
+    public var string: String {
+        return recognizer.matchingString
     }
 }
 
 extension ConsecutiveCharacterFilter: Filter {
     public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
-        switch openRecognizer.state {
+        switch recognizer.state {
         case .idle, .tracking:
             break
         case .triggered(let location):
-            openRecognizer.resetState()
+            recognizer.resetState()
 
-            openRecognizer.processMutation(mutation)
+            recognizer.processMutation(mutation)
 
             if location != mutation.range.location {
                 break
@@ -41,9 +34,9 @@ extension ConsecutiveCharacterFilter: Filter {
             return handleMutationAfterTrigger(mutation, in: storage)
         }
 
-        openRecognizer.processMutation(mutation)
+        recognizer.processMutation(mutation)
 
-        switch openRecognizer.state {
+        switch recognizer.state {
         case .triggered:
             return .stop
         case .idle, .tracking:
