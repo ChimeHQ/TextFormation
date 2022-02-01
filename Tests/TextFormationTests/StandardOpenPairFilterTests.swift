@@ -19,6 +19,22 @@ class StandardOpenPairFilterTests: XCTestCase {
         XCTAssertEqual(storage.string, "{a}")
     }
 
+    func testMatchOpenAndApplyWhitespace() {
+        let filter = StandardOpenPairFilter(open: "{", close: "}")
+        let storage = StringStorage()
+
+        let openMutation = TextMutation(insert: "{", at: 0, limit: 0)
+
+        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .none)
+        storage.applyMutation(openMutation)
+
+        let nextMutation = TextMutation(insert: "a", at: 1, limit: 1)
+        XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .none)
+        storage.applyMutation(nextMutation)
+
+        XCTAssertEqual(storage.string, "{a}")
+    }
+
     func testSkipCloseAfterMatchingOpen() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
         let storage = StringStorage()

@@ -118,6 +118,25 @@ class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(storage.string, "{\n\t\n}")
     }
 
+    func testLeadingWhitespaceForCloseAfterMatch() {
+        let providers = WhitespaceProviders(leadingWhitespace: { _, _ in return "\t" },
+                                            trailingWhitespace: WhitespaceProviders.passthroughProvider)
+        let filter = ClosePairFilter(open: "{", close: "}", whitespaceProviders: providers)
+
+        let storage = StringStorage()
+
+        let openMutation = TextMutation(insert: "{", at: 0, limit: 0)
+
+        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .stop)
+        storage.applyMutation(openMutation)
+
+        let nextMutation = TextMutation(insert: "\n", at: 1, limit: 1)
+        XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .stop)
+        storage.applyMutation(nextMutation)
+
+        XCTAssertEqual(storage.string, "{\n\t\n}")
+    }
+
     func testMatchingWithDoubleOpen() {
         let filter = ClosePairFilter(open: "(", close: ")")
         let storage = StringStorage()

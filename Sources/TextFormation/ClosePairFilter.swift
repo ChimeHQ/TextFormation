@@ -28,17 +28,21 @@ public class ClosePairFilter {
         storage.insertString(closeString, at: mutation.range.max)
 
         if mutation.string == "\n" && isInsert {
-            addLeadingWhitespace(with: mutation, in: storage)
+            handleNewlineInsert(with: mutation, in: storage)
         }
 
         return .stop
     }
 
-    private func addLeadingWhitespace(with mutation: TextMutation, in storage: TextStoring) {
+    private func handleNewlineInsert(with mutation: TextMutation, in storage: TextStoring) {
         guard let provider = whitespaceProviders?.leadingWhitespace else { return }
 
         storage.insertString("\n", at: mutation.range.max)
 
+        addLeadingWhitespace(using: provider, for: mutation, in: storage)
+    }
+
+    private func addLeadingWhitespace(using provider: StringSubstitutionProvider, for mutation: TextMutation, in storage: TextStoring) {
         let range = NSRange(location: mutation.range.location, length: 0)
         let value = provider(range, storage)
 
