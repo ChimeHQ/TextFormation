@@ -8,9 +8,9 @@ struct CompositeFilter {
 
     var actionHandler: SubfilterHandler
 
-    init(filters: [Filter]) {
+    init(filters: [Filter], handler: @escaping SubfilterHandler = { $1 }) {
         self.filters = filters
-        self.actionHandler = { (_, action) in return action }
+        self.actionHandler = handler
     }
 }
 

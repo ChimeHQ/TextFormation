@@ -73,4 +73,15 @@ public struct TextualIndenter {
 
         return .success(referenceWhitespace)
     }
+
+    public func substitutionProvider(range: NSRange, _ storage: TextStoring) -> String {
+        let result = computeIndentation(at: range.location, in: storage)
+
+        switch result {
+        case .failure:
+            return storage.substring(from: range) ?? ""
+        case .success(let string):
+            return string
+        }
+    }
 }
