@@ -1,28 +1,35 @@
 import Foundation
 import TextStory
 
-public class NewlineIndentationFilter {
+public class LineLeadingWhitespaceFilter {
     private let recognizer: ConsecutiveCharacterRecognizer
-    public let provider: IndentationProvider
+    public let provider: StringSubstitutionProvider
 
-    init(provider: @escaping IndentationProvider) {
-        self.recognizer = ConsecutiveCharacterRecognizer(matching: "\n")
+    init(string: String, provider: @escaping StringSubstitutionProvider) {
+        self.recognizer = ConsecutiveCharacterRecognizer(matching: string)
         self.provider = provider
+    }
+
+    public var string: String {
+        return recognizer.matchingString
     }
 
     private func filterHandler(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
         storage.applyMutation(mutation)
 
-        let location = mutation.postApplyRange.max
-        if let newWhitespace = try? provider(location).get() {
-            storage.insertString(newWhitespace, at: location)
+        guard let whitespaceRange = storage.leadingWhitespaceRange(containing: mutation.range.location) else {
+            return .none
         }
+
+        let value = provider(whitespaceRange, storage)
+
+        storage.replaceString(in: whitespaceRange, with: value)
 
         return .discard
     }
 }
 
-extension NewlineIndentationFilter: Filter {
+extension LineLeadingWhitespaceFilter: Filter {
     public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
         recognizer.processMutation(mutation)
 

@@ -4,9 +4,9 @@ import TextStory
 struct StandardOpenPairFilter {
     private let filter: CompositeFilter
 
-    init(open: String, close: String) {
+    init(open: String, close: String, whitespaceProviders: WhitespaceProviders = .none) {
         let skip = SkipFilter(matching: "}")
-        let closePair = ClosePairFilter(open: "{", close: "}")
+        let closePair = ClosePairFilter(open: "{", close: "}", whitespaceProviders: whitespaceProviders)
         let openPairReplacement = OpenPairReplacementFilter(open: "{", close: "}")
 
         var filter = CompositeFilter(filters: [skip, openPairReplacement, closePair])

@@ -2,8 +2,8 @@ import Foundation
 import TextStory
 
 extension TextStoring {
-    func findStartOfLine(containing location: Int) -> Int {
-        var checkLoc = min(location - 1, length)
+    func findPreceedingOccurrenceOfCharacter(in set: CharacterSet, from location: Int) -> Int? {
+        var checkLoc = min(location - 1, length - 1)
 
         while true {
             if checkLoc < 0 {
@@ -16,12 +16,16 @@ extension TextStoring {
                 fatalError()
             }
 
-            if value == "\n" {
+            if value.unicodeScalars.allSatisfy({ set.contains($0) }) {
                 return checkLoc + 1
             }
 
             checkLoc -= 1
         }
+    }
+
+    func findStartOfLine(containing location: Int) -> Int {
+        return findPreceedingOccurrenceOfCharacter(in: CharacterSet.newlines, from: location) ?? 0
     }
 
     func leadingRange(in range: NSRange, within set: CharacterSet) -> NSRange? {
@@ -37,8 +41,8 @@ extension TextStoring {
 
         let nonMatchingRange = NSRange(stringRange, in: string)
 
-        precondition(nonMatchingRange.location <= range.length)
-        precondition(nonMatchingRange.location >= 0)
+        assert(nonMatchingRange.location <= range.length)
+        assert(nonMatchingRange.location >= 0)
 
         return NSRange(location: range.location, length: nonMatchingRange.location)
     }
@@ -56,14 +60,22 @@ extension TextStoring {
 
         let nonMatchingRange = NSRange(stringRange, in: string)
 
-        precondition(nonMatchingRange.max <= range.length)
-        precondition(nonMatchingRange.max >= 0)
+        assert(nonMatchingRange.max <= range.length)
+        assert(nonMatchingRange.max >= 0)
 
         return NSRange(location: range.location + nonMatchingRange.max, length: range.length - nonMatchingRange.max)
     }
 }
 
 extension TextStoring {
+    func leadingWhitespaceRange(in range: NSRange) -> NSRange? {
+        return leadingRange(in: range, within: .whitespaces)
+    }
+
+    func trailingWhitespaceRange(in range: NSRange) -> NSRange? {
+        return trailingRange(in: range, within: .whitespaces)
+    }
+
     func leadingWhitespaceRange(containing location: Int) -> NSRange? {
         let lineStartLocation = findStartOfLine(containing: location)
 

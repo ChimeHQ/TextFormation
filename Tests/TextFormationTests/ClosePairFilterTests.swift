@@ -99,10 +99,10 @@ class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(storage.string, "{\n}")
     }
 
-    func testIndentingNewlineAfterMatch() {
-        let filter = ClosePairFilter(open: "{", close: "}", indenter: { _ in
-            return .success("\t")
-        })
+    func testLeadingWhitespaceForNewlineAfterMatch() {
+        let providers = WhitespaceProviders(leadingWhitespace: { _, _ in return "\t" },
+                                            trailingWhitespace: WhitespaceProviders.passthroughProvider)
+        let filter = ClosePairFilter(open: "{", close: "}", whitespaceProviders: providers)
 
         let storage = StringStorage()
 

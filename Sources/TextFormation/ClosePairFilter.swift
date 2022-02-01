@@ -4,11 +4,11 @@ import TextStory
 public class ClosePairFilter {
     private let innerFilter: AfterConsecutiveCharacterFilter
     public let closeString: String
-    public let indenter: IndentationProvider?
+    private let whitespaceProviders: WhitespaceProviders?
 
-    init(open: String, close: String, indenter: IndentationProvider? = nil) {
+    init(open: String, close: String, whitespaceProviders: WhitespaceProviders? = nil) {
         self.closeString = close
-        self.indenter = indenter
+        self.whitespaceProviders = whitespaceProviders
         self.innerFilter = AfterConsecutiveCharacterFilter(matching: open)
 
         innerFilter.handler = { [unowned self] in self.filterHandler($0, in: $1)}
@@ -28,20 +28,21 @@ public class ClosePairFilter {
         storage.insertString(closeString, at: mutation.range.max)
 
         if mutation.string == "\n" && isInsert {
-            addIndentation(with: mutation, in: storage)
+            addLeadingWhitespace(with: mutation, in: storage)
         }
 
         return .stop
     }
 
-    private func addIndentation(with mutation: TextMutation, in storage: TextStoring) {
-        guard let provider = indenter else { return }
+    private func addLeadingWhitespace(with mutation: TextMutation, in storage: TextStoring) {
+        guard let provider = whitespaceProviders?.leadingWhitespace else { return }
 
         storage.insertString("\n", at: mutation.range.max)
 
-        if let indentation = try? provider(mutation.range.location).get() {
-            storage.insertString(indentation, at: mutation.range.location)
-        }
+        let range = NSRange(location: mutation.range.location, length: 0)
+        let value = provider(range, storage)
+
+        storage.insertString(value, at: mutation.range.location)
     }
 }
 

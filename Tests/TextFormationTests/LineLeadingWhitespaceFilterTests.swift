@@ -2,11 +2,11 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-class LineIndentationFilterTests: XCTestCase {
+class LineLeadingWhitespaceFilterTests: XCTestCase {
     func testMatching() {
         let storage = StringStorage()
-        let filter = LineIndentationFilter(string: "abc", provider: { _ in
-            return .success("\t")
+        let filter = LineLeadingWhitespaceFilter(string: "abc", provider: { _, _ in
+            return "\t"
         })
 
         let mutation = TextMutation(insert: "abc", at: 0, limit: 0)
@@ -18,8 +18,8 @@ class LineIndentationFilterTests: XCTestCase {
 
     func testMatchingWithDifferentIndentation() {
         let storage = StringStorage(" ")
-        let filter = LineIndentationFilter(string: "abc", provider: { _ in
-            return .success("\t")
+        let filter = LineLeadingWhitespaceFilter(string: "abc", provider: { _, _ in
+            return "\t"
         })
 
         let mutation = TextMutation(insert: "abc", at: 1, limit: 1)
@@ -31,8 +31,8 @@ class LineIndentationFilterTests: XCTestCase {
 
     func testMatchingWithSame() {
         let storage = StringStorage("\t")
-        let filter = LineIndentationFilter(string: "\n", provider: { _ in
-            return .success("\t")
+        let filter = LineLeadingWhitespaceFilter(string: "\n", provider: { _, _ in
+            return "\t"
         })
 
         let mutation = TextMutation(insert: "\n", at: 1, limit: 1)
