@@ -6,7 +6,7 @@ public struct StandardOpenPairFilter {
 
     public init(open: String, close: String, whitespaceProviders: WhitespaceProviders = .none) {
         let skip = SkipFilter(matching: close)
-        let closeWhitespaceFilter = LineLeadingWhitespaceFilter(string: close, provider: whitespaceProviders.leadingWhitespace)
+        let closeWhitespaceFilter = LineLeadingWhitespaceFilter(string: close, leadingWhitespaceProvider: whitespaceProviders.leadingWhitespace)
         let closePair = ClosePairFilter(open: open, close: close, whitespaceProviders: whitespaceProviders)
         let openPairReplacement = OpenPairReplacementFilter(open: open, close: close)
 

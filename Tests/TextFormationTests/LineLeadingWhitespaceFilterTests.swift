@@ -5,7 +5,7 @@ import TextStory
 class LineLeadingWhitespaceFilterTests: XCTestCase {
     func testMatching() {
         let storage = StringStorage()
-        let filter = LineLeadingWhitespaceFilter(string: "abc", provider: { _, _ in
+        let filter = LineLeadingWhitespaceFilter(string: "abc", leadingWhitespaceProvider: { _, _ in
             return "\t"
         })
 
@@ -18,7 +18,7 @@ class LineLeadingWhitespaceFilterTests: XCTestCase {
 
     func testMatchingWithDifferentIndentation() {
         let storage = StringStorage(" ")
-        let filter = LineLeadingWhitespaceFilter(string: "abc", provider: { _, _ in
+        let filter = LineLeadingWhitespaceFilter(string: "abc", leadingWhitespaceProvider: { _, _ in
             return "\t"
         })
 
@@ -31,7 +31,7 @@ class LineLeadingWhitespaceFilterTests: XCTestCase {
 
     func testMatchingWithSame() {
         let storage = StringStorage("\t")
-        let filter = LineLeadingWhitespaceFilter(string: "\n", provider: { _, _ in
+        let filter = LineLeadingWhitespaceFilter(string: "\n", leadingWhitespaceProvider: { _, _ in
             return "\t"
         })
 

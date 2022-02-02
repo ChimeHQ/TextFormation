@@ -3,11 +3,11 @@ import TextStory
 
 public class LineLeadingWhitespaceFilter {
     private let recognizer: ConsecutiveCharacterRecognizer
-    public let provider: StringSubstitutionProvider
+    private let provider: StringSubstitutionProvider
 
-    public init(string: String, provider: @escaping StringSubstitutionProvider) {
+    public init(string: String, leadingWhitespaceProvider: @escaping StringSubstitutionProvider) {
         self.recognizer = ConsecutiveCharacterRecognizer(matching: string)
-        self.provider = provider
+        self.provider = leadingWhitespaceProvider
     }
 
     public var string: String {

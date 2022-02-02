@@ -7,7 +7,7 @@ class NewlineProcessingFilterTests: XCTestCase {
         let storage = StringStorage()
         let providers = WhitespaceProviders(leadingWhitespace: { _, _ in return "lll" },
                                             trailingWhitespace: {  _, _ in return "ttt"})
-        let filter = NewlineProcessingFilter(providers: providers)
+        let filter = NewlineProcessingFilter(whitespaceProviders: providers)
 
         let mutation = TextMutation(insert: "\n", at: 0, limit: 0)
 
@@ -20,7 +20,7 @@ class NewlineProcessingFilterTests: XCTestCase {
         let storage = StringStorage(" ")
         let providers = WhitespaceProviders(leadingWhitespace: {  _, _ in return "lll" },
                                             trailingWhitespace: {  _, _ in return "ttt"})
-        let filter = NewlineProcessingFilter(providers: providers)
+        let filter = NewlineProcessingFilter(whitespaceProviders: providers)
 
         let mutation = TextMutation(insert: "\n", at: 1, limit: 1)
 
@@ -33,7 +33,7 @@ class NewlineProcessingFilterTests: XCTestCase {
         let storage = StringStorage("abc\t")
         let providers = WhitespaceProviders(leadingWhitespace: {  _, _ in return "lll" },
                                             trailingWhitespace: {  _, _ in return "ttt"})
-        let filter = NewlineProcessingFilter(providers: providers)
+        let filter = NewlineProcessingFilter(whitespaceProviders: providers)
 
         let mutation = TextMutation(insert: "\n", at: 4, limit: 4)
 

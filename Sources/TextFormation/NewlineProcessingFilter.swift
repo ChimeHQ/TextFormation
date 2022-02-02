@@ -5,9 +5,9 @@ public class NewlineProcessingFilter {
     private let recognizer: ConsecutiveCharacterRecognizer
     public let providers: WhitespaceProviders
 
-    public init(providers: WhitespaceProviders) {
+    public init(whitespaceProviders: WhitespaceProviders) {
         self.recognizer = ConsecutiveCharacterRecognizer(matching: "\n")
-        self.providers = providers
+        self.providers = whitespaceProviders
     }
 
     private func filterHandler(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
