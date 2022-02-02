@@ -6,6 +6,7 @@ public class AfterConsecutiveCharacterFilter {
 
     private let recognizer: ConsecutiveCharacterRecognizer
     public var handler: Handler
+    public var processMutationAfterTrigger: Bool = true
 
     init(matching string: String) {
         self.recognizer = ConsecutiveCharacterRecognizer(matching: string)
@@ -25,7 +26,9 @@ extension AfterConsecutiveCharacterFilter: Filter {
         case .triggered(let location):
             recognizer.resetState()
 
-            recognizer.processMutation(mutation)
+            if processMutationAfterTrigger {
+                recognizer.processMutation(mutation)
+            }
 
             if location != mutation.range.location {
                 break

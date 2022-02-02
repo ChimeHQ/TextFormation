@@ -55,7 +55,7 @@ class ClosePairFilterTests: XCTestCase {
         let filter = ClosePairFilter(open: "abc", close: "def")
         let storage = StringStorage("yz")
 
-        let openMutation = TextMutation(string: "abc", range: NSRange(0..<1), limit: 1)
+        let openMutation = TextMutation(string: "abc", range: NSRange(0..<1), limit: 2)
 
         XCTAssertEqual(filter.processMutation(openMutation, in: storage), .stop)
         storage.applyMutation(openMutation)
@@ -67,11 +67,11 @@ class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(storage.string, "abc defz")
     }
 
-    func testMatchWithCloseReplacement() {
+    func testMatchThenReplacement() {
         let filter = ClosePairFilter(open: "abc", close: "def")
         let storage = StringStorage("yz")
 
-        let openMutation = TextMutation(string: "abc", range: NSRange(0..<1), limit: 1)
+        let openMutation = TextMutation(string: "abc", range: NSRange(0..<1), limit: 2)
 
         XCTAssertEqual(filter.processMutation(openMutation, in: storage), .stop)
         storage.applyMutation(openMutation)
@@ -187,5 +187,97 @@ class ClosePairFilterTests: XCTestCase {
         storage.applyMutation(unrelatedMutation)
 
         XCTAssertEqual(storage.string, "(((ab)))")
+    }
+}
+
+extension ClosePairFilterTests {
+    func testMatchingWithSameOpenClose() {
+        let filter = ClosePairFilter(open: "'", close: "'")
+        let storage = StringStorage()
+
+        let openMutation = TextMutation(insert: "'", at: 0, limit: 0)
+
+        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .stop)
+        storage.applyMutation(openMutation)
+
+        let nextMutation = TextMutation(insert: "a", at: 1, limit: 1)
+        XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .stop)
+        storage.applyMutation(nextMutation)
+
+        XCTAssertEqual(storage.string, "'a'")
+    }
+
+    func testCloseAfterMatchingWithSameOpenClose() {
+        let filter = ClosePairFilter(open: "'", close: "'")
+        let storage = StringStorage()
+
+        let openMutation = TextMutation(insert: "'", at: 0, limit: 0)
+
+        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .stop)
+        storage.applyMutation(openMutation)
+
+        let closeMutation = TextMutation(insert: "'", at: 1, limit: 1)
+        XCTAssertEqual(filter.processMutation(closeMutation, in: storage), .stop)
+        storage.applyMutation(closeMutation)
+
+        XCTAssertEqual(storage.string, "''")
+    }
+
+    func testAnotherMutationAfterCloseAfterMatchingWithSameOpenClose() {
+        let filter = ClosePairFilter(open: "'", close: "'")
+        let storage = StringStorage()
+
+        let openMutation = TextMutation(insert: "'", at: 0, limit: 0)
+
+        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .stop)
+        storage.applyMutation(openMutation)
+
+        let closeMutation = TextMutation(insert: "'", at: 1, limit: 1)
+        XCTAssertEqual(filter.processMutation(closeMutation, in: storage), .stop)
+        storage.applyMutation(closeMutation)
+
+        let nextMutation = TextMutation(insert: "a", at: 2, limit: 2)
+        XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .none)
+        storage.applyMutation(nextMutation)
+
+        XCTAssertEqual(storage.string, "''a")
+
+        let anotherMutation = TextMutation(insert: "b", at: 3, limit: 3)
+        XCTAssertEqual(filter.processMutation(anotherMutation, in: storage), .none)
+        storage.applyMutation(anotherMutation)
+
+        XCTAssertEqual(storage.string, "''ab")
+    }
+
+    func testMatchWithOpenReplacementWithSameOpenClose() {
+        let filter = ClosePairFilter(open: "'", close: "'")
+        let storage = StringStorage("yz")
+
+        let openMutation = TextMutation(string: "'", range: NSRange(0..<1), limit: 2)
+
+        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .stop)
+        storage.applyMutation(openMutation)
+
+        let nextMutation = TextMutation(insert: " ", at: 1, limit: 2)
+        XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .stop)
+        storage.applyMutation(nextMutation)
+
+        XCTAssertEqual(storage.string, "' 'z")
+    }
+
+    func testMatchThenReplacementWithSameOpenClose() {
+        let filter = ClosePairFilter(open: "'", close: "'")
+        let storage = StringStorage("yz")
+
+        let openMutation = TextMutation(string: "'", range: NSRange(0..<1), limit: 2)
+
+        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .stop)
+        storage.applyMutation(openMutation)
+
+        let nextMutation = TextMutation(string: " ", range: NSRange(1..<2), limit: 2)
+        XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .none)
+        storage.applyMutation(nextMutation)
+
+        XCTAssertEqual(storage.string, "' ")
     }
 }

@@ -5,6 +5,7 @@ public class ClosePairFilter {
     private let innerFilter: AfterConsecutiveCharacterFilter
     public let closeString: String
     private let whitespaceProviders: WhitespaceProviders?
+    private var locationAfterSkippedClose: Int?
 
     init(open: String, close: String, whitespaceProviders: WhitespaceProviders? = nil) {
         self.closeString = close
@@ -12,6 +13,15 @@ public class ClosePairFilter {
         self.innerFilter = AfterConsecutiveCharacterFilter(matching: open)
 
         innerFilter.handler = { [unowned self] in self.filterHandler($0, in: $1)}
+
+        // This is tricky! Consider:
+        // open = A, close = A
+        // input: AAB
+        //
+        // This will result in the second "A", causing a trigger, and
+        // pruducing "AABA". This flag allows us to control for this
+        // behavior better.
+        innerFilter.processMutationAfterTrigger = open != close
     }
 
     public var openString: String {
@@ -20,11 +30,17 @@ public class ClosePairFilter {
 
     private func filterHandler(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
         let isInsert = mutation.range.length == 0
+        let isClose = mutation.string == closeString
+//        let locationWasSkipped = locationAfterSkippedClose == mutation.range.location
 
-        if mutation.string == closeString && isInsert {
+        if isClose && isInsert {
+//            self.locationAfterSkippedClose = mutation.postApplyRange.max
+
             return .stop
         }
 
+        self.locationAfterSkippedClose = nil
+        
         storage.insertString(closeString, at: mutation.range.max)
 
         if mutation.string == "\n" && isInsert {
