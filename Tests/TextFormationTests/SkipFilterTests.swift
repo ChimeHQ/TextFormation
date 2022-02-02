@@ -13,4 +13,15 @@ class SkipFilterTests: XCTestCase {
 
         XCTAssertEqual(storage.string, "}")
     }
+
+    func testNoSkip() {
+        let filter = SkipFilter(matching: "}")
+        let storage = StringStorage("")
+
+        let mutation = TextMutation(insert: "}", at: 0, limit: 0)
+        XCTAssertEqual(filter.processMutation(mutation, in: storage), .none)
+        storage.applyMutation(mutation)
+
+        XCTAssertEqual(storage.string, "}")
+    }
 }

@@ -19,6 +19,10 @@ extension SkipFilter: Filter {
             return .none
         }
 
+        if storage.substring(from: mutation.postApplyRange) != string {
+            return .none
+        }
+
         // delete match, so the new character replaces it and also updates the selection in the
         // expected way
         let range = NSRange(location: mutation.range.max, length: string.utf16.count)

@@ -18,13 +18,13 @@ extension CompositeFilter: Filter {
     func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
         for filter in filters {
             let action = filter.processMutation(mutation, in: storage)
+            let result = actionHandler(filter, action)
 
-            switch actionHandler(filter, action) {
-            case .none:
+            if action == .none && result == .none {
                 continue
-            case .stop, .discard:
-                return action
             }
+
+            return result
         }
 
         return .none

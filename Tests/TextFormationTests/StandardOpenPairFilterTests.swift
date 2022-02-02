@@ -19,22 +19,6 @@ class StandardOpenPairFilterTests: XCTestCase {
         XCTAssertEqual(storage.string, "{a}")
     }
 
-    func testMatchOpenAndApplyWhitespace() {
-        let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let storage = StringStorage()
-
-        let openMutation = TextMutation(insert: "{", at: 0, limit: 0)
-
-        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .none)
-        storage.applyMutation(openMutation)
-
-        let nextMutation = TextMutation(insert: "a", at: 1, limit: 1)
-        XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .none)
-        storage.applyMutation(nextMutation)
-
-        XCTAssertEqual(storage.string, "{a}")
-    }
-
     func testSkipCloseAfterMatchingOpen() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
         let storage = StringStorage()
@@ -47,12 +31,25 @@ class StandardOpenPairFilterTests: XCTestCase {
         let nextMutation = TextMutation(insert: "a", at: 1, limit: 1)
         XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .none)
         storage.applyMutation(nextMutation)
+        XCTAssertEqual(storage.string, "{a}")
 
         let closeMutation = TextMutation(insert: "}", at: 2, limit: 2)
         XCTAssertEqual(filter.processMutation(closeMutation, in: storage), .none)
         storage.applyMutation(closeMutation)
-
+        
         XCTAssertEqual(storage.string, "{a}")
+    }
+
+    func testApplyWhitespaceOnClose() {
+        let providers = WhitespaceProviders(leadingWhitespace: { _, _ in return "lll" },
+                                            trailingWhitespace: {  _, _ in return "ttt"})
+        let filter = StandardOpenPairFilter(open: "{", close: "}", whitespaceProviders: providers)
+        let storage = StringStorage()
+
+        let openMutation = TextMutation(insert: "}", at: 0, limit: 0)
+        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .discard)
+
+        XCTAssertEqual(storage.string, "lll}")
     }
 
     func testSurroundRange() {

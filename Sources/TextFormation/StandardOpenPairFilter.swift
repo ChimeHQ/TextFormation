@@ -5,12 +5,15 @@ struct StandardOpenPairFilter {
     private let filter: CompositeFilter
 
     init(open: String, close: String, whitespaceProviders: WhitespaceProviders = .none) {
-        let skip = SkipFilter(matching: "}")
-        let closePair = ClosePairFilter(open: "{", close: "}", whitespaceProviders: whitespaceProviders)
-        let openPairReplacement = OpenPairReplacementFilter(open: "{", close: "}")
+        let skip = SkipFilter(matching: close)
+        let closeWhitespaceFilter = LineLeadingWhitespaceFilter(string: close, provider: whitespaceProviders.leadingWhitespace)
+        let closePair = ClosePairFilter(open: open, close: close, whitespaceProviders: whitespaceProviders)
+        let openPairReplacement = OpenPairReplacementFilter(open: open, close: close)
+
+        let filters: [Filter] = [skip, closeWhitespaceFilter, openPairReplacement, closePair]
 
         // treat a "stop" as only applying to our local chain
-        self.filter = CompositeFilter(filters: [skip, openPairReplacement, closePair], handler: { (_, action) in
+        self.filter = CompositeFilter(filters: filters, handler: { (_, action) in
             switch action {
             case .stop, .none:
                 return .none
