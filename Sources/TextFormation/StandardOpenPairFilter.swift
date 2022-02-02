@@ -1,10 +1,10 @@
 import Foundation
 import TextStory
 
-struct StandardOpenPairFilter {
+public struct StandardOpenPairFilter {
     private let filter: CompositeFilter
 
-    init(open: String, close: String, whitespaceProviders: WhitespaceProviders = .none) {
+    public init(open: String, close: String, whitespaceProviders: WhitespaceProviders = .none) {
         let skip = SkipFilter(matching: close)
         let closeWhitespaceFilter = LineLeadingWhitespaceFilter(string: close, provider: whitespaceProviders.leadingWhitespace)
         let closePair = ClosePairFilter(open: open, close: close, whitespaceProviders: whitespaceProviders)
@@ -25,7 +25,7 @@ struct StandardOpenPairFilter {
 }
 
 extension StandardOpenPairFilter: Filter {
-    func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
         return filter.processMutation(mutation, in: storage)
     }
 }
