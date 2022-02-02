@@ -5,7 +5,7 @@ public class LineLeadingWhitespaceFilter {
     private let recognizer: ConsecutiveCharacterRecognizer
     public let provider: StringSubstitutionProvider
 
-    init(string: String, provider: @escaping StringSubstitutionProvider) {
+    public init(string: String, provider: @escaping StringSubstitutionProvider) {
         self.recognizer = ConsecutiveCharacterRecognizer(matching: string)
         self.provider = provider
     }

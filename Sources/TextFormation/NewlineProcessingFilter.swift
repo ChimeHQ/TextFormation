@@ -5,7 +5,7 @@ public class NewlineProcessingFilter {
     private let recognizer: ConsecutiveCharacterRecognizer
     public let providers: WhitespaceProviders
 
-    init(providers: WhitespaceProviders) {
+    public init(providers: WhitespaceProviders) {
         self.recognizer = ConsecutiveCharacterRecognizer(matching: "\n")
         self.providers = providers
     }
