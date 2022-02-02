@@ -16,6 +16,19 @@ class LineLeadingWhitespaceFilterTests: XCTestCase {
         XCTAssertEqual(storage.string, "\tabc")
     }
 
+    func testMatchingWithMoreInPrefix() {
+        let storage = StringStorage("def ")
+        let filter = LineLeadingWhitespaceFilter(string: "abc", leadingWhitespaceProvider: { _, _ in
+            return "\t"
+        })
+
+        let mutation = TextMutation(insert: "abc", at: 4, limit: 4)
+
+        XCTAssertEqual(filter.processMutation(mutation, in: storage), .discard)
+
+        XCTAssertEqual(storage.string, "\tdef abc")
+    }
+
     func testMatchingWithDifferentIndentation() {
         let storage = StringStorage(" ")
         let filter = LineLeadingWhitespaceFilter(string: "abc", leadingWhitespaceProvider: { _, _ in

@@ -79,6 +79,6 @@ extension TextStoring {
     func leadingWhitespaceRange(containing location: Int) -> NSRange? {
         let lineStartLocation = findStartOfLine(containing: location)
 
-        return trailingRange(in: NSRange(lineStartLocation..<location), within: .whitespaces)
+        return leadingRange(in: NSRange(lineStartLocation..<location), within: .whitespaces)
     }
 }
