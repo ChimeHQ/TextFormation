@@ -38,20 +38,27 @@ public class ClosePairFilter {
 
         interface.insertString(closeString, at: mutation.range.max)
         interface.insertionLocation = mutation.range.location
-        
-        if mutation.string == "\n" && isInsert {
-            handleNewlineInsert(with: mutation, in: interface)
+
+        if mutation.string != "\n" || isInsert == false {
+            return .stop
         }
 
-        return .stop
+        return handleNewlineInsert(with: mutation, in: interface)
     }
 
-    private func handleNewlineInsert(with mutation: TextMutation, in interface: TextInterface) {
-        guard let provider = whitespaceProviders?.leadingWhitespace else { return }
+    private func handleNewlineInsert(with mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+        guard let provider = whitespaceProviders?.leadingWhitespace else {
+            return .stop
+        }
 
-        interface.insertString("\n", at: mutation.range.max)
+        let range = NSRange(location: mutation.range.location, length: 0)
+        let value = provider(range, interface)
 
-        addLeadingWhitespace(using: provider, for: mutation, in: interface)
+        let string = "\n" + value + "\n"
+        interface.insertString(string, at: mutation.range.location)
+        interface.insertionLocation = mutation.range.location + 1 + value.utf16.count
+
+        return .discard
     }
 
     private func addLeadingWhitespace(using provider: StringSubstitutionProvider, for mutation: TextMutation, in interface: TextInterface) {
@@ -59,7 +66,7 @@ public class ClosePairFilter {
         let value = provider(range, interface)
 
         interface.insertString(value, at: mutation.range.location)
-
+        interface.insertionLocation = mutation.range.location + value.utf16.count
         interface.applyMutation(mutation)
     }
 }

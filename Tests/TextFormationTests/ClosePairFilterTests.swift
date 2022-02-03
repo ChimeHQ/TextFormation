@@ -126,6 +126,40 @@ class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(interface.string, "(((ab)))")
         XCTAssertEqual(interface.insertionLocation, 5)
     }
+
+    func testMatchThenNewline() {
+        let filter = ClosePairFilter(open: "abc", close: "def")
+        let interface = TestableTextInterface()
+
+        let openMutation = TextMutation(insert: "abc", at: 0, limit: 0)
+
+        XCTAssertEqual(interface.runFilter(filter, on: openMutation), .stop)
+        XCTAssertEqual(interface.selectedRange, NSRange(3..<3))
+
+        let nextMutation = TextMutation(insert: "\n", at: 3, limit: 3)
+        XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .stop)
+
+        XCTAssertEqual(interface.string, "abc\ndef")
+        XCTAssertEqual(interface.selectedRange, NSRange(4..<4))
+    }
+
+    func testMatchThenNewlineWithWhitespaceProviders() {
+        let providers = WhitespaceProviders(leadingWhitespace: {  _, _ in return "lll" },
+                                            trailingWhitespace: {  _, _ in return "ttt"})
+        let filter = ClosePairFilter(open: "abc", close: "def", whitespaceProviders: providers)
+        let interface = TestableTextInterface()
+
+        let openMutation = TextMutation(insert: "abc", at: 0, limit: 0)
+
+        XCTAssertEqual(interface.runFilter(filter, on: openMutation), .stop)
+        XCTAssertEqual(interface.selectedRange, NSRange(3..<3))
+
+        let nextMutation = TextMutation(insert: "\n", at: 3, limit: 3)
+        XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .discard)
+
+        XCTAssertEqual(interface.string, "abc\nlll\ndef")
+        XCTAssertEqual(interface.selectedRange, NSRange(7..<7))
+    }
 }
 
 extension ClosePairFilterTests {
