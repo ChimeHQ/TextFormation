@@ -5,97 +5,97 @@ import TextStory
 class StandardOpenPairFilterTests: XCTestCase {
     func testMatchOpen() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let storage = StringStorage()
+        let interface = TestableTextInterface()
 
         let openMutation = TextMutation(insert: "{", at: 0, limit: 0)
-
-        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .none)
-        storage.applyMutation(openMutation)
+        XCTAssertEqual(interface.runFilter(filter, on: openMutation), .none)
 
         let nextMutation = TextMutation(insert: "a", at: 1, limit: 1)
-        XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .none)
-        storage.applyMutation(nextMutation)
+        XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .none)
 
-        XCTAssertEqual(storage.string, "{a}")
+        XCTAssertEqual(interface.string, "{a}")
+        XCTAssertEqual(interface.insertionLocation, 2)
     }
 
     func testSkipCloseAfterMatchingOpen() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let storage = StringStorage()
+        let interface = TestableTextInterface()
 
         let openMutation = TextMutation(insert: "{", at: 0, limit: 0)
-
-        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .none)
-        storage.applyMutation(openMutation)
+        XCTAssertEqual(interface.runFilter(filter, on: openMutation), .none)
 
         let nextMutation = TextMutation(insert: "a", at: 1, limit: 1)
-        XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .none)
-        storage.applyMutation(nextMutation)
-        XCTAssertEqual(storage.string, "{a}")
+        XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .none)
+
+        XCTAssertEqual(interface.string, "{a}")
 
         let closeMutation = TextMutation(insert: "}", at: 2, limit: 2)
-        XCTAssertEqual(filter.processMutation(closeMutation, in: storage), .none)
-        storage.applyMutation(closeMutation)
+        XCTAssertEqual(interface.runFilter(filter, on: closeMutation), .none)
         
-        XCTAssertEqual(storage.string, "{a}")
+        XCTAssertEqual(interface.string, "{a}")
+        XCTAssertEqual(interface.insertionLocation, 3)
     }
 
     func testApplyWhitespaceOnClose() {
         let providers = WhitespaceProviders(leadingWhitespace: { _, _ in return "lll" },
                                             trailingWhitespace: {  _, _ in return "ttt"})
         let filter = StandardOpenPairFilter(open: "{", close: "}", whitespaceProviders: providers)
-        let storage = StringStorage()
+        let interface = TestableTextInterface()
 
         let openMutation = TextMutation(insert: "}", at: 0, limit: 0)
-        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .discard)
+        XCTAssertEqual(interface.runFilter(filter, on: openMutation), .discard)
 
-        XCTAssertEqual(storage.string, "lll}")
+        XCTAssertEqual(interface.string, "lll}")
+        XCTAssertEqual(interface.insertionLocation, 4)
     }
 
     func testSurroundRange() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let storage = StringStorage("abc")
+        let interface = TestableTextInterface("abc")
 
-        let openMutation = TextMutation(string: "{", range: NSRange(0..<3), limit: 3)
+        interface.selectedRange = NSRange(0..<3)
 
-        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .discard)
-        XCTAssertEqual(storage.string, "{abc}")
+        let openMutation = TextMutation(string: "{", range: interface.selectedRange, limit: 3)
+        XCTAssertEqual(interface.runFilter(filter, on: openMutation), .discard)
+
+        XCTAssertEqual(interface.string, "{abc}")
+        XCTAssertEqual(interface.selectedRange, NSRange(1..<4))
+
+        interface.selectedRange = NSRange(1..<1)
 
         // now, make sure we don't do anything with that open
         let nextMutation = TextMutation(insert: "z", at: 1, limit: 1)
-        XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .none)
-        storage.applyMutation(nextMutation)
+        XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .none)
 
-        XCTAssertEqual(storage.string, "{zabc}")
+        XCTAssertEqual(interface.string, "{zabc}")
+        XCTAssertEqual(interface.insertionLocation, 2)
     }
 
     func testSkipClose() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let storage = StringStorage("}")
+        let interface = TestableTextInterface("}")
 
         let openMutation = TextMutation(insert: "}", at: 0, limit: 0)
+        XCTAssertEqual(interface.runFilter(filter, on: openMutation), .none)
 
-        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .none)
-        storage.applyMutation(openMutation)
-        XCTAssertEqual(storage.string, "}")
+        XCTAssertEqual(interface.string, "}")
+        XCTAssertEqual(interface.insertionLocation, 1)
     }
 
     func testDoubleOpen() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let storage = StringStorage()
+        let interface = TestableTextInterface()
 
         let openMutation = TextMutation(insert: "{", at: 0, limit: 0)
-        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .none)
-        storage.applyMutation(openMutation)
+        XCTAssertEqual(interface.runFilter(filter, on: openMutation), .none)
 
         let doubleOpenMutation = TextMutation(insert: "{", at: 1, limit: 1)
-        XCTAssertEqual(filter.processMutation(doubleOpenMutation, in: storage), .none)
-        storage.applyMutation(doubleOpenMutation)
+        XCTAssertEqual(interface.runFilter(filter, on: doubleOpenMutation), .none)
 
         let nextMutation = TextMutation(insert: "a", at: 2, limit: 2)
-        XCTAssertEqual(filter.processMutation(nextMutation, in: storage), .none)
-        storage.applyMutation(nextMutation)
+        XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .none)
 
-        XCTAssertEqual(storage.string, "{{a}}")
+        XCTAssertEqual(interface.string, "{{a}}")
+        XCTAssertEqual(interface.insertionLocation, 3)
     }
 }

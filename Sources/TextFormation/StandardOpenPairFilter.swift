@@ -25,7 +25,7 @@ public struct StandardOpenPairFilter {
 }
 
 extension StandardOpenPairFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
-        return filter.processMutation(mutation, in: storage)
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+        return filter.processMutation(mutation, in: interface)
     }
 }

@@ -10,7 +10,7 @@ public class SkipFilter {
 }
 
 extension SkipFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
         if mutation.string != string {
             return .none
         }
@@ -19,7 +19,7 @@ extension SkipFilter: Filter {
             return .none
         }
 
-        if storage.substring(from: mutation.postApplyRange) != string {
+        if interface.substring(from: mutation.postApplyRange) != string {
             return .none
         }
 
@@ -27,7 +27,7 @@ extension SkipFilter: Filter {
         // expected way
         let range = NSRange(location: mutation.range.max, length: string.utf16.count)
 
-        storage.replaceString(in: range, with: "")
+        interface.replaceString(in: range, with: "")
 
         return .stop
     }

@@ -14,28 +14,28 @@ public class LineLeadingWhitespaceFilter {
         return recognizer.matchingString
     }
 
-    private func filterHandler(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
-        storage.applyMutation(mutation)
+    private func filterHandler(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+        interface.applyMutation(mutation)
 
-        guard let whitespaceRange = storage.leadingWhitespaceRange(containing: mutation.range.location) else {
+        guard let whitespaceRange = interface.leadingWhitespaceRange(containing: mutation.range.location) else {
             return .none
         }
 
-        let value = provider(whitespaceRange, storage)
+        let value = provider(whitespaceRange, interface)
 
-        storage.replaceString(in: whitespaceRange, with: value)
+        interface.replaceString(in: whitespaceRange, with: value)
 
         return .discard
     }
 }
 
 extension LineLeadingWhitespaceFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
         recognizer.processMutation(mutation)
 
         switch recognizer.state {
         case .triggered:
-            return filterHandler(mutation, in: storage)
+            return filterHandler(mutation, in: interface)
         case .tracking, .idle:
             return .none
         }

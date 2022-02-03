@@ -5,23 +5,23 @@ import TextStory
 class SkipFilterTests: XCTestCase {
     func testSingleCharacterSkip() {
         let filter = SkipFilter(matching: "}")
-        let storage = StringStorage("}")
+        let interface = TestableTextInterface("}")
 
         let mutation = TextMutation(insert: "}", at: 0, limit: 1)
-        XCTAssertEqual(filter.processMutation(mutation, in: storage), .stop)
-        storage.applyMutation(mutation)
+        XCTAssertEqual(interface.runFilter(filter, on: mutation), .stop)
 
-        XCTAssertEqual(storage.string, "}")
+        XCTAssertEqual(interface.string, "}")
+        XCTAssertEqual(interface.insertionLocation, 1)
     }
 
     func testNoSkip() {
         let filter = SkipFilter(matching: "}")
-        let storage = StringStorage("")
+        let interface = TestableTextInterface()
 
         let mutation = TextMutation(insert: "}", at: 0, limit: 0)
-        XCTAssertEqual(filter.processMutation(mutation, in: storage), .none)
-        storage.applyMutation(mutation)
+        XCTAssertEqual(interface.runFilter(filter, on: mutation), .none)
 
-        XCTAssertEqual(storage.string, "}")
+        XCTAssertEqual(interface.string, "}")
+        XCTAssertEqual(interface.insertionLocation, 1)
     }
 }

@@ -15,9 +15,9 @@ public struct CompositeFilter {
 }
 
 extension CompositeFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
         for filter in filters {
-            let action = filter.processMutation(mutation, in: storage)
+            let action = filter.processMutation(mutation, in: interface)
             let result = actionHandler(filter, action)
 
             if action == .none && result == .none {

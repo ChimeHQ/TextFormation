@@ -5,21 +5,21 @@ import TextStory
 class OpenPairReplacementFilterTests: XCTestCase {
     func testMatch() {
         let filter = OpenPairReplacementFilter(open: "abc", close: "def")
-        let storage = StringStorage(" ")
+        let interface = TestableTextInterface(" ")
 
         let openMutation = TextMutation(string: "abc", range: NSRange(0..<1), limit: 1)
 
-        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .discard)
-        XCTAssertEqual(storage.string, "abc def")
+        XCTAssertEqual(filter.processMutation(openMutation, in: interface), .discard)
+        XCTAssertEqual(interface.string, "abc def")
     }
 
     func testInsertMatch() {
         let filter = OpenPairReplacementFilter(open: "abc", close: "def")
-        let storage = StringStorage(" ")
+        let interface = TestableTextInterface(" ")
 
         let openMutation = TextMutation(string: "abc", range: NSRange(0..<0), limit: 1)
 
-        XCTAssertEqual(filter.processMutation(openMutation, in: storage), .none)
-        XCTAssertEqual(storage.string, " ")
+        XCTAssertEqual(filter.processMutation(openMutation, in: interface), .none)
+        XCTAssertEqual(interface.string, " ")
     }
 }

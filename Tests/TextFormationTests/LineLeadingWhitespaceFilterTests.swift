@@ -4,54 +4,54 @@ import TextStory
 
 class LineLeadingWhitespaceFilterTests: XCTestCase {
     func testMatching() {
-        let storage = StringStorage()
+        let interface = TestableTextInterface()
         let filter = LineLeadingWhitespaceFilter(string: "abc", leadingWhitespaceProvider: { _, _ in
             return "\t"
         })
 
         let mutation = TextMutation(insert: "abc", at: 0, limit: 0)
 
-        XCTAssertEqual(filter.processMutation(mutation, in: storage), .discard)
+        XCTAssertEqual(filter.processMutation(mutation, in: interface), .discard)
 
-        XCTAssertEqual(storage.string, "\tabc")
+        XCTAssertEqual(interface.string, "\tabc")
     }
 
     func testMatchingWithMoreInPrefix() {
-        let storage = StringStorage("def ")
+        let interface = TestableTextInterface("def ")
         let filter = LineLeadingWhitespaceFilter(string: "abc", leadingWhitespaceProvider: { _, _ in
             return "\t"
         })
 
         let mutation = TextMutation(insert: "abc", at: 4, limit: 4)
 
-        XCTAssertEqual(filter.processMutation(mutation, in: storage), .discard)
+        XCTAssertEqual(filter.processMutation(mutation, in: interface), .discard)
 
-        XCTAssertEqual(storage.string, "\tdef abc")
+        XCTAssertEqual(interface.string, "\tdef abc")
     }
 
     func testMatchingWithDifferentIndentation() {
-        let storage = StringStorage(" ")
+        let interface = TestableTextInterface(" ")
         let filter = LineLeadingWhitespaceFilter(string: "abc", leadingWhitespaceProvider: { _, _ in
             return "\t"
         })
 
         let mutation = TextMutation(insert: "abc", at: 1, limit: 1)
 
-        XCTAssertEqual(filter.processMutation(mutation, in: storage), .discard)
+        XCTAssertEqual(filter.processMutation(mutation, in: interface), .discard)
 
-        XCTAssertEqual(storage.string, "\tabc")
+        XCTAssertEqual(interface.string, "\tabc")
     }
 
     func testMatchingWithSame() {
-        let storage = StringStorage("\t")
+        let interface = TestableTextInterface("\t")
         let filter = LineLeadingWhitespaceFilter(string: "\n", leadingWhitespaceProvider: { _, _ in
             return "\t"
         })
 
         let mutation = TextMutation(insert: "\n", at: 1, limit: 1)
 
-        XCTAssertEqual(filter.processMutation(mutation, in: storage), .discard)
+        XCTAssertEqual(filter.processMutation(mutation, in: interface), .discard)
 
-        XCTAssertEqual(storage.string, "\t\n")
+        XCTAssertEqual(interface.string, "\t\n")
     }
 }

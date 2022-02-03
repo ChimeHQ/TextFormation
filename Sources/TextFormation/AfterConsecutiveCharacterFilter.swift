@@ -2,7 +2,7 @@ import Foundation
 import TextStory
 
 public class AfterConsecutiveCharacterFilter {
-    public typealias Handler = (TextMutation, TextStoring) -> FilterAction
+    public typealias Handler = (TextMutation, TextInterface) -> FilterAction
 
     private let recognizer: ConsecutiveCharacterRecognizer
     public var handler: Handler
@@ -19,7 +19,7 @@ public class AfterConsecutiveCharacterFilter {
 }
 
 extension AfterConsecutiveCharacterFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
         switch recognizer.state {
         case .idle, .tracking:
             break
@@ -34,7 +34,7 @@ extension AfterConsecutiveCharacterFilter: Filter {
                 break
             }
 
-            return handleMutationAfterTrigger(mutation, in: storage)
+            return handleMutationAfterTrigger(mutation, in: interface)
         }
 
         recognizer.processMutation(mutation)
@@ -49,7 +49,7 @@ extension AfterConsecutiveCharacterFilter: Filter {
         return .none
     }
 
-    private func handleMutationAfterTrigger(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
+    private func handleMutationAfterTrigger(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
         if mutation.string.isEmpty {
             return .none
         }
@@ -58,6 +58,6 @@ extension AfterConsecutiveCharacterFilter: Filter {
             return .none
         }
 
-        return handler(mutation, storage)
+        return handler(mutation, interface)
     }
 }

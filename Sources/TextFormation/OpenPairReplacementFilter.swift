@@ -12,7 +12,7 @@ public class OpenPairReplacementFilter {
 }
 
 extension OpenPairReplacementFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
         if mutation.string != openString {
             return .none
         }
@@ -21,8 +21,8 @@ extension OpenPairReplacementFilter: Filter {
             return .none
         }
 
-        storage.insertString(closeString, at: mutation.range.max)
-        storage.insertString(openString, at: mutation.range.location)
+        interface.insertString(closeString, at: mutation.range.max)
+        interface.insertString(openString, at: mutation.range.location)
 
         return .discard
     }

@@ -11,5 +11,5 @@ extension FilterAction: Hashable {
 }
 
 public protocol Filter {
-    func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction
+    func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction
 }

@@ -28,46 +28,44 @@ public class ClosePairFilter {
         return innerFilter.string
     }
 
-    private func filterHandler(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
+    private func filterHandler(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
         let isInsert = mutation.range.length == 0
         let isClose = mutation.string == closeString
-//        let locationWasSkipped = locationAfterSkippedClose == mutation.range.location
 
         if isClose && isInsert {
-//            self.locationAfterSkippedClose = mutation.postApplyRange.max
-
             return .stop
         }
 
-        self.locationAfterSkippedClose = nil
+        interface.insertString(closeString, at: mutation.range.max)
+        interface.insertionLocation = mutation.range.location
         
-        storage.insertString(closeString, at: mutation.range.max)
-
         if mutation.string == "\n" && isInsert {
-            handleNewlineInsert(with: mutation, in: storage)
+            handleNewlineInsert(with: mutation, in: interface)
         }
 
         return .stop
     }
 
-    private func handleNewlineInsert(with mutation: TextMutation, in storage: TextStoring) {
+    private func handleNewlineInsert(with mutation: TextMutation, in interface: TextInterface) {
         guard let provider = whitespaceProviders?.leadingWhitespace else { return }
 
-        storage.insertString("\n", at: mutation.range.max)
+        interface.insertString("\n", at: mutation.range.max)
 
-        addLeadingWhitespace(using: provider, for: mutation, in: storage)
+        addLeadingWhitespace(using: provider, for: mutation, in: interface)
     }
 
-    private func addLeadingWhitespace(using provider: StringSubstitutionProvider, for mutation: TextMutation, in storage: TextStoring) {
+    private func addLeadingWhitespace(using provider: StringSubstitutionProvider, for mutation: TextMutation, in interface: TextInterface) {
         let range = NSRange(location: mutation.range.location, length: 0)
-        let value = provider(range, storage)
+        let value = provider(range, interface)
 
-        storage.insertString(value, at: mutation.range.location)
+        interface.insertString(value, at: mutation.range.location)
+
+        interface.applyMutation(mutation)
     }
 }
 
 extension ClosePairFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
-        return innerFilter.processMutation(mutation, in: storage)
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+        return innerFilter.processMutation(mutation, in: interface)
     }
 }

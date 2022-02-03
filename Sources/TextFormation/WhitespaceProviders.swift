@@ -5,7 +5,7 @@ extension CharacterSet {
     static let whitespacesWithoutNewlines = CharacterSet.whitespacesAndNewlines.subtracting(.newlines)
 }
 
-public typealias StringSubstitutionProvider = (NSRange, TextStoring) -> String
+public typealias StringSubstitutionProvider = (NSRange, TextInterface) -> String
 
 public struct WhitespaceProviders {
     public var leadingWhitespace: StringSubstitutionProvider

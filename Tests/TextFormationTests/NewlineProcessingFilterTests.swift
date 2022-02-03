@@ -4,41 +4,44 @@ import TextStory
 
 class NewlineProcessingFilterTests: XCTestCase {
     func testMatchingAfter() {
-        let storage = StringStorage()
+        let interface = TestableTextInterface()
         let providers = WhitespaceProviders(leadingWhitespace: { _, _ in return "lll" },
                                             trailingWhitespace: {  _, _ in return "ttt"})
         let filter = NewlineProcessingFilter(whitespaceProviders: providers)
 
         let mutation = TextMutation(insert: "\n", at: 0, limit: 0)
 
-        XCTAssertEqual(filter.processMutation(mutation, in: storage), .discard)
+        XCTAssertEqual(filter.processMutation(mutation, in: interface), .discard)
 
-        XCTAssertEqual(storage.string, "\nlll")
+        XCTAssertEqual(interface.string, "\nlll")
+        XCTAssertEqual(interface.insertionLocation, 4)
     }
 
     func testMatchingWithTrailingWhitespace() {
-        let storage = StringStorage(" ")
+        let interface = TestableTextInterface(" ")
         let providers = WhitespaceProviders(leadingWhitespace: {  _, _ in return "lll" },
                                             trailingWhitespace: {  _, _ in return "ttt"})
         let filter = NewlineProcessingFilter(whitespaceProviders: providers)
 
         let mutation = TextMutation(insert: "\n", at: 1, limit: 1)
 
-        XCTAssertEqual(filter.processMutation(mutation, in: storage), .discard)
+        XCTAssertEqual(filter.processMutation(mutation, in: interface), .discard)
 
-        XCTAssertEqual(storage.string, "ttt\nlll")
+        XCTAssertEqual(interface.string, "ttt\nlll")
+        XCTAssertEqual(interface.insertionLocation, 7)
     }
 
     func testMatchingWithTrailingTab() {
-        let storage = StringStorage("abc\t")
+        let interface = TestableTextInterface("abc\t")
         let providers = WhitespaceProviders(leadingWhitespace: {  _, _ in return "lll" },
                                             trailingWhitespace: {  _, _ in return "ttt"})
         let filter = NewlineProcessingFilter(whitespaceProviders: providers)
 
         let mutation = TextMutation(insert: "\n", at: 4, limit: 4)
 
-        XCTAssertEqual(filter.processMutation(mutation, in: storage), .discard)
+        XCTAssertEqual(filter.processMutation(mutation, in: interface), .discard)
 
-        XCTAssertEqual(storage.string, "abcttt\nlll")
+        XCTAssertEqual(interface.string, "abcttt\nlll")
+        XCTAssertEqual(interface.insertionLocation, 10)
     }
 }

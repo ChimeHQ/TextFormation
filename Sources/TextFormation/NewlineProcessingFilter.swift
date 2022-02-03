@@ -10,28 +10,28 @@ public class NewlineProcessingFilter {
         self.providers = whitespaceProviders
     }
 
-    private func filterHandler(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
-        storage.applyMutation(mutation)
+    private func filterHandler(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+        interface.applyMutation(mutation)
 
-        handleLeading(for: mutation, in: storage)
-        handleTrailing(for: mutation, in: storage)
+        handleLeading(for: mutation, in: interface)
+        handleTrailing(for: mutation, in: interface)
 
         return .discard
     }
 
-    private func handleLeading(for mutation: TextMutation, in storage: TextStoring) {
+    private func handleLeading(for mutation: TextMutation, in interface: TextInterface) {
         let range = NSRange(location: mutation.postApplyRange.max, length: 0)
 
-        let value = providers.leadingWhitespace(range, storage)
+        let value = providers.leadingWhitespace(range, interface)
 
-        storage.insertString(value, at: mutation.postApplyRange.max)
+        interface.insertString(value, at: mutation.postApplyRange.max)
     }
 
-    private func handleTrailing(for mutation: TextMutation, in storage: TextStoring) {
+    private func handleTrailing(for mutation: TextMutation, in interface: TextInterface) {
         let set = CharacterSet.whitespacesWithoutNewlines.inverted
         let location = mutation.range.location
 
-        guard let nonWhitespaceStart = storage.findPreceedingOccurrenceOfCharacter(in: set, from: location) else {
+        guard let nonWhitespaceStart = interface.findPreceedingOccurrenceOfCharacter(in: set, from: location) else {
             return
         }
 
@@ -41,21 +41,21 @@ public class NewlineProcessingFilter {
 
         let range = NSRange(nonWhitespaceStart..<location)
 
-        let value = providers.trailingWhitespace(range, storage)
+        let value = providers.trailingWhitespace(range, interface)
         
-        let trailingMutation = TextMutation(string: value, range: range, limit: storage.length)
+        let trailingMutation = TextMutation(string: value, range: range, limit: interface.length)
 
-        storage.applyMutation(trailingMutation)
+        interface.applyMutation(trailingMutation)
     }
 }
 
 extension NewlineProcessingFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in storage: TextStoring) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
         recognizer.processMutation(mutation)
 
         switch recognizer.state {
         case .triggered:
-            return filterHandler(mutation, in: storage)
+            return filterHandler(mutation, in: interface)
         case .tracking, .idle:
             return .none
         }
