@@ -16,7 +16,7 @@ public struct TextualIndenter {
 
     public var indentationStringUnit: String
 
-    init(unit: String) {
+    public init(unit: String) {
         self.indentationStringUnit = unit
     }
 
