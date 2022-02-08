@@ -2,7 +2,7 @@ import Foundation
 import TextStory
 
 extension CharacterSet {
-    static let whitespacesWithoutNewlines = CharacterSet.whitespacesAndNewlines.subtracting(.newlines)
+    public static let whitespacesWithoutNewlines = CharacterSet.whitespacesAndNewlines.subtracting(.newlines)
 }
 
 public typealias StringSubstitutionProvider = (NSRange, TextInterface) -> String

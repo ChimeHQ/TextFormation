@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "Rearrange",
+        "repositoryURL": "https://github.com/ChimeHQ/Rearrange.git",
+        "state": {
+          "branch": null,
+          "revision": "6e0eec6f00d7263385e0757baba2d94237df2f82",
+          "version": "1.3.2"
+        }
+      },
+      {
         "package": "TextStory",
         "repositoryURL": "https://github.com/ChimeHQ/TextStory.git",
         "state": {
