@@ -48,7 +48,10 @@ let closePair = ClosePairFilter(open: "{", close: "}", whitespaceProviders: prov
 // surround selection-replacements with the pair
 let openPairReplacement = OpenPairReplacementFilter(open: "{", close: "}")
 
-let filters: [Filter] = [skip, closeWhitespace, openPairReplacement, closePair]
+// delete a matching close when adjacent and the opening is deleted
+let deleteClose = DeleteCloseFilter(open: open, close: close)
+
+let filters: [Filter] = [skip, closeWhitespace, openPairReplacement, closePair, deleteClose]
 
 // treat a "stop" as only applying to our local chain
 self.filter = CompositeFilter(filters: filters, handler: { (_, action) in

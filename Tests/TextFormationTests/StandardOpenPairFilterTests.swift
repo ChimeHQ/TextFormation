@@ -98,4 +98,22 @@ class StandardOpenPairFilterTests: XCTestCase {
         XCTAssertEqual(interface.string, "{{a}}")
         XCTAssertEqual(interface.insertionLocation, 3)
     }
+
+    func testDoubleOpenDelete() {
+        let filter = StandardOpenPairFilter(open: "{", close: "}")
+        let interface = TestableTextInterface("{{}}")
+
+        interface.insertionLocation = 2
+
+        let firstDeleteMutation = TextMutation(delete: NSRange(1..<2), limit: 4)
+        XCTAssertEqual(interface.runFilter(filter, on: firstDeleteMutation), .none)
+
+        XCTAssertEqual(interface.insertionLocation, 1)
+
+        let secondDeleteMutation = TextMutation(delete: NSRange(0..<1), limit: 4)
+        XCTAssertEqual(interface.runFilter(filter, on: secondDeleteMutation), .none)
+
+        XCTAssertEqual(interface.string, "")
+        XCTAssertEqual(interface.insertionLocation, 0)
+    }
 }
