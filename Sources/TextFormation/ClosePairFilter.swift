@@ -36,10 +36,12 @@ public class ClosePairFilter {
             return .stop
         }
 
-        interface.insertString(closeString, at: mutation.range.max)
-        interface.insertionLocation = mutation.range.location
+        let hasProvider = whitespaceProviders?.leadingWhitespace != nil
 
-        if mutation.string != "\n" || isInsert == false {
+        if mutation.string != "\n" || isInsert == false || hasProvider == false {
+            interface.insertString(closeString, at: mutation.range.max)
+            interface.insertionLocation = mutation.range.location
+
             return .stop
         }
 
@@ -51,13 +53,23 @@ public class ClosePairFilter {
             return .stop
         }
 
-        let firstRange = NSRange(location: mutation.range.location, length: 0)
+        // this is sublte stuff. We really want to insert:
+        // \n<leading>\n<leading><close>
+        // however, indentation calculations are very sensitive
+        // to the curent state of the text. So, we want to
+        // do our mutations in a way that provides the needed
+        // context and text state at the right times.
+        
+        let newlinesAndClose = "\n\n" + closeString
+
+        interface.insertString(newlinesAndClose, at: mutation.range.location)
+
+        let firstRange = NSRange(location: mutation.range.location + 1, length: 0)
         let firstWhitespace = provider(firstRange, interface)
 
-        let firstString = "\n" + firstWhitespace + "\n"
-        interface.insertString(firstString, at: mutation.range.location)
+        interface.insertString(firstWhitespace, at: mutation.range.location + 1)
 
-        let secondRange = NSRange(location: mutation.range.location + firstString.utf16.count, length: 0)
+        let secondRange = NSRange(location: mutation.range.location + 2 + firstWhitespace.utf16.count, length: 0)
         let secondWhitespace = provider(secondRange, interface)
 
         interface.insertString(secondWhitespace, at: secondRange.location)

@@ -144,7 +144,14 @@ class ClosePairFilterTests: XCTestCase {
     }
 
     func testMatchThenNewlineWithWhitespaceProviders() {
-        let providers = WhitespaceProviders(leadingWhitespace: {  _, _ in return "lll" },
+        var leadingRequests: [(NSRange, String)] = []
+
+        let leadingProvider = { (range: NSRange, interface: TextInterface) -> String in
+            leadingRequests.append((range, interface.string))
+            return "lll"
+        }
+
+        let providers = WhitespaceProviders(leadingWhitespace: leadingProvider,
                                             trailingWhitespace: {  _, _ in return "ttt"})
         let filter = ClosePairFilter(open: "abc", close: "def", whitespaceProviders: providers)
         let interface = TestableTextInterface()
@@ -156,6 +163,13 @@ class ClosePairFilterTests: XCTestCase {
 
         let nextMutation = TextMutation(insert: "\n", at: 3, limit: 3)
         XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .discard)
+
+        XCTAssertEqual(leadingRequests.count, 2)
+        XCTAssertEqual(leadingRequests[0].0, NSRange(4..<4))
+        XCTAssertEqual(leadingRequests[0].1, "abc\n\ndef")
+
+        XCTAssertEqual(leadingRequests[1].0, NSRange(8..<8))
+        XCTAssertEqual(leadingRequests[1].1, "abc\nlll\ndef")
 
         XCTAssertEqual(interface.string, "abc\nlll\nllldef")
         XCTAssertEqual(interface.selectedRange, NSRange(7..<7))
