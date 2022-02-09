@@ -50,6 +50,9 @@ public class ClosePairFilter {
 
     private func handleNewlineInsert(with mutation: TextMutation, in interface: TextInterface) -> FilterAction {
         guard let provider = whitespaceProviders?.leadingWhitespace else {
+            interface.insertString(closeString, at: mutation.range.max)
+            interface.insertionLocation = mutation.range.location
+            
             return .stop
         }
 
@@ -64,18 +67,9 @@ public class ClosePairFilter {
 
         interface.insertString(newlinesAndClose, at: mutation.range.location)
 
-        let firstRange = NSRange(location: mutation.range.location + 1, length: 0)
-        let firstWhitespace = provider(firstRange, interface)
-
-        interface.insertString(firstWhitespace, at: mutation.range.location + 1)
-
-        let secondRange = NSRange(location: mutation.range.location + 2 + firstWhitespace.utf16.count, length: 0)
-        let secondWhitespace = provider(secondRange, interface)
-
-        interface.insertString(secondWhitespace, at: secondRange.location)
-
-        // our insertion location is after firstWhitespace, but not after the next newline
-        interface.insertionLocation = secondRange.location - 1
+        NewlineWithinPairFilter.adjustWhitespaceBetweenNewlines(at: mutation.range.location + 1,
+                                                                in: interface,
+                                                                using: provider)
 
         return .discard
     }

@@ -42,6 +42,9 @@ let skip = SkipFilter(matching: "}")
 // apply whitespace to our close
 let closeWhitespace = LineLeadingWhitespaceFilter(string: "}", provider: providers.leadingWhitespace)
 
+// handle newlines inserted in between opening and closing
+let newlinePair = NewlineWithinPairFilter(open: "{", close: "}", whitespaceProviders: providers)
+
 // auto-insert closings after an opening, with special-handling for newlines
 let closePair = ClosePairFilter(open: "{", close: "}", whitespaceProviders: providers)
 
@@ -51,7 +54,7 @@ let openPairReplacement = OpenPairReplacementFilter(open: "{", close: "}")
 // delete a matching close when adjacent and the opening is deleted
 let deleteClose = DeleteCloseFilter(open: open, close: close)
 
-let filters: [Filter] = [skip, closeWhitespace, openPairReplacement, closePair, deleteClose]
+let filters: [Filter] = [skip, closeWhitespace, openPairReplacement, newlinePair, closePair, deleteClose]
 
 // treat a "stop" as only applying to our local chain
 self.filter = CompositeFilter(filters: filters, handler: { (_, action) in
