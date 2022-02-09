@@ -51,12 +51,19 @@ public class ClosePairFilter {
             return .stop
         }
 
-        let range = NSRange(location: mutation.range.location, length: 0)
-        let value = provider(range, interface)
+        let firstRange = NSRange(location: mutation.range.location, length: 0)
+        let firstWhitespace = provider(firstRange, interface)
 
-        let string = "\n" + value + "\n"
-        interface.insertString(string, at: mutation.range.location)
-        interface.insertionLocation = mutation.range.location + 1 + value.utf16.count
+        let firstString = "\n" + firstWhitespace + "\n"
+        interface.insertString(firstString, at: mutation.range.location)
+
+        let secondRange = NSRange(location: mutation.range.location + firstString.utf16.count, length: 0)
+        let secondWhitespace = provider(secondRange, interface)
+
+        interface.insertString(secondWhitespace, at: secondRange.location)
+
+        // our insertion location is after firstWhitespace, but not after the next newline
+        interface.insertionLocation = secondRange.location - 1
 
         return .discard
     }

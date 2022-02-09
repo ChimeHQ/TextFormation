@@ -157,7 +157,7 @@ class ClosePairFilterTests: XCTestCase {
         let nextMutation = TextMutation(insert: "\n", at: 3, limit: 3)
         XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .discard)
 
-        XCTAssertEqual(interface.string, "abc\nlll\ndef")
+        XCTAssertEqual(interface.string, "abc\nlll\nllldef")
         XCTAssertEqual(interface.selectedRange, NSRange(7..<7))
     }
 }

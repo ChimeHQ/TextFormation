@@ -3,7 +3,7 @@
     "pins": [
       {
         "package": "Rearrange",
-        "repositoryURL": "https://github.com/ChimeHQ/Rearrange.git",
+        "repositoryURL": "https://github.com/ChimeHQ/Rearrange",
         "state": {
           "branch": null,
           "revision": "6e0eec6f00d7263385e0757baba2d94237df2f82",
