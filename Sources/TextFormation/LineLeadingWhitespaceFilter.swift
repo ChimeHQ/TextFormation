@@ -16,8 +16,6 @@ public class LineLeadingWhitespaceFilter {
     }
 
     private func filterHandler(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
-        interface.applyMutation(mutation)
-
         guard let whitespaceRange = interface.leadingWhitespaceRange(containing: mutation.range.location) else {
             return .none
         }
@@ -25,6 +23,8 @@ public class LineLeadingWhitespaceFilter {
         if whitespaceRange.max != mutation.range.location && mustHaveWhitespacePrefix {
             return .none
         }
+
+        interface.applyMutation(mutation)
 
         let value = provider(whitespaceRange, interface)
 
