@@ -4,6 +4,7 @@ import TextStory
 public class LineLeadingWhitespaceFilter {
     private let recognizer: ConsecutiveCharacterRecognizer
     private let provider: StringSubstitutionProvider
+    public var mustHaveWhitespacePrefix: Bool = true
 
     public init(string: String, leadingWhitespaceProvider: @escaping StringSubstitutionProvider) {
         self.recognizer = ConsecutiveCharacterRecognizer(matching: string)
@@ -18,6 +19,10 @@ public class LineLeadingWhitespaceFilter {
         interface.applyMutation(mutation)
 
         guard let whitespaceRange = interface.leadingWhitespaceRange(containing: mutation.range.location) else {
+            return .none
+        }
+
+        if whitespaceRange.max != mutation.range.location && mustHaveWhitespacePrefix {
             return .none
         }
 

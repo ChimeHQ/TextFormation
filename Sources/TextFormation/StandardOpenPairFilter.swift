@@ -3,8 +3,13 @@ import TextStory
 
 public struct StandardOpenPairFilter {
     private let filter: CompositeFilter
+    public let openString: String
+    public let closeString: String
 
     public init(open: String, close: String, whitespaceProviders: WhitespaceProviders = .none) {
+        self.openString = open
+        self.closeString = close
+
         let skip = SkipFilter(matching: close)
         let closeWhitespaceFilter = LineLeadingWhitespaceFilter(string: close, leadingWhitespaceProvider: whitespaceProviders.leadingWhitespace)
         let closePair = ClosePairFilter(open: open, close: close, whitespaceProviders: whitespaceProviders)
