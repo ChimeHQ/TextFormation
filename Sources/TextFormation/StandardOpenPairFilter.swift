@@ -17,7 +17,13 @@ public struct StandardOpenPairFilter {
         let openPairReplacement = OpenPairReplacementFilter(open: open, close: close)
         let deleteClose = DeleteCloseFilter(open: open, close: close)
 
-        let filters: [Filter] = [skip, closeWhitespaceFilter, openPairReplacement, newlinePair, closePair, deleteClose]
+        let filters: [Filter]
+
+        if open != close {
+            filters = [skip, closeWhitespaceFilter, openPairReplacement, newlinePair, closePair, deleteClose]
+        } else {
+            filters = [skip, openPairReplacement, newlinePair, closePair, deleteClose]
+        }
 
         // treat a "stop" as only applying to our local chain
         self.filter = CompositeFilter(filters: filters, handler: { (_, action) in
@@ -28,6 +34,10 @@ public struct StandardOpenPairFilter {
                 return .discard
             }
         })
+    }
+
+    public init(same: String, whitespaceProviders: WhitespaceProviders = .none) {
+        self.init(open: same, close: same, whitespaceProviders: whitespaceProviders)
     }
 }
 

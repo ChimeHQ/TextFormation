@@ -17,6 +17,20 @@ class StandardOpenPairFilterTests: XCTestCase {
         XCTAssertEqual(interface.insertionLocation, 2)
     }
 
+    func testMatchOpenWithSame() {
+        let filter = StandardOpenPairFilter(same: "-")
+        let interface = TestableTextInterface()
+
+        let openMutation = TextMutation(insert: "-", at: 0, limit: 0)
+        XCTAssertEqual(interface.runFilter(filter, on: openMutation), .none)
+
+        let nextMutation = TextMutation(insert: "a", at: 1, limit: 1)
+        XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .none)
+
+        XCTAssertEqual(interface.string, "-a-")
+        XCTAssertEqual(interface.insertionLocation, 2)
+    }
+
     func testSkipCloseAfterMatchingOpen() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
         let interface = TestableTextInterface()
