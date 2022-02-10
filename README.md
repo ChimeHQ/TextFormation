@@ -78,6 +78,13 @@ let providers = WhitespaceProviders(leadingWhitespace: { indenter.substitutionPr
 let filter = StandardOpenPairFilter(open: "{", close: "}", whitespaceProviders: providers)
 ```
 
+There's also a nice little type called `TextViewFilterApplier` that can make it easier to connect filters up to an `NSTextView`. All you need to do use one of the stand-in delegate methods:
+
+```swift
+public func textView(_ textView: NSTextView, shouldChangeTextInRanges affectedRanges: [NSValue], replacementStrings: [String]?) -> Bool
+public func textView(_ textView: NSTextView, shouldChangeTextInRange affectedRange: NSRange, replacementString: String?) -> Bool
+```
+
 ### Suggestions or Feedback
 
 We'd love to hear from you! Get in touch via [twitter](https://twitter.com/chimehq), an issue, or a pull request.
