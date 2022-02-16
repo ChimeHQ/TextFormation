@@ -27,7 +27,7 @@ TextFormation's core model is a `Filter`. This just just a protocol, that examin
 Careful use of filter nesting, possibly `CompositeFilter`, and these actions can produce some pretty power behaviors. Here's an example of a chain that produces typing completions that roughly matches what Xcode does for open/close curly braces:
 
 ```swift
-// naive indentation algorighm that uses mimimal text context
+// naive indentation algorithm that uses minimal text context
 // and four spaces as the indentation unit
 let indenter = TextualIndenter(unit: "    ")
 
