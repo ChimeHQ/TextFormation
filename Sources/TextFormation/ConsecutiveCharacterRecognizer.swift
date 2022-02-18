@@ -23,6 +23,11 @@ public class ConsecutiveCharacterRecognizer {
     private func updateState(_ mutation: TextMutation) {
         let length = mutation.string.utf16.count
 
+        if length == 0 {
+            self.state = .idle
+            return
+        }
+
         switch state {
         case .idle, .triggered:
             self.state = .idle
@@ -37,6 +42,8 @@ public class ConsecutiveCharacterRecognizer {
                 self.state = .tracking(mutation.postApplyRange.max, length)
             }
         case .tracking(let location, let count):
+            assert(count > 0)
+
             if mutation.range.location != location {
                 self.state = .idle
                 break

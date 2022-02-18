@@ -48,4 +48,20 @@ class ConsecutiveCharacterRecognizerTests: XCTestCase {
         XCTAssertFalse(recognizer.processMutation(TextMutation(string: "abcd", range: NSRange(0..<0), limit: 0)))
         XCTAssertEqual(recognizer.state, .idle)
     }
+
+    func testNonMatchingMutationWithMoreCharacters() {
+        let recognizer = ConsecutiveCharacterRecognizer(matching: "abc")
+
+        XCTAssertEqual(recognizer.state, .idle)
+        XCTAssertFalse(recognizer.processMutation(TextMutation(string: "def", range: NSRange(0..<0), limit: 0)))
+        XCTAssertEqual(recognizer.state, .idle)
+    }
+
+    func testDeleteMutation() {
+        let recognizer = ConsecutiveCharacterRecognizer(matching: "abc")
+
+        XCTAssertEqual(recognizer.state, .idle)
+        XCTAssertFalse(recognizer.processMutation(TextMutation(delete: NSRange(0..<1), limit: 1)))
+        XCTAssertEqual(recognizer.state, .idle)
+    }
 }
