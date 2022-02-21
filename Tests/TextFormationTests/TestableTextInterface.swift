@@ -1,6 +1,8 @@
-import AppKit.NSTextView
+import TextFormation
 
 #if os(macOS)
+import AppKit.NSTextView
+
 class TestableTextInterface: NSTextView {
     convenience init(_ string: String) {
         self.init()
