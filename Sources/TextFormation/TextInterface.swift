@@ -1,7 +1,7 @@
 import Foundation
 import TextStory
 
-public protocol TextInterface: AnyObject, TextStoring {
+public protocol TextInterface: TextStoring {
     var selectedRange: NSRange { get set }
 }
 

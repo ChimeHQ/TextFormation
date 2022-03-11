@@ -9,7 +9,7 @@ let package = Package(
         .library(name: "TextFormation", targets: ["TextFormation"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/ChimeHQ/TextStory.git", from: "0.6.1")
+        .package(url: "https://github.com/ChimeHQ/TextStory", .branch("main"))
     ],
     targets: [
         .target(name: "TextFormation", dependencies: ["TextStory"]),
