@@ -21,7 +21,7 @@ class LineLeadingWhitespaceFilterTests: XCTestCase {
         let filter = LineLeadingWhitespaceFilter(string: "abc", leadingWhitespaceProvider: { _, _ in
             return "\t"
         })
-        filter.lineMustHaveLeadingWhitespace = false
+        filter.mustOccurAtLineLeadingWhitespace = false
 
         let mutation = TextMutation(insert: "abc", at: 4, limit: 4)
 
