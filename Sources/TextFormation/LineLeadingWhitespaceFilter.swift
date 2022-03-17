@@ -4,7 +4,7 @@ import TextStory
 public class LineLeadingWhitespaceFilter {
     private let recognizer: ConsecutiveCharacterRecognizer
     private let provider: StringSubstitutionProvider
-    public var mustHaveWhitespacePrefix: Bool = true
+    public var lineMustHaveLeadingWhitespace: Bool = true
 
     public init(string: String, leadingWhitespaceProvider: @escaping StringSubstitutionProvider) {
         self.recognizer = ConsecutiveCharacterRecognizer(matching: string)
@@ -20,7 +20,7 @@ public class LineLeadingWhitespaceFilter {
             return .none
         }
 
-        if whitespaceRange.max != mutation.range.location && mustHaveWhitespacePrefix {
+        if whitespaceRange.max != mutation.range.location && lineMustHaveLeadingWhitespace {
             return .none
         }
 
