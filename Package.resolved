@@ -14,9 +14,9 @@
         "package": "TextStory",
         "repositoryURL": "https://github.com/ChimeHQ/TextStory",
         "state": {
-          "branch": "main",
+          "branch": null,
           "revision": "a9e65b12b2e52675a2be471ef2773853416685e9",
-          "version": null
+          "version": "0.7.0"
         }
       }
     ]
