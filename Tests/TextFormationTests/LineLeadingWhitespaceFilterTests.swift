@@ -16,6 +16,19 @@ class LineLeadingWhitespaceFilterTests: XCTestCase {
         XCTAssertEqual(interface.string, "\tabc")
     }
 
+    func testMatchingOneCharacterAtATime() {
+        let interface = TestableTextInterface("  ")
+        let filter = LineLeadingWhitespaceFilter(string: "abc", leadingWhitespaceProvider: { _, _ in
+            return "\t"
+        })
+
+        XCTAssertEqual(interface.runFilter(filter, on: TextMutation(insert: "a", at: 2, limit: 2)), .none)
+        XCTAssertEqual(interface.runFilter(filter, on: TextMutation(insert: "b", at: 3, limit: 3)), .none)
+        XCTAssertEqual(interface.runFilter(filter, on: TextMutation(insert: "c", at: 4, limit: 4)), .discard)
+
+        XCTAssertEqual(interface.string, "\tabc")
+    }
+
     func testMatchingWithWhitespacePrefix() {
         let interface = TestableTextInterface("def ")
         let filter = LineLeadingWhitespaceFilter(string: "abc", leadingWhitespaceProvider: { _, _ in

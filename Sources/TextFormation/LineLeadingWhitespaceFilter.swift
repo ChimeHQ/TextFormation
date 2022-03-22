@@ -20,7 +20,10 @@ public class LineLeadingWhitespaceFilter {
             return .none
         }
 
-        if whitespaceRange.max != mutation.range.location && mustOccurAtLineLeadingWhitespace {
+        let length = string.utf16.count
+        let start = mutation.postApplyRange.max - length
+
+        if whitespaceRange.max != start && mustOccurAtLineLeadingWhitespace {
             return .none
         }
 
