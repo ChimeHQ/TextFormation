@@ -20,6 +20,7 @@ public struct WhitespaceProviders {
 
 extension WhitespaceProviders {
     public static let passthroughProvider: StringSubstitutionProvider = { $1.substring(from: $0) ?? "" }
+    public static let removeAllProvider: StringSubstitutionProvider =  { _, _ in return "" }
 
     public static let none = WhitespaceProviders(leadingWhitespace: WhitespaceProviders.passthroughProvider,
                                                  trailingWhitespace: WhitespaceProviders.passthroughProvider)

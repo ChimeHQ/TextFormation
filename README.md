@@ -4,7 +4,7 @@
 
 TextFormation is simple rule system that can be used to implement typing completions and whitespace control. Think matching "}" with "{" and indenting.
 
-Note that getting indenting correct in the general case may parsing. It also typically requires some understanding of the user's preferences. The included indenting algorithm is naive, but there's a system in place for you to include your own.
+Note that getting indenting correct in the general case may require parsing. It also typically needs some understanding of the user's preferences. The included `TextualIndenter` type has a pattern-based system that can perform sufficiently in many situations. It also includes some pre-defined patterns for some languages.
 
 ## Integration
 
@@ -27,13 +27,12 @@ TextFormation's core model is a `Filter`. This just just a protocol, that examin
 Careful use of filter nesting, possibly `CompositeFilter`, and these actions can produce some pretty power behaviors. Here's an example of a chain that produces typing completions that roughly matches what Xcode does for open/close curly braces:
 
 ```swift
-// naive indentation algorithm that uses minimal text context
-// and four spaces as the indentation unit
-let indenter = TextualIndenter(unit: "    ")
+// simple indentation algorithm that uses minimal text context
+let indenter = TextualIndenter()
 
 // delete an trailing whitespace, and use our indenter to compute
-// any needed leading whitespace
-let providers = WhitespaceProviders(leadingWhitespace: { indenter.substitutionProvider($0. $1) },
+// any needed leading whitespace using a four-space unit
+let providers = WhitespaceProviders(leadingWhitespace: indenter.substitionProvider(indentationUnit: "    "),
                                    trailingWhitespace: { _, _ in return "" })
                                    
 // skip over closings
@@ -69,11 +68,11 @@ self.filter = CompositeFilter(filters: filters, handler: { (_, action) in
 // use filter
 ```
 
-This kind of usage is probably going to be common, so all this behavior is wrapped up in a premade filter: `StandardOpenPairFilter`.
+This kind of usage is probably going to be common, so all this behavior is wrapped up in a pre-made filter: `StandardOpenPairFilter`.
 
 ```swift
-let indenter = TextualIndenter(unit: "    ")
-let providers = WhitespaceProviders(leadingWhitespace: { indenter.substitutionProvider($0. $1) },
+let indenter = TextualIndenter()
+let providers = WhitespaceProviders(leadingWhitespace: indenter.substitionProvider(indentationUnit: "    "),
                                    trailingWhitespace: { _, _ in return "" })
 let filter = StandardOpenPairFilter(open: "{", close: "}", whitespaceProviders: providers)
 ```
