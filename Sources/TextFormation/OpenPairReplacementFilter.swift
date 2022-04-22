@@ -21,9 +21,22 @@ extension OpenPairReplacementFilter: Filter {
             return .none
         }
 
+        // another area where mutations affect the selection different on the platforms
+        #if os(macOS)
+        interface.insertString(closeString, at: mutation.range.max)
+        interface.insertString(openString, at: mutation.range.location)
+        #else
+
+        let originalRange = interface.selectedRange
+
         interface.insertString(closeString, at: mutation.range.max)
         interface.insertString(openString, at: mutation.range.location)
 
+        let offset = openString.utf16.count
+
+        interface.selectedRange = NSRange(location: originalRange.location + offset, length: originalRange.length)
+        #endif
+        
         return .discard
     }
 }

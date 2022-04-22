@@ -30,4 +30,10 @@ import AppKit
 extension NSTextView: TextInterface {
 }
 
+#else
+import UIKit
+
+extension UITextView: TextInterface {
+}
+
 #endif

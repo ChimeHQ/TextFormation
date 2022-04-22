@@ -1,8 +1,17 @@
-#if os(macOS)
-import Cocoa
 import TextStory
+#if os(macOS)
+import AppKit
 
-extension NSResponder {
+typealias Responder = NSResponder
+typealias TextView = NSTextView
+#else
+import UIKit
+
+typealias Responder = UIResponder
+typealias TextView = UITextView
+#endif
+
+extension Responder {
     var undoActive: Bool {
         guard let manager = undoManager else { return false }
 
@@ -17,7 +26,7 @@ public struct TextViewFilterApplier {
         self.filters = filters
     }
 
-    private func shouldApplyMutation(_ mutation: TextMutation, to textView: NSTextView) -> Bool {
+    private func shouldApplyMutation(_ mutation: TextMutation, to textView: TextView) -> Bool {
         // don't perform any kind of filtering during undo operations
         if textView.undoActive {
             return true
@@ -38,9 +47,22 @@ public struct TextViewFilterApplier {
 
         return true
     }
+
+    private func internalTextView(_ textView: TextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let mutation = TextMutation(string: text, range: range, limit: textView.length)
+
+        textView.undoManager?.beginUndoGrouping()
+
+        let result = shouldApplyMutation(mutation, to: textView)
+
+        textView.undoManager?.endUndoGrouping()
+
+        return result
+    }
 }
 
 extension TextViewFilterApplier {
+    #if os(macOS)
     public func textView(_ textView: NSTextView, shouldChangeTextInRanges affectedRanges: [NSValue], replacementStrings: [String]?) -> Bool {
         guard let strings = replacementStrings else {
             return true
@@ -67,15 +89,11 @@ extension TextViewFilterApplier {
             return true
         }
 
-        let mutation = TextMutation(string: string, range: affectedRange, limit: textView.length)
-
-        textView.undoManager?.beginUndoGrouping()
-
-        let result = shouldApplyMutation(mutation, to: textView)
-
-        textView.undoManager?.endUndoGrouping()
-
-        return result
+        return internalTextView(textView, shouldChangeTextIn: affectedRange, replacementText: string)
     }
+    #else
+    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        return internalTextView(textView, shouldChangeTextIn: range, replacementText: text)
+    }
+    #endif
 }
-#endif

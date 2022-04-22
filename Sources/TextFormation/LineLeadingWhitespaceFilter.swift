@@ -31,7 +31,17 @@ public class LineLeadingWhitespaceFilter {
 
         let value = provider(whitespaceRange, interface)
 
+        #if os(macOS)
         interface.replaceString(in: whitespaceRange, with: value)
+        #else
+        let originalSelection = interface.selectedRange
+
+        interface.replaceString(in: whitespaceRange, with: value)
+
+        let offset = value.utf16.count - whitespaceRange.length
+
+        interface.selectedRange = NSRange(location: originalSelection.location + offset, length: originalSelection.length)
+        #endif
 
         return .discard
     }

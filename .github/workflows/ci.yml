@@ -10,9 +10,15 @@ on:
 
 jobs:
   test:
-    name: Test with Swift
+    name: Test
     runs-on: macOS-latest
+    strategy:
+      matrix:
+        destination:
+          - "platform=macOS"
+          - "platform=iOS Simulator,name=iPhone 11"
+    
     steps:
-      - uses: actions/checkout@v1
-      - name: swift test
-        run: swift test
+      - uses: actions/checkout@v2
+      - name: Test platform ${{ matrix.destination }}
+        run: set -o pipefail && xcodebuild -scheme TextFormation -destination "${{ matrix.destination }}" test | xcpretty

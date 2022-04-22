@@ -25,6 +25,7 @@ class NewlineProcessingFilterTests: XCTestCase {
 
         let mutation = TextMutation(insert: "\n", at: 1, limit: 1)
 
+        XCTAssertEqual(interface.insertionLocation, 1)
         XCTAssertEqual(filter.processMutation(mutation, in: interface), .discard)
 
         XCTAssertEqual(interface.string, "ttt\nlll")
