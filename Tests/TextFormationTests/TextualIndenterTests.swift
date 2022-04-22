@@ -43,7 +43,7 @@ extension TextualIndenterTests {
     func testIncreasesIndentation() throws {
         let indenter = TextualIndenter()
 
-        ["{", "[", "(", ":"].forEach { delim in
+        ["{", "[", "("].forEach { delim in
             let interface = TestableTextInterface("\t\(delim)\n")
 
             XCTAssertEqual(indenter.computeIndentation(at: 3, in: interface), .success(.relativeIncrease(NSRange(0..<2))))
@@ -53,7 +53,7 @@ extension TextualIndenterTests {
     func testIncreaseWithoutSurroundingWhitespace() throws {
         let indenter = TextualIndenter()
 
-        ["{", "[", "(", ":"].forEach { delim in
+        ["{", "[", "("].forEach { delim in
             let interface = TestableTextInterface("\(delim)\n")
 
             XCTAssertEqual(indenter.computeIndentation(at: 2, in: interface), .success(.relativeIncrease(NSRange(0..<1))))
