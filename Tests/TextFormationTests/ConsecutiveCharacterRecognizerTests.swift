@@ -25,6 +25,18 @@ class ConsecutiveCharacterRecognizerTests: XCTestCase {
         XCTAssertEqual(recognizer.state, .triggered(3))
     }
 
+    func testMatchingAfterDuplicatePrefix() {
+        let recognizer = ConsecutiveCharacterRecognizer(matching: "abc")
+
+        XCTAssertEqual(recognizer.state, .idle)
+        XCTAssertTrue(recognizer.processMutation(TextMutation(insert: "a", at: 0, limit: 0)))
+        XCTAssertEqual(recognizer.state, .tracking(1, 1))
+        XCTAssertFalse(recognizer.processMutation(TextMutation(insert: "a", at: 1, limit: 1)))
+        XCTAssertEqual(recognizer.state, .tracking(2, 1))
+        XCTAssertTrue(recognizer.processMutation(TextMutation(insert: "bc", at: 2, limit: 2)))
+        XCTAssertEqual(recognizer.state, .triggered(4))
+    }
+
     func testMatchingWithSingleMultiCharacterMutation() {
         let recognizer = ConsecutiveCharacterRecognizer(matching: "abc")
 
@@ -54,14 +66,6 @@ class ConsecutiveCharacterRecognizerTests: XCTestCase {
 
         XCTAssertEqual(recognizer.state, .idle)
         XCTAssertFalse(recognizer.processMutation(TextMutation(string: "def", range: NSRange(0..<0), limit: 0)))
-        XCTAssertEqual(recognizer.state, .idle)
-    }
-
-    func testDeleteMutation() {
-        let recognizer = ConsecutiveCharacterRecognizer(matching: "abc")
-
-        XCTAssertEqual(recognizer.state, .idle)
-        XCTAssertFalse(recognizer.processMutation(TextMutation(delete: NSRange(0..<1), limit: 1)))
         XCTAssertEqual(recognizer.state, .idle)
     }
 }

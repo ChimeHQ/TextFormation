@@ -62,7 +62,7 @@ extension TextualIndenterTests {
 
     func testMulticharacterMatchAtLineStart() throws {
         let patterns = [
-            TextualIndenter.Pattern(match: .preceedingLinePrefix("abc"), action: .indent)
+            PreceedingLinePrefixIndenter(prefix: "abc"),
         ]
         let indenter = TextualIndenter(patterns: patterns)
         let interface = TestableTextInterface("\tabc something\n")
@@ -72,18 +72,18 @@ extension TextualIndenterTests {
 
     func testDecreaseIndentation() throws {
         let patterns = [
-            TextualIndenter.Pattern(match: .currentLinePrefix("}"), action: .outdent)
+            CurrentLinePrefixOutdenter(prefix: "}"),
         ]
         let indenter = TextualIndenter(patterns: patterns)
 
         let interface = TestableTextInterface("\t\n\t}")
 
-        XCTAssertEqual(indenter.computeIndentation(at: 3, in: interface), .success(.relativeDecrease(NSRange(0..<1))))
+        XCTAssertEqual(indenter.computeIndentation(at: 3, in: interface), .success(.decrease(NSRange(2..<4))))
     }
 
     func testDecreaseIndentationWithNoWhitespace() throws {
         let patterns = [
-            TextualIndenter.Pattern(match: .currentLinePrefix("}"), action: .outdent)
+            CurrentLinePrefixOutdenter(prefix: "}"),
         ]
         let indenter = TextualIndenter(patterns: patterns)
 
@@ -92,17 +92,14 @@ extension TextualIndenterTests {
         XCTAssertEqual(indenter.computeIndentation(at: 1, in: interface), .failure(.unableToComputeReferenceRange))
     }
 
-    func testIncreaseAndDecreaseIndentation() throws {
+    func testConditionalDecreaseIndentation() throws {
         let patterns = [
-            TextualIndenter.Pattern(match: .currentLinePrefix("else"), action: .outdent),
-            TextualIndenter.Pattern(match: .preceedingLinePrefix("else"), action: .indent),
+            CurrentLinePrefixOutdenter(prefix: "else"),
         ]
         let indenter = TextualIndenter(patterns: patterns)
 
-        // this "else" is intentionally too indented
-        let interface = TestableTextInterface("if true\n\tvalue\n\telse\n")
+        let interface = TestableTextInterface("if true\n\telse")
 
-        XCTAssertEqual(indenter.computeIndentation(at: 20, in: interface), .success(.relativeDecrease(NSRange(8..<14))), "line with else should be outdented")
-        XCTAssertEqual(indenter.computeIndentation(at: 21, in: interface), .success(.relativeIncrease(NSRange(15..<20))), "line after else should be indented")
+        XCTAssertEqual(indenter.computeIndentation(at: 11, in: interface), .success(.decrease(NSRange(8..<13))))
     }
 }

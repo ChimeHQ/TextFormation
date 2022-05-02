@@ -6,8 +6,6 @@
 
 TextFormation is simple rule system that can be used to implement typing completions and whitespace control. Think matching "}" with "{" and indenting.
 
-Note that getting indenting correct in the general case may require parsing. It also typically needs some understanding of the user's preferences. The included `TextualIndenter` type has a pattern-based system that can perform sufficiently in many situations. It also includes some pre-defined patterns for some languages.
-
 ## Integration
 
 Swift Package Manager:
@@ -86,6 +84,16 @@ public func textView(_ textView: NSTextView, shouldChangeTextInRanges affectedRa
 public func textView(_ textView: NSTextView, shouldChangeTextInRange affectedRange: NSRange, replacementString: String?) -> Bool
 
 public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
+```
+
+### Indenting
+
+Correctly indenting in the general case may require parsing. It also typically needs some understanding of the user's preferences. The included `TextualIndenter` type has a pattern-based system that can perform sufficiently in many situations.
+
+It also includes pre-defined patterns for some languages:
+
+```swift
+TextualIndenter.rubyPatterns
 ```
 
 ### Suggestions or Feedback

@@ -19,7 +19,24 @@ public class ConsecutiveCharacterRecognizer {
     public func resetState() {
         self.state = .idle
     }
-    
+
+    private func processPossibleFirstMutation(_ mutation: TextMutation) {
+        self.state = .idle
+
+        if matchingString.hasPrefix(mutation.string) == false {
+            return
+        }
+
+        if matchingString == mutation.string {
+            self.state = .triggered(mutation.postApplyRange.max)
+            return
+        }
+
+        let length = mutation.string.utf16.count
+
+        self.state = .tracking(mutation.postApplyRange.max, length)
+    }
+
     private func updateState(_ mutation: TextMutation) {
         let length = mutation.string.utf16.count
 
@@ -30,33 +47,23 @@ public class ConsecutiveCharacterRecognizer {
 
         switch state {
         case .idle, .triggered:
-            self.state = .idle
-
-            if matchingString.hasPrefix(mutation.string) == false {
-                break
-            }
-
-            if matchingString == mutation.string {
-                self.state = .triggered(mutation.postApplyRange.max)
-            } else {
-                self.state = .tracking(mutation.postApplyRange.max, length)
-            }
+            processPossibleFirstMutation(mutation)
         case .tracking(let location, let count):
             assert(count > 0)
 
             if mutation.range.location != location {
-                self.state = .idle
+                processPossibleFirstMutation(mutation)
                 break
             }
 
             let range = NSRange(location: count, length: length)
             guard let stringRange = Range(range, in: matchingString) else {
-                self.state = .idle
+                processPossibleFirstMutation(mutation)
                 break
             }
 
             if matchingString[stringRange] != mutation.string {
-                self.state = .idle
+                processPossibleFirstMutation(mutation)
                 break
             }
 

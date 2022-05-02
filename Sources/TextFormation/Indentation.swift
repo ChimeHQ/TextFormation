@@ -3,6 +3,7 @@ import Foundation
 public enum Indentation {
     case relativeIncrease(NSRange)
     case relativeDecrease(NSRange)
+    case decrease(NSRange)
     case equal(NSRange)
 
     public var range: NSRange {
@@ -11,6 +12,8 @@ public enum Indentation {
             return range
         case .relativeDecrease(let range):
             return range
+        case .decrease(let range):
+            return range
         case .equal(let range):
             return range
         }
@@ -18,4 +21,13 @@ public enum Indentation {
 }
 
 extension Indentation: Hashable {
+}
+
+public enum IndentationError: Error {
+    case unableToComputeReferenceRange
+    case unableToGetReferenceValue
+    case unableToDetermineAction
+}
+
+extension IndentationError: Hashable {
 }

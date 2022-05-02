@@ -37,7 +37,7 @@ extension TextStoring {
 }
 
 extension TextStoring {
-    public func whitespaceStringResult(with indentation: Indentation, using indentUnit: String) -> Result<String, IndentationComputationError> {
+    public func whitespaceStringResult(with indentation: Indentation, using indentUnit: String) -> Result<String, IndentationError> {
         let range = indentation.range
         guard let referenceWhitespace = leadingIndentingWhitespace(for: range) else {
             return .failure(.unableToComputeReferenceRange)
@@ -46,7 +46,7 @@ extension TextStoring {
         switch indentation {
         case .relativeIncrease:
             return .success(referenceWhitespace + indentUnit)
-        case .relativeDecrease:
+        case .relativeDecrease, .decrease:
             guard let indentUnitStringRange = referenceWhitespace.range(of: indentUnit) else {
                 return .failure(.unableToComputeReferenceRange)
             }

@@ -1,52 +1,12 @@
 import Foundation
 import TextStory
 
-public enum IndentationComputationError: Error {
-    case unitUnavailable
-    case unableToComputeReferenceRange
-    case unableToGetReferenceValue
-    case unableToBuildString
-    case unableToDetermineAction
-    case nonUnitWhitespace
-    case noExistingWhitespace
-}
-
 public struct TextualIndenter {
-    public typealias IndentationResult = Result<Indentation, IndentationComputationError>
+    public typealias IndentationResult = Result<Indentation, IndentationError>
 
-    public struct Pattern {
-        public enum Match {
-            case preceedingLineSuffix(String)
-            case preceedingLinePrefix(String)
-            case currentLinePrefix(String)
-        }
+    public let patterns: [PatternMatcher]
 
-        public enum Action {
-            case indent
-            case outdent
-        }
-
-        public let match: Match
-        public let action: Action
-
-        public init(match: Match, action: Action) {
-            self.match = match
-            self.action = action
-        }
-        
-        public func indentation(with preceedingLineWhitespaceRange: NSRange) -> Indentation {
-            switch action {
-            case .indent:
-                return .relativeIncrease(preceedingLineWhitespaceRange)
-            case .outdent:
-                return .relativeDecrease(preceedingLineWhitespaceRange)
-            }
-        }
-    }
-
-    public let patterns: [Pattern]
-
-    public init(patterns: [Pattern] = Pattern.basic) {
+    public init(patterns: [PatternMatcher] = TextualIndenter.basicPatterns) {
         self.patterns = patterns
     }
 
@@ -75,34 +35,18 @@ public struct TextualIndenter {
             return .failure(.unableToGetReferenceValue)
         }
 
-        for pattern in patterns {
-            switch pattern.match {
-            case .currentLinePrefix(let value):
-                if content.hasPrefix(value) {
-                    return .success(pattern.indentation(with: preceedingLineRange))
-                }
-            case .preceedingLineSuffix, .preceedingLinePrefix:
-                break
-            }
-        }
-
         guard let preceedingContent = nonWhitespaceContent(from: preceedingLineRange, in: storage) else {
             return .failure(.unableToGetReferenceValue)
         }
 
-        for pattern in patterns {
-            switch pattern.match {
-            case .currentLinePrefix:
-                break
+        let context = TextualContext(currentLineRange: lineRange,
+                                     preceedingLineRange: preceedingLineRange,
+                                     strippedCurrentLine: content,
+                                     strippedPreceedingLine: preceedingContent)
 
-            case .preceedingLineSuffix(let value):
-                if preceedingContent.hasSuffix(value) {
-                    return .success(pattern.indentation(with: preceedingLineRange))
-                }
-            case .preceedingLinePrefix(let value):
-                if preceedingContent.hasPrefix(value) {
-                    return .success(pattern.indentation(with: preceedingLineRange))
-                }
+        for pattern in patterns {
+            if let indentation = pattern.action(for: context) {
+                return .success(indentation)
             }
         }
 

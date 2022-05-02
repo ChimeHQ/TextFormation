@@ -1,36 +1,42 @@
 import Foundation
 
-public extension TextualIndenter.Pattern {
-    static let basic: [TextualIndenter.Pattern] = [
-        TextualIndenter.Pattern(match: .preceedingLineSuffix("{"), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLineSuffix("("), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLineSuffix("["), action: .indent),
+public extension TextualIndenter {
+    static let basicPatterns: [PatternMatcher] = [
+        CurrentLinePrefixOutdenter(prefix: "}"),
+        CurrentLinePrefixOutdenter(prefix: ")"),
+        CurrentLinePrefixOutdenter(prefix: "]"),
 
-        TextualIndenter.Pattern(match: .currentLinePrefix("}"), action: .outdent),
-        TextualIndenter.Pattern(match: .currentLinePrefix(")"), action: .outdent),
-        TextualIndenter.Pattern(match: .currentLinePrefix("]"), action: .outdent),
+        PreceedingLinePrefixIndenter(prefix: "{"),
+        PreceedingLinePrefixIndenter(prefix: "("),
+        PreceedingLinePrefixIndenter(prefix: "["),
     ]
+}
 
-    static let ruby: [TextualIndenter.Pattern] = [
-        TextualIndenter.Pattern(match: .preceedingLineSuffix("["), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLineSuffix("{"), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLineSuffix("("), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLineSuffix("|"), action: .indent),
+public extension TextualIndenter {
+    static let rubyPatterns: [PatternMatcher] = [
+        CurrentLinePrefixOutdenter(prefix: "else"),
+        CurrentLinePrefixOutdenter(prefix: "elsif"),
+        CurrentLinePrefixOutdenter(prefix: "ensure"),
+        CurrentLinePrefixOutdenter(prefix: "rescue"),
+        CurrentLinePrefixOutdenter(prefix: "when"),
+        CurrentLinePrefixOutdenter(prefix: "end"),
 
-        TextualIndenter.Pattern(match: .preceedingLinePrefix("do"), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLinePrefix("if"), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLinePrefix("else"), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLinePrefix("elsif"), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLinePrefix("ensure"), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLinePrefix("when"), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLinePrefix("module"), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLinePrefix("class"), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLinePrefix("for"), action: .indent),
-        TextualIndenter.Pattern(match: .preceedingLinePrefix("unless"), action: .indent),
+        PreceedingLinePrefixIndenter(prefix: "{"),
+        PreceedingLinePrefixIndenter(prefix: "("),
+        PreceedingLinePrefixIndenter(prefix: "["),
+        PreceedingLinePrefixIndenter(prefix: "|"),
 
-        TextualIndenter.Pattern(match: .currentLinePrefix("else"), action: .outdent),
-        TextualIndenter.Pattern(match: .currentLinePrefix("elsif"), action: .outdent),
-        TextualIndenter.Pattern(match: .currentLinePrefix("ensure"), action: .outdent),
-        TextualIndenter.Pattern(match: .currentLinePrefix("when"), action: .outdent),
+        PreceedingLinePrefixIndenter(prefix: "do"),
+        PreceedingLinePrefixIndenter(prefix: "if"),
+        PreceedingLinePrefixIndenter(prefix: "else"),
+        PreceedingLinePrefixIndenter(prefix: "elsif"),
+        PreceedingLinePrefixIndenter(prefix: "ensure"),
+        PreceedingLinePrefixIndenter(prefix: "rescue"),
+        PreceedingLinePrefixIndenter(prefix: "when"),
+        PreceedingLinePrefixIndenter(prefix: "for"),
+        PreceedingLinePrefixIndenter(prefix: "unless"),
+        PreceedingLinePrefixIndenter(prefix: "while"),
+        PreceedingLinePrefixIndenter(prefix: "class"),
+        PreceedingLinePrefixIndenter(prefix: "module"),
     ]
 }
