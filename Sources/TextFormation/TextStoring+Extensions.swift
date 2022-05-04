@@ -25,28 +25,27 @@ extension TextStoring {
         return .zero
     }
 
-    func leadingIndentingWhitespace(for range: NSRange) -> String? {
-        let lineRange = lineRange(containing: range.location)
+    func leadingIndentingWhitespace(at location: Int) -> String? {
+        let start = findStartOfLine(containing: location)
+        let end = findNextOccurrenceOfCharacter(in: .newlines, from: location) ?? length
 
-        guard let matchingRange = leadingWhitespaceRange(in: lineRange) else {
-            return nil
-        }
+        let indentRange = NSRange(start..<end)
 
-        return substring(from: matchingRange)
+        return substring(from: indentRange)
     }
 }
 
 extension TextStoring {
     public func whitespaceStringResult(with indentation: Indentation, using indentUnit: String) -> Result<String, IndentationError> {
         let range = indentation.range
-        guard let referenceWhitespace = leadingIndentingWhitespace(for: range) else {
+        guard let referenceWhitespace = leadingIndentingWhitespace(at: range.location) else {
             return .failure(.unableToComputeReferenceRange)
         }
 
         switch indentation {
         case .relativeIncrease:
             return .success(referenceWhitespace + indentUnit)
-        case .relativeDecrease, .decrease:
+        case .relativeDecrease:
             guard let indentUnitStringRange = referenceWhitespace.range(of: indentUnit) else {
                 return .failure(.unableToComputeReferenceRange)
             }

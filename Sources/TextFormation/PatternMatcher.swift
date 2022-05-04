@@ -68,7 +68,7 @@ extension CurrentLinePrefixOutdenter: PatternMatcher {
             return nil
         }
 
-        return .decrease(context.currentLineRange)
+        return .relativeDecrease(context.preceedingLineRange)
     }
 }
 

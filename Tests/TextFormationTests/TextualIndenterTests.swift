@@ -78,7 +78,7 @@ extension TextualIndenterTests {
 
         let interface = TestableTextInterface("\t\n\t}")
 
-        XCTAssertEqual(indenter.computeIndentation(at: 3, in: interface), .success(.decrease(NSRange(2..<4))))
+        XCTAssertEqual(indenter.computeIndentation(at: 3, in: interface), .success(.relativeDecrease(NSRange(0..<1))))
     }
 
     func testDecreaseIndentationWithNoWhitespace() throws {
@@ -100,6 +100,17 @@ extension TextualIndenterTests {
 
         let interface = TestableTextInterface("if true\n\telse")
 
-        XCTAssertEqual(indenter.computeIndentation(at: 11, in: interface), .success(.decrease(NSRange(8..<13))))
+        XCTAssertEqual(indenter.computeIndentation(at: 11, in: interface), .success(.relativeDecrease(NSRange(0..<7))))
+    }
+}
+
+extension TextualIndenterTests {
+    func testIndentationStringWithoutMatching() {
+        let interface = TestableTextInterface("\t\t\n")
+        let indenter = TextualIndenter(patterns: [])
+
+        let string = indenter.computeIndentationString(in: NSRange(3..<3), for: interface, indentationUnit: "\t")
+
+        XCTAssertEqual(string, "\t\t")
     }
 }
