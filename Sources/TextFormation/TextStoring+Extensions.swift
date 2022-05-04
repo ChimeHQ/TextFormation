@@ -26,8 +26,10 @@ extension TextStoring {
     }
 
     func leadingIndentingWhitespace(at location: Int) -> String? {
+        let set = CharacterSet.whitespacesWithoutNewlines.inverted
+
         let start = findStartOfLine(containing: location)
-        let end = findNextOccurrenceOfCharacter(in: .newlines, from: location) ?? length
+        let end = findNextOccurrenceOfCharacter(in: set, from: start) ?? length
 
         let indentRange = NSRange(start..<end)
 

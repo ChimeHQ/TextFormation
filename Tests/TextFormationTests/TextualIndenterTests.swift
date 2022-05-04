@@ -105,11 +105,20 @@ extension TextualIndenterTests {
 }
 
 extension TextualIndenterTests {
-    func testIndentationStringWithoutMatching() {
+    func testIndentationStringWithoutMatchingEmptyLine() {
         let interface = TestableTextInterface("\t\t\n")
         let indenter = TextualIndenter(patterns: [])
 
         let string = indenter.computeIndentationString(in: NSRange(3..<3), for: interface, indentationUnit: "\t")
+
+        XCTAssertEqual(string, "\t\t")
+    }
+
+    func testIndentationStringWithoutMatchingNonEmptyLine() {
+        let interface = TestableTextInterface("\t\tabc\n")
+        let indenter = TextualIndenter(patterns: [])
+
+        let string = indenter.computeIndentationString(in: NSRange(6..<6), for: interface, indentationUnit: "\t")
 
         XCTAssertEqual(string, "\t\t")
     }
