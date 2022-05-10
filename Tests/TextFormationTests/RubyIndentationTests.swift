@@ -24,6 +24,29 @@ end
         XCTAssertEqual(try indentationGetter(8), .relativeIncrease(NSRange(0..<7)))
     }
 
+    func testEndImmediatelyAfterIndent() throws {
+        let text = """
+if true
+end
+"""
+
+        let indentationGetter = try getIndentation(with: text)
+
+        XCTAssertEqual(try indentationGetter(8), .equal(NSRange(0..<7)))
+    }
+
+    func testDo() throws {
+        let text = """
+block do
+
+end
+"""
+
+        let indentationGetter = try getIndentation(with: text)
+
+        XCTAssertEqual(try indentationGetter(9), .relativeIncrease(NSRange(0..<8)))
+    }
+
     func testIfWithNonEmptyThen() throws {
         let text = """
 if true

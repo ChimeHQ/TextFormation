@@ -24,9 +24,10 @@ public extension TextualIndenter {
         PreceedingLinePrefixIndenter(prefix: "{"),
         PreceedingLinePrefixIndenter(prefix: "("),
         PreceedingLinePrefixIndenter(prefix: "["),
-        PreceedingLinePrefixIndenter(prefix: "|"),
 
-        PreceedingLinePrefixIndenter(prefix: "do"),
+        PreceedingLineSuffixIndenter(suffix: "|"),
+        PreceedingLineSuffixIndenter(suffix: "do"),
+
         PreceedingLinePrefixIndenter(prefix: "if"),
         PreceedingLinePrefixIndenter(prefix: "else"),
         PreceedingLinePrefixIndenter(prefix: "elsif"),
@@ -38,5 +39,6 @@ public extension TextualIndenter {
         PreceedingLinePrefixIndenter(prefix: "while"),
         PreceedingLinePrefixIndenter(prefix: "class"),
         PreceedingLinePrefixIndenter(prefix: "module"),
+        PreceedingLinePrefixIndenter(prefix: "def"),
     ]
 }
