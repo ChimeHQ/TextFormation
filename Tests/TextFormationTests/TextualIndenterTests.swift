@@ -122,4 +122,17 @@ extension TextualIndenterTests {
 
         XCTAssertEqual(string, "\t\t")
     }
+
+    func testConflict() {
+        let patterns: [PatternMatcher] = [
+            PreceedingLineSuffixIndenter(suffix: "abc"),
+            CurrentLinePrefixOutdenter(prefix: "def"),
+        ]
+        let indenter = TextualIndenter(patterns: patterns)
+
+        let interface = TestableTextInterface("abc\ndef")
+
+        XCTAssertEqual(indenter.computeIndentation(at: 4, in: interface), .success(.equal(NSRange(0..<3))))
+
+    }
 }

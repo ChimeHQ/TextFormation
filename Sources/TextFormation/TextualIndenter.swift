@@ -44,11 +44,14 @@ public struct TextualIndenter {
                                      strippedCurrentLine: content,
                                      strippedPreceedingLine: preceedingContent)
 
-        for pattern in patterns {
-            if let indentation = pattern.action(for: context) {
-                return .success(indentation)
-            }
+        // unique them, just in case two matches produce the same identical action
+        let potentialIndents = Set(patterns.compactMap({ $0.action(for: context) }))
+
+        if let indent = potentialIndents.first, potentialIndents.count == 1 {
+            return .success(indent)
         }
+
+        // we have no matches, or conflicting matches
 
         return .success(.equal(preceedingLineRange))
     }
