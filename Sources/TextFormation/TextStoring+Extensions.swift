@@ -2,7 +2,7 @@ import Foundation
 import TextStory
 
 extension TextStoring {
-    func findFirstNonBlankLinePreceeding(location: Int) -> NSRange? {
+    func findFirstLinePreceeding(location: Int, satisifying predicate: TextualIndenter.ReferenceLinePredicate) -> NSRange? {
         var startLoc = findStartOfLine(containing: location)
 
         if startLoc == 0 {
@@ -15,8 +15,11 @@ extension TextStoring {
             let preceedingStart = findStartOfLine(containing: startLoc)
             let length = startLoc - preceedingStart
 
-            if length >= 1 {
-                return NSRange(location: preceedingStart, length: length)
+            assert(length >= 0)
+            let range = NSRange(location: preceedingStart, length: length)
+
+            if predicate(self, range) {
+                return range
             }
 
             startLoc = preceedingStart - 1

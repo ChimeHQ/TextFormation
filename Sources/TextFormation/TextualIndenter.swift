@@ -3,11 +3,15 @@ import TextStory
 
 public struct TextualIndenter {
     public typealias IndentationResult = Result<Indentation, IndentationError>
+    public typealias ReferenceLinePredicate = (TextStoring, NSRange) -> Bool
 
     public let patterns: [PatternMatcher]
+    public let referenceLinePredicate: ReferenceLinePredicate
 
-    public init(patterns: [PatternMatcher] = TextualIndenter.basicPatterns) {
+    public init(patterns: [PatternMatcher] = TextualIndenter.basicPatterns,
+                referenceLinePredicate: @escaping ReferenceLinePredicate = TextualIndenter.nonEmptyLinePredicate) {
         self.patterns = patterns
+        self.referenceLinePredicate = referenceLinePredicate
     }
 
     private func nonWhitespaceContent(from lineRange: NSRange, in storage: TextStoring) -> String? {
@@ -24,8 +28,12 @@ public struct TextualIndenter {
         return storage.substring(from: contentRange)
     }
 
+    public static func nonEmptyLinePredicate(storage: TextStoring, range: NSRange) -> Bool {
+        return range.length >= 1
+    }
+    
     public func computeIndentation(at location: Int, in storage: TextStoring) -> IndentationResult {
-        guard let preceedingLineRange = storage.findFirstNonBlankLinePreceeding(location: location) else {
+        guard let preceedingLineRange = storage.findFirstLinePreceeding(location: location, satisifying: referenceLinePredicate) else {
             return .failure(.unableToComputeReferenceRange)
         }
 

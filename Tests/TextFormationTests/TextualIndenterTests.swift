@@ -31,6 +31,13 @@ class TextualIndenterTests: XCTestCase {
         XCTAssertEqual(indenter.computeIndentation(at: 3, in: interface), .success(.equal(NSRange(0..<1))))
     }
 
+    func testCustomReferencePredicate() throws {
+        let indenter = TextualIndenter(referenceLinePredicate: { $1.length == 3 })
+        let interface = TestableTextInterface("\tab\n\t\t\n")
+
+        XCTAssertEqual(indenter.computeIndentation(at: 7, in: interface), .success(.equal(NSRange(0..<3))))
+    }
+
     func testSkipsCurrentLine() throws {
         let indenter = TextualIndenter()
         let interface = TestableTextInterface("\tabc\n\t\t\tdef\n")
