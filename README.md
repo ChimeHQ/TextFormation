@@ -18,7 +18,7 @@ dependencies: [
 
 ## Usage
 
-TextFormation's core model is a `Filter`. This just just a protocol, that examines a `TextMutation` before it has been applied. A filter can have three possible result actions.
+TextFormation's core model is a `Filter`. This just a protocol, that examines a `TextMutation` before it has been applied. A filter can have three possible result actions.
 
 - `none` indicates that the mutation should be passed to the next filter in the list
 - `stop` means no further filtering should be applied
