@@ -9,7 +9,7 @@ public struct TextualIndenter {
     public let referenceLinePredicate: ReferenceLinePredicate
 
     public init(patterns: [PatternMatcher] = TextualIndenter.basicPatterns,
-                referenceLinePredicate: @escaping ReferenceLinePredicate = TextualIndenter.nonEmptyLinePredicate) {
+                referenceLinePredicate: @escaping ReferenceLinePredicate = TextualIndenter.nonEmptyLinePredicate()) {
         self.patterns = patterns
         self.referenceLinePredicate = referenceLinePredicate
     }
@@ -26,10 +26,6 @@ public struct TextualIndenter {
         let contentRange = NSRange(leadingWhitespace.upperBound..<trailingWhitespace.lowerBound)
 
         return storage.substring(from: contentRange)
-    }
-
-    public static func nonEmptyLinePredicate(storage: TextStoring, range: NSRange) -> Bool {
-        return range.length >= 1
     }
     
     public func computeIndentation(at location: Int, in storage: TextStoring) -> IndentationResult {
@@ -79,6 +75,30 @@ public struct TextualIndenter {
     public func substitionProvider(indentationUnit: String) -> StringSubstitutionProvider {
         return { range, interface in
             return computeIndentationString(in: range, for: interface, indentationUnit: indentationUnit)
+        }
+    }
+}
+
+extension TextualIndenter {
+    public static func nonEmptyLinePredicate() -> ReferenceLinePredicate {
+        return { storage, range in
+            return range.length >= 1
+        }
+    }
+
+    public static func leadingCharacterNonEmptyLinePredicate(prefix: String) -> ReferenceLinePredicate {
+        return { storage, range in
+            if range.length <= 1 {
+                return false
+            }
+
+            guard let leadingRange = storage.leadingWhitespaceRange(in: range) else {
+                return false
+            }
+
+            let firstCharRange = NSRange(location: leadingRange.max, length: 1)
+
+            return storage.substring(from: firstCharRange) != prefix
         }
     }
 }
