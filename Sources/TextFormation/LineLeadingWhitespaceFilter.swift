@@ -11,6 +11,16 @@ public class LineLeadingWhitespaceFilter {
         self.provider = leadingWhitespaceProvider
     }
 
+    public convenience init(string: String, whitespaceProviders: WhitespaceProviders) {
+        self.init(string: string, leadingWhitespaceProvider: whitespaceProviders.leadingWhitespace)
+    }
+
+    public convenience init(string: String, whitespaceProviders: WhitespaceProviders? = nil) {
+        let leadingProvider = whitespaceProviders?.leadingWhitespace ?? WhitespaceProviders.passthroughProvider
+
+        self.init(string: string, leadingWhitespaceProvider: leadingProvider)
+    }
+
     public var string: String {
         return recognizer.matchingString
     }
