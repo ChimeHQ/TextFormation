@@ -9,6 +9,10 @@ public extension TextualIndenter {
         PreceedingLinePrefixIndenter(prefix: "{"),
         PreceedingLinePrefixIndenter(prefix: "("),
         PreceedingLinePrefixIndenter(prefix: "["),
+
+        PreceedingLineSuffixIndenter(suffix: "{"),
+        PreceedingLineSuffixIndenter(suffix: "("),
+        PreceedingLineSuffixIndenter(suffix: "["),
     ]
 }
 
@@ -25,6 +29,9 @@ public extension TextualIndenter {
         PreceedingLinePrefixIndenter(prefix: "("),
         PreceedingLinePrefixIndenter(prefix: "["),
 
+        PreceedingLineSuffixIndenter(suffix: "{"),
+        PreceedingLineSuffixIndenter(suffix: "("),
+        PreceedingLineSuffixIndenter(suffix: "["),
         PreceedingLineSuffixIndenter(suffix: "|"),
         PreceedingLineSuffixIndenter(suffix: "do"),
 
