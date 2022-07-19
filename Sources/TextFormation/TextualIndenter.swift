@@ -82,13 +82,13 @@ public struct TextualIndenter {
 extension TextualIndenter {
     public static func nonEmptyLinePredicate() -> ReferenceLinePredicate {
         return { storage, range in
-            return range.length >= 1
+            return range.length > 0
         }
     }
 
-    public static func leadingCharacterNonEmptyLinePredicate(prefix: String) -> ReferenceLinePredicate {
+    public static func nonEmptyLineWithoutPrefixPredicate(prefix: String) -> ReferenceLinePredicate {
         return { storage, range in
-            if range.length <= 1 {
+            if range.length == 0 {
                 return false
             }
 
@@ -96,9 +96,13 @@ extension TextualIndenter {
                 return false
             }
 
-            let firstCharRange = NSRange(location: leadingRange.max, length: 1)
+            let remainingRange = NSRange(location: leadingRange.max, length: range.length - leadingRange.length)
 
-            return storage.substring(from: firstCharRange) != prefix
+            guard let value = storage.substring(from: remainingRange) else {
+                return true
+            }
+
+            return value.hasPrefix(prefix) == false
         }
     }
 }

@@ -143,3 +143,15 @@ extension TextualIndenterTests {
 
     }
 }
+
+extension TextualIndenterTests {
+    func testPrefixPredicate() {
+        let interface = TestableTextInterface("abc\n  abc\n  def")
+        let predicate = TextualIndenter.nonEmptyLineWithoutPrefixPredicate(prefix: "abc")
+
+        XCTAssertFalse(predicate(interface, NSRange(0..<3)))
+        XCTAssertFalse(predicate(interface, NSRange(4..<4)))
+        XCTAssertFalse(predicate(interface, NSRange(4..<9)))
+        XCTAssertTrue(predicate(interface, NSRange(10..<15)))
+    }
+}
