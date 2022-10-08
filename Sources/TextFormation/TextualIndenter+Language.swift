@@ -17,6 +17,7 @@ public extension TextualIndenter {
 }
 
 public extension TextualIndenter {
+	/// Specialized indentation patterns for Ruby.
     static let rubyPatterns: [PatternMatcher] = [
         CurrentLinePrefixOutdenter(prefix: "else"),
         CurrentLinePrefixOutdenter(prefix: "elsif"),
@@ -48,4 +49,17 @@ public extension TextualIndenter {
         PreceedingLinePrefixIndenter(prefix: "module"),
         PreceedingLinePrefixIndenter(prefix: "def"),
     ]
+
+	/// Specialized indentation patterns for Python.
+	static let pythonPatterns: [PatternMatcher] = [
+		PreceedingLineSuffixIndenter(suffix: ":"),
+
+		PreceedingLinePrefixIndenter(prefix: "{"),
+		PreceedingLinePrefixIndenter(prefix: "("),
+		PreceedingLinePrefixIndenter(prefix: "["),
+
+		PreceedingLineSuffixIndenter(suffix: "{"),
+		PreceedingLineSuffixIndenter(suffix: "("),
+		PreceedingLineSuffixIndenter(suffix: "["),
+	]
 }
