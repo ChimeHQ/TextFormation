@@ -49,14 +49,14 @@ extension TextStoring {
             return .failure(.unableToComputeReferenceRange)
         }
 
+		// here, we have to determine how many units of indentation currently exist
+		let spaceOnlyReference = referenceWhitespace.replacingOccurrences(of: "\t", with: String(repeating: " ", count: width))
+		let spaceCount = spaceOnlyReference.utf8.count
+		let referenceCount = spaceCount / width
+		let remainder = spaceCount % width
+
         switch indentation {
         case .relativeIncrease:
-			// here, we have to determine how many units of indentation currently exist
-			let spaceOnlyReference = referenceWhitespace.replacingOccurrences(of: "\t", with: String(repeating: " ", count: width))
-			let spaceCount = spaceOnlyReference.utf8.count
-			let referenceCount = spaceCount / width
-			let remainder = spaceCount % width
-
 			let value = String(repeating: indentUnit, count: referenceCount + 1) + String(repeating: " ", count: remainder)
 
             return .success(value)
@@ -71,7 +71,9 @@ extension TextStoring {
 
             return .success(updatedWhitespace)
         case .equal:
-            return .success(referenceWhitespace)
+			let value = String(repeating: indentUnit, count: referenceCount) + String(repeating: " ", count: remainder)
+
+            return .success(value)
         }
     }
 }

@@ -42,4 +42,20 @@ final class TextStoringTests: XCTestCase {
 
 		XCTAssertEqual(result, .success("\t\t  "))
 	}
+
+	func testUnmatchedTabSpaceIndentationEqual() throws {
+		let interface = TestableTextInterface("\t\nabc")
+
+		let result = interface.whitespaceStringResult(with: .equal(NSRange(0..<1)), using: "    ", width: 4)
+
+		XCTAssertEqual(result, .success("    "))
+	}
+
+	func testUnmatchedSpaceTabIndentationEqual() throws {
+		let interface = TestableTextInterface("    \nabc")
+
+		let result = interface.whitespaceStringResult(with: .equal(NSRange(0..<4)), using: "\t", width: 4)
+
+		XCTAssertEqual(result, .success("\t"))
+	}
 }
