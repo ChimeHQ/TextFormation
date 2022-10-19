@@ -95,6 +95,7 @@ It also includes pre-defined patterns for some languages:
 
 ```swift
 TextualIndenter.rubyPatterns
+TextualIndenter.pythonPatterns
 ```
 
 ### Suggestions or Feedback
