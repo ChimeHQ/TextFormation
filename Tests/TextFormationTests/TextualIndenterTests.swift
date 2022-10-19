@@ -116,7 +116,7 @@ extension TextualIndenterTests {
         let interface = TestableTextInterface("\t\t\n")
         let indenter = TextualIndenter(patterns: [])
 
-        let string = indenter.computeIndentationString(in: NSRange(3..<3), for: interface, indentationUnit: "\t")
+        let string = indenter.computeIndentationString(in: NSRange(3..<3), for: interface, indentationUnit: "\t", width: 4)
 
         XCTAssertEqual(string, "\t\t")
     }
@@ -125,7 +125,7 @@ extension TextualIndenterTests {
         let interface = TestableTextInterface("\t\tabc\n")
         let indenter = TextualIndenter(patterns: [])
 
-        let string = indenter.computeIndentationString(in: NSRange(6..<6), for: interface, indentationUnit: "\t")
+        let string = indenter.computeIndentationString(in: NSRange(6..<6), for: interface, indentationUnit: "\t", width: 4)
 
         XCTAssertEqual(string, "\t\t")
     }

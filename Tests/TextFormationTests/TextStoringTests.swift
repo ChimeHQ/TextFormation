@@ -6,7 +6,7 @@ final class TextStoringTests: XCTestCase {
 	func testMatchingSpaceIndentationIncrease() throws {
 		let interface = TestableTextInterface("    \nabc")
 
-		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<4)), using: "    ", tabWidth: 4)
+		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<4)), using: "    ", width: 4)
 
 		XCTAssertEqual(result, .success("        "))
 	}
@@ -14,7 +14,7 @@ final class TextStoringTests: XCTestCase {
 	func testMatchingTabIndentationIncrease() throws {
 		let interface = TestableTextInterface("\t\nabc")
 
-		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<1)), using: "\t", tabWidth: 4)
+		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<1)), using: "\t", width: 4)
 
 		XCTAssertEqual(result, .success("\t\t"))
 	}
@@ -22,7 +22,7 @@ final class TextStoringTests: XCTestCase {
 	func testUnmatchedTabSpaceIndentationIncrease() throws {
 		let interface = TestableTextInterface("\t\nabc")
 
-		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<1)), using: "    ", tabWidth: 4)
+		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<1)), using: "    ", width: 4)
 
 		XCTAssertEqual(result, .success("        "))
 	}
@@ -30,7 +30,7 @@ final class TextStoringTests: XCTestCase {
 	func testUnmatchedSpaceTabIndentationIncrease() throws {
 		let interface = TestableTextInterface("    \nabc")
 
-		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<4)), using: "\t", tabWidth: 4)
+		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<4)), using: "\t", width: 4)
 
 		XCTAssertEqual(result, .success("\t\t"))
 	}
@@ -38,7 +38,7 @@ final class TextStoringTests: XCTestCase {
 	func testUnevenUnitIndentationIncrease() throws {
 		let interface = TestableTextInterface("\t  \nabc")
 
-		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<3)), using: "\t", tabWidth: 4)
+		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<3)), using: "\t", width: 4)
 
 		XCTAssertEqual(result, .success("\t\t  "))
 	}
