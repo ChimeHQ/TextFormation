@@ -41,7 +41,9 @@ extension TextStoring {
 }
 
 extension TextStoring {
-    public func whitespaceStringResult(with indentation: Indentation, using indentUnit: String) -> Result<String, IndentationError> {
+	public func whitespaceStringResult(with indentation: Indentation, using indentUnit: String, width: Int) -> Result<String, IndentationError> {
+		assert(width > 0)
+		
         let range = indentation.range
         guard let referenceWhitespace = leadingIndentingWhitespace(at: range.location) else {
             return .failure(.unableToComputeReferenceRange)
@@ -49,7 +51,15 @@ extension TextStoring {
 
         switch indentation {
         case .relativeIncrease:
-            return .success(referenceWhitespace + indentUnit)
+			// here, we have to determine how many units of indentation currently exist
+			let spaceOnlyReference = referenceWhitespace.replacingOccurrences(of: "\t", with: String(repeating: " ", count: width))
+			let spaceCount = spaceOnlyReference.utf8.count
+			let referenceCount = spaceCount / width
+			let remainder = spaceCount % width
+
+			let value = String(repeating: indentUnit, count: referenceCount + 1) + String(repeating: " ", count: remainder)
+
+            return .success(value)
         case .relativeDecrease:
             guard let indentUnitStringRange = referenceWhitespace.range(of: indentUnit) else {
                 return .failure(.unableToComputeReferenceRange)

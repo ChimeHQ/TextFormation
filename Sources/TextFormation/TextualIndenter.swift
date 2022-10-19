@@ -60,9 +60,9 @@ public struct TextualIndenter {
         return .success(.equal(preceedingLineRange))
     }
 
-    public func computeIndentationString(in range: NSRange, for storage: TextStoring, indentationUnit: String) -> String {
+	public func computeIndentationString(in range: NSRange, for storage: TextStoring, indentationUnit: String, width: Int) -> String {
         let result = computeIndentation(at: range.location, in: storage)
-            .flatMap({ storage.whitespaceStringResult(with: $0, using: indentationUnit) })
+			.flatMap({ storage.whitespaceStringResult(with: $0, using: indentationUnit, width: width) })
 
         switch result {
         case .failure:
@@ -72,9 +72,9 @@ public struct TextualIndenter {
         }
     }
 
-    public func substitionProvider(indentationUnit: String) -> StringSubstitutionProvider {
+    public func substitionProvider(indentationUnit: String, width: Int) -> StringSubstitutionProvider {
         return { range, interface in
-            return computeIndentationString(in: range, for: interface, indentationUnit: indentationUnit)
+			return computeIndentationString(in: range, for: interface, indentationUnit: indentationUnit, width: width)
         }
     }
 }
