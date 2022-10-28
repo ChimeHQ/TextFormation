@@ -31,7 +31,7 @@ Careful use of filter nesting, possibly `CompositeFilter`, and these actions can
 // simple indentation algorithm that uses minimal text context
 let indenter = TextualIndenter()
 
-// delete an trailing whitespace, and use our indenter to compute
+// delete any trailing whitespace, and use our indenter to compute
 // any needed leading whitespace using a four-space unit
 let providers = WhitespaceProviders(leadingWhitespace: indenter.substitionProvider(indentationUnit: "    "),
                                    trailingWhitespace: { _, _ in return "" })
