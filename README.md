@@ -25,7 +25,7 @@ TextFormation's core model is a `Filter`. This just a protocol, that examines a 
 - `stop` means no further filtering should be applied
 - `discard` is just like stop, but also means the `TextMutation` shouldn't be applied
 
-Careful use of filter nesting, possibly `CompositeFilter`, and these actions can produce some pretty power behaviors. Here's an example of a chain that produces typing completions that roughly matches what Xcode does for open/close curly braces:
+Careful use of filter nesting, possibly `CompositeFilter`, and these actions can produce some pretty powerful behaviors. Here's an example of a chain that produces typing completions that roughly matches what Xcode does for open/close curly braces:
 
 ```swift
 // simple indentation algorithm that uses minimal text context
