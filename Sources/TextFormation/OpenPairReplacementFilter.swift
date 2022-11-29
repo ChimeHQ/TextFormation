@@ -5,7 +5,7 @@ public class OpenPairReplacementFilter {
     public let openString: String
     public let closeString: String
 
-    init(open: String, close: String) {
+    public init(open: String, close: String) {
         self.openString = open
         self.closeString = close
     }
