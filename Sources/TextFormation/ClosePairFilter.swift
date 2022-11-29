@@ -73,15 +73,6 @@ public class ClosePairFilter {
 
         return .discard
     }
-
-    private func addLeadingWhitespace(using provider: StringSubstitutionProvider, for mutation: TextMutation, in interface: TextInterface) {
-        let range = NSRange(location: mutation.range.location, length: 0)
-        let value = provider(range, interface)
-
-        interface.insertString(value, at: mutation.range.location)
-        interface.insertionLocation = mutation.range.location + value.utf16.count
-        interface.applyMutation(mutation)
-    }
 }
 
 extension ClosePairFilter: Filter {
