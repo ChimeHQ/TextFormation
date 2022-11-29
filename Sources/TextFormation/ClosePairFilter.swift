@@ -7,7 +7,7 @@ public class ClosePairFilter {
     private let whitespaceProviders: WhitespaceProviders?
     private var locationAfterSkippedClose: Int?
 
-    init(open: String, close: String, whitespaceProviders: WhitespaceProviders? = nil) {
+    public init(open: String, close: String, whitespaceProviders: WhitespaceProviders? = nil) {
         self.closeString = close
         self.whitespaceProviders = whitespaceProviders
         self.innerFilter = AfterConsecutiveCharacterFilter(matching: open)

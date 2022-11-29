@@ -8,7 +8,7 @@ public class AfterConsecutiveCharacterFilter {
     public var handler: Handler
     public var processMutationAfterTrigger: Bool = true
 
-    init(matching string: String) {
+    public init(matching string: String) {
         self.recognizer = ConsecutiveCharacterRecognizer(matching: string)
         self.handler = { (_, _) in return .none }
     }
