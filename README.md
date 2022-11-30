@@ -17,13 +17,17 @@ dependencies: [
 ]
 ```
 
-## Usage
+## Concept
 
-TextFormation's core model is a `Filter`. This just a protocol, that examines a `TextMutation` before it has been applied. A filter can have three possible result actions.
+TextFormation's core model is a `Filter`. Filters are typically set up once for a given language. From there, changes in the form of a `TextMutation` are fed in. The filter examines a `TextMutation` **before** it has been applied. A filter can have three possible result actions.
 
 - `none` indicates that the mutation should be passed to the next filter in the list
 - `stop` means no further filtering should be applied
 - `discard` is just like stop, but also means the `TextMutation` shouldn't be applied
+
+Filters do not necessarily change the text. You must respect the filter action, ensuring that the mutation is actually applied in the cases of `none` and `stop`. The design of the filters tries hard to allow mutations to occur to help maintain the expected selection and undo behaviors of a standard text view.
+
+## Usage
 
 Careful use of filter nesting, possibly `CompositeFilter`, and these actions can produce some pretty powerful behaviors. Here's an example of a chain that produces typing completions that roughly matches what Xcode does for open/close curly braces:
 
@@ -33,14 +37,14 @@ let indenter = TextualIndenter()
 
 // delete any trailing whitespace, and use our indenter to compute
 // any needed leading whitespace using a four-space unit
-let providers = WhitespaceProviders(leadingWhitespace: indenter.substitionProvider(indentationUnit: "    "),
-                                   trailingWhitespace: { _, _ in return "" })
-                                   
+let providers = WhitespaceProviders(leadingWhitespace: indenter.substitionProvider(indentationUnit: "    ", width: 4),
+                                    trailingWhitespace: { _, _ in return "" })
+
 // skip over closings
 let skip = SkipFilter(matching: "}")
 
 // apply whitespace to our close
-let closeWhitespace = LineLeadingWhitespaceFilter(string: "}", provider: providers.leadingWhitespace)
+let closeWhitespace = LineLeadingWhitespaceFilter(string: "}", leadingWhitespaceProvider: providers.leadingWhitespace)
 
 // handle newlines inserted in between opening and closing
 let newlinePair = NewlineWithinPairFilter(open: "{", close: "}", whitespaceProviders: providers)
@@ -52,12 +56,12 @@ let closePair = ClosePairFilter(open: "{", close: "}", whitespaceProviders: prov
 let openPairReplacement = OpenPairReplacementFilter(open: "{", close: "}")
 
 // delete a matching close when adjacent and the opening is deleted
-let deleteClose = DeleteCloseFilter(open: open, close: close)
+let deleteClose = DeleteCloseFilter(open: "{", close: "}")
 
 let filters: [Filter] = [skip, closeWhitespace, openPairReplacement, newlinePair, closePair, deleteClose]
 
 // treat a "stop" as only applying to our local chain
-self.filter = CompositeFilter(filters: filters, handler: { (_, action) in
+let filter = CompositeFilter(filters: filters, handler: { (_, action) in
     switch action {
     case .stop, .none:
         return .none
@@ -73,8 +77,8 @@ This kind of usage is probably going to be common, so all this behavior is wrapp
 
 ```swift
 let indenter = TextualIndenter()
-let providers = WhitespaceProviders(leadingWhitespace: indenter.substitionProvider(indentationUnit: "    "),
-                                   trailingWhitespace: { _, _ in return "" })
+let providers = WhitespaceProviders(leadingWhitespace: indenter.substitionProvider(indentationUnit: "    ", width: 4),
+                                    trailingWhitespace: { _, _ in return "" })
 let filter = StandardOpenPairFilter(open: "{", close: "}", whitespaceProviders: providers)
 ```
 
