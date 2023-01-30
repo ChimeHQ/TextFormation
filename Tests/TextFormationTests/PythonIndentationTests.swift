@@ -1,6 +1,5 @@
 import XCTest
 import TextFormation
-import Rearrange
 
 final class PythonIndentationTests: XCTestCase {
 	private func getIndentation(with text: String) throws -> (Int) throws -> Indentation {

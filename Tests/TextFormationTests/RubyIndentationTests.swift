@@ -1,6 +1,5 @@
 import XCTest
 import TextFormation
-import Rearrange
 
 class RubyIndentationTests: XCTestCase {
     private func getIndentation(with text: String) throws -> (Int) throws -> Indentation {
