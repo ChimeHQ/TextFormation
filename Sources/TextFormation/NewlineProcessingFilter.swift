@@ -50,11 +50,6 @@ public class NewlineProcessingFilter {
 
         let trailingMutation = TextMutation(string: value, range: range, limit: interface.length)
 
-        // on macOS, mutations must be adjacent to the selection location to change it, but
-        // on iOS, any mutation changes the selection
-        #if os(macOS)
-        interface.applyMutation(trailingMutation)
-        #else
         let preInsertion = interface.insertionLocation
 
         interface.applyMutation(trailingMutation)
@@ -62,7 +57,6 @@ public class NewlineProcessingFilter {
         if let location = preInsertion {
             interface.insertionLocation = location + trailingMutation.delta
         }
-        #endif
     }
 }
 
