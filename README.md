@@ -32,25 +32,17 @@ Filters do not necessarily change the text. You must respect the filter action, 
 Careful use of filter nesting, possibly `CompositeFilter`, and these actions can produce some pretty powerful behaviors. Here's an example of a chain that produces typing completions that roughly matches what Xcode does for open/close curly braces:
 
 ```swift
-// simple indentation algorithm that uses minimal text context
-let indenter = TextualIndenter()
-
-// delete any trailing whitespace, and use our indenter to compute
-// any needed leading whitespace using a four-space unit
-let providers = WhitespaceProviders(leadingWhitespace: indenter.substitionProvider(indentationUnit: "    ", width: 4),
-                                    trailingWhitespace: { _, _ in return "" })
-
 // skip over closings
 let skip = SkipFilter(matching: "}")
 
 // apply whitespace to our close
-let closeWhitespace = LineLeadingWhitespaceFilter(string: "}", leadingWhitespaceProvider: providers.leadingWhitespace)
+let closeWhitespace = LineLeadingWhitespaceFilter(string: "}")
 
 // handle newlines inserted in between opening and closing
-let newlinePair = NewlineWithinPairFilter(open: "{", close: "}", whitespaceProviders: providers)
+let newlinePair = NewlineWithinPairFilter(open: "{", close: "}")
 
 // auto-insert closings after an opening, with special-handling for newlines
-let closePair = ClosePairFilter(open: "{", close: "}", whitespaceProviders: providers)
+let closePair = ClosePairFilter(open: "{", close: "}")
 
 // surround selection-replacements with the pair
 let openPairReplacement = OpenPairReplacementFilter(open: "{", close: "}")
@@ -69,17 +61,26 @@ let filter = CompositeFilter(filters: filters, handler: { (_, action) in
         return .discard
     }
 })
-
-// use filter
 ```
 
 This kind of usage is probably going to be common, so all this behavior is wrapped up in a pre-made filter: `StandardOpenPairFilter`.
 
 ```swift
+let filter = StandardOpenPairFilter(open: "{", close: "}")
+```
+
+Using filters:
+
+```swift
+// simple indentation algorithm that uses minimal text context
 let indenter = TextualIndenter()
+
+// delete any trailing whitespace, and use our indenter to compute
+// any needed leading whitespace using a four-space unit
 let providers = WhitespaceProviders(leadingWhitespace: indenter.substitionProvider(indentationUnit: "    ", width: 4),
                                     trailingWhitespace: { _, _ in return "" })
-let filter = StandardOpenPairFilter(open: "{", close: "}", whitespaceProviders: providers)
+
+let action = filter.shouldProcessMutation(mutation, in: textView, with: providers)
 ```
 
 There's also a nice little type called `TextViewFilterApplier` that can make it easier to connect filters up to an `NSTextView` or `UITextView`. All you need to do use one of the stand-in delegate methods:
