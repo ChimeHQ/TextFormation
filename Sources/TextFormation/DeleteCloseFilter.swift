@@ -12,7 +12,7 @@ public class DeleteCloseFilter {
 }
 
 extension DeleteCloseFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
         guard mutation.string == "" && mutation.range.length > 0 else {
             return .none
         }

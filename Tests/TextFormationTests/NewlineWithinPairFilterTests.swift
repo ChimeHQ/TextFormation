@@ -14,11 +14,11 @@ class NewlineWithinPairFilterTests: XCTestCase {
         let providers = WhitespaceProviders(leadingWhitespace: leadingProvider,
                                             trailingWhitespace: {  _, _ in return "ttt"})
 
-        let filter = NewlineWithinPairFilter(open: "abc", close: "def", whitespaceProviders: providers)
+        let filter = NewlineWithinPairFilter(open: "abc", close: "def")
         let interface = TestableTextInterface("abcdef")
 
         let mutation = TextMutation(insert: "\n", at: 3, limit: 6)
-        XCTAssertEqual(interface.runFilter(filter, on: mutation), .discard)
+		XCTAssertEqual(interface.runFilter(filter, on: mutation, with: providers), .discard)
 
         XCTAssertEqual(leadingRequests.count, 2)
         if leadingRequests.count != 2 {
@@ -39,12 +39,12 @@ class NewlineWithinPairFilterTests: XCTestCase {
         let providers = WhitespaceProviders(leadingWhitespace: {  _, _ in return "lll"},
                                             trailingWhitespace: {  _, _ in return "ttt"})
 
-        let filter = NewlineWithinPairFilter(open: "abc", close: "def", whitespaceProviders: providers)
+        let filter = NewlineWithinPairFilter(open: "abc", close: "def")
         let interface = TestableTextInterface("abcdef")
         interface.insertionLocation = 2
 
         let mutation = TextMutation(insert: "\n", at: 2, limit: 6)
-        XCTAssertEqual(interface.runFilter(filter, on: mutation), .none)
+        XCTAssertEqual(interface.runFilter(filter, on: mutation, with: providers), .none)
 
         XCTAssertEqual(interface.string, "ab\ncdef")
         XCTAssertEqual(interface.insertionLocation, 3)

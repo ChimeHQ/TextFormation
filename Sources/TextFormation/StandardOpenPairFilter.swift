@@ -6,14 +6,14 @@ public struct StandardOpenPairFilter {
     public let openString: String
     public let closeString: String
 
-    public init(open: String, close: String, whitespaceProviders: WhitespaceProviders = .none) {
+    public init(open: String, close: String) {
         self.openString = open
         self.closeString = close
 
         let skip = SkipFilter(matching: close)
-        let closeWhitespaceFilter = LineLeadingWhitespaceFilter(string: close, leadingWhitespaceProvider: whitespaceProviders.leadingWhitespace)
-        let closePair = ClosePairFilter(open: open, close: close, whitespaceProviders: whitespaceProviders)
-        let newlinePair = NewlineWithinPairFilter(open: open, close: close, whitespaceProviders: whitespaceProviders)
+        let closeWhitespaceFilter = LineLeadingWhitespaceFilter(string: close)
+        let closePair = ClosePairFilter(open: open, close: close)
+        let newlinePair = NewlineWithinPairFilter(open: open, close: close)
         let openPairReplacement = OpenPairReplacementFilter(open: open, close: close)
         let deleteClose = DeleteCloseFilter(open: open, close: close)
 
@@ -36,13 +36,13 @@ public struct StandardOpenPairFilter {
         })
     }
 
-    public init(same: String, whitespaceProviders: WhitespaceProviders = .none) {
-        self.init(open: same, close: same, whitespaceProviders: whitespaceProviders)
+    public init(same: String) {
+        self.init(open: same, close: same)
     }
 }
 
 extension StandardOpenPairFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
-        return filter.processMutation(mutation, in: interface)
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
+        return filter.processMutation(mutation, in: interface, with: providers)
     }
 }

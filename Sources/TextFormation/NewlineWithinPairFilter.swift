@@ -4,17 +4,15 @@ import TextStory
 public class NewlineWithinPairFilter {
     public let openString: String
     public let closeString: String
-    private let whitespaceProviders: WhitespaceProviders
 
-    public init(open: String, close: String, whitespaceProviders: WhitespaceProviders) {
+    public init(open: String, close: String) {
         self.openString = open
         self.closeString = close
-        self.whitespaceProviders = whitespaceProviders
     }
 }
 
 extension NewlineWithinPairFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
         if mutation.string != "\n" {
             return .none
         }
@@ -43,7 +41,7 @@ extension NewlineWithinPairFilter: Filter {
 
         NewlineWithinPairFilter.adjustWhitespaceBetweenNewlines(at: mutation.range.location + 1,
                                                                 in: interface,
-                                                                using: whitespaceProviders.leadingWhitespace)
+                                                                using: providers.leadingWhitespace)
 
         return .discard
     }

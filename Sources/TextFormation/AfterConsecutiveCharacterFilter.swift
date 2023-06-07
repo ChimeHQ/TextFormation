@@ -2,7 +2,7 @@ import Foundation
 import TextStory
 
 public class AfterConsecutiveCharacterFilter {
-    public typealias Handler = (TextMutation, TextInterface) -> FilterAction
+    public typealias Handler = (TextMutation, TextInterface, WhitespaceProviders) -> FilterAction
 
     private let recognizer: ConsecutiveCharacterRecognizer
     public var handler: Handler
@@ -10,7 +10,7 @@ public class AfterConsecutiveCharacterFilter {
 
     public init(matching string: String) {
         self.recognizer = ConsecutiveCharacterRecognizer(matching: string)
-        self.handler = { (_, _) in return .none }
+        self.handler = { (_, _, _) in return .none }
     }
 
     public var string: String {
@@ -19,7 +19,7 @@ public class AfterConsecutiveCharacterFilter {
 }
 
 extension AfterConsecutiveCharacterFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+	public func processMutation(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
         switch recognizer.state {
         case .idle, .tracking:
             break
@@ -34,7 +34,7 @@ extension AfterConsecutiveCharacterFilter: Filter {
                 break
             }
 
-            return handleMutationAfterTrigger(mutation, in: interface)
+            return handleMutationAfterTrigger(mutation, in: interface, with: providers)
         }
 
         recognizer.processMutation(mutation)
@@ -49,7 +49,7 @@ extension AfterConsecutiveCharacterFilter: Filter {
         return .none
     }
 
-    private func handleMutationAfterTrigger(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+    private func handleMutationAfterTrigger(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
         if mutation.string.isEmpty {
             return .none
         }
@@ -58,6 +58,6 @@ extension AfterConsecutiveCharacterFilter: Filter {
             return .none
         }
 
-        return handler(mutation, interface)
+        return handler(mutation, interface, providers)
     }
 }

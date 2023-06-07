@@ -10,7 +10,7 @@ public class SkipFilter {
 }
 
 extension SkipFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
         if mutation.string != string {
             return .none
         }

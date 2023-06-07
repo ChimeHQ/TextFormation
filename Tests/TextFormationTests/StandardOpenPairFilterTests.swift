@@ -34,11 +34,11 @@ class StandardOpenPairFilterTests: XCTestCase {
     func testCloseWithoutLeadingWhitespace() {
         let providers = WhitespaceProviders(leadingWhitespace: { _, _ in return "lll" },
                                             trailingWhitespace: {  _, _ in return "ttt"})
-        let filter = StandardOpenPairFilter(open: "{", close: "}", whitespaceProviders: providers)
+        let filter = StandardOpenPairFilter(open: "{", close: "}")
         let interface = TestableTextInterface("a")
 
         let openMutation = TextMutation(insert: "}", at: 1, limit: 1)
-        XCTAssertEqual(interface.runFilter(filter, on: openMutation), .none)
+		XCTAssertEqual(interface.runFilter(filter, on: openMutation, with: providers), .none)
 
         XCTAssertEqual(interface.string, "a}")
         XCTAssertEqual(interface.insertionLocation, 2)
@@ -66,11 +66,11 @@ class StandardOpenPairFilterTests: XCTestCase {
     func testApplyWhitespaceOnClose() {
         let providers = WhitespaceProviders(leadingWhitespace: { _, _ in return "lll" },
                                             trailingWhitespace: {  _, _ in return "ttt"})
-        let filter = StandardOpenPairFilter(open: "{", close: "}", whitespaceProviders: providers)
+        let filter = StandardOpenPairFilter(open: "{", close: "}")
         let interface = TestableTextInterface()
 
         let openMutation = TextMutation(insert: "}", at: 0, limit: 0)
-        XCTAssertEqual(interface.runFilter(filter, on: openMutation), .discard)
+        XCTAssertEqual(interface.runFilter(filter, on: openMutation, with: providers), .discard)
 
         XCTAssertEqual(interface.string, "lll}")
         XCTAssertEqual(interface.insertionLocation, 4)

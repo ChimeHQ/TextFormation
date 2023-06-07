@@ -3,23 +3,21 @@ import TextStory
 
 public class NewlineProcessingFilter {
     private let recognizer: ConsecutiveCharacterRecognizer
-	public let providers: WhitespaceProviders
 
-    public init(whitespaceProviders: WhitespaceProviders) {
+    public init() {
         self.recognizer = ConsecutiveCharacterRecognizer(matching: "\n")
-		self.providers = whitespaceProviders
     }
 
-    private func filterHandler(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+    private func filterHandler(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
         interface.applyMutation(mutation)
 
-        handleLeading(for: mutation, in: interface)
-        handleTrailing(for: mutation, in: interface)
+        handleLeading(for: mutation, in: interface, with: providers)
+        handleTrailing(for: mutation, in: interface, with: providers)
 
         return .discard
     }
 
-    private func handleLeading(for mutation: TextMutation, in interface: TextInterface) {
+    private func handleLeading(for mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) {
         let range = NSRange(location: mutation.postApplyRange.max, length: 0)
 
 		let value = providers.leadingWhitespace(range, interface)
@@ -30,7 +28,7 @@ public class NewlineProcessingFilter {
 	/// Adjust trailing whitespace
 	///
 	/// Trailing is only defined for lines with some non-whitespace.
-    private func handleTrailing(for mutation: TextMutation, in interface: TextInterface) {
+    private func handleTrailing(for mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) {
 		let set = CharacterSet.whitespacesWithoutNewlines.inverted
 		let location = mutation.range.location
 		guard let nonWhitespaceStart = interface.findPreceedingOccurrenceOfCharacter(in: set, from: location) else {
@@ -61,12 +59,12 @@ public class NewlineProcessingFilter {
 }
 
 extension NewlineProcessingFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
         recognizer.processMutation(mutation)
 
         switch recognizer.state {
         case .triggered:
-            return filterHandler(mutation, in: interface)
+			return filterHandler(mutation, in: interface, with: providers)
         case .tracking, .idle:
             return .none
         }

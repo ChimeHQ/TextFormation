@@ -3,29 +3,17 @@ import TextStory
 
 public class LineLeadingWhitespaceFilter {
     private let recognizer: ConsecutiveCharacterRecognizer
-    private let provider: StringSubstitutionProvider
     public var mustOccurAtLineLeadingWhitespace: Bool = true
 
-    public init(string: String, leadingWhitespaceProvider: @escaping StringSubstitutionProvider) {
+    public init(string: String) {
         self.recognizer = ConsecutiveCharacterRecognizer(matching: string)
-        self.provider = leadingWhitespaceProvider
-    }
-
-    public convenience init(string: String, whitespaceProviders: WhitespaceProviders) {
-        self.init(string: string, leadingWhitespaceProvider: whitespaceProviders.leadingWhitespace)
-    }
-
-    public convenience init(string: String, whitespaceProviders: WhitespaceProviders? = nil) {
-        let leadingProvider = whitespaceProviders?.leadingWhitespace ?? WhitespaceProviders.passthroughProvider
-
-        self.init(string: string, leadingWhitespaceProvider: leadingProvider)
     }
 
     public var string: String {
         return recognizer.matchingString
     }
 
-    private func filterHandler(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+    private func filterHandler(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
         guard let whitespaceRange = interface.leadingWhitespaceRange(containing: mutation.range.location) else {
             return .none
         }
@@ -39,7 +27,7 @@ public class LineLeadingWhitespaceFilter {
 
         interface.applyMutation(mutation)
 
-        let value = provider(whitespaceRange, interface)
+		let value = providers.leadingWhitespace(whitespaceRange, interface)
 
         #if os(macOS)
         interface.replaceString(in: whitespaceRange, with: value)
@@ -58,12 +46,12 @@ public class LineLeadingWhitespaceFilter {
 }
 
 extension LineLeadingWhitespaceFilter: Filter {
-    public func processMutation(_ mutation: TextMutation, in interface: TextInterface) -> FilterAction {
+    public func processMutation(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
         recognizer.processMutation(mutation)
 
         switch recognizer.state {
         case .triggered:
-            return filterHandler(mutation, in: interface)
+			return filterHandler(mutation, in: interface, with: providers)
         case .tracking, .idle:
             return .none
         }

@@ -137,9 +137,9 @@ class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(3..<3))
 
         let nextMutation = TextMutation(insert: "\n", at: 3, limit: 3)
-        XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .stop)
+        XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .discard)
 
-        XCTAssertEqual(interface.string, "abc\ndef")
+        XCTAssertEqual(interface.string, "abc\n\ndef")
         XCTAssertEqual(interface.selectedRange, NSRange(4..<4))
     }
 
@@ -153,7 +153,7 @@ class ClosePairFilterTests: XCTestCase {
 
         let providers = WhitespaceProviders(leadingWhitespace: leadingProvider,
                                             trailingWhitespace: {  _, _ in return "ttt"})
-        let filter = ClosePairFilter(open: "abc", close: "def", whitespaceProviders: providers)
+        let filter = ClosePairFilter(open: "abc", close: "def")
         let interface = TestableTextInterface()
 
         let openMutation = TextMutation(insert: "abc", at: 0, limit: 0)
@@ -162,7 +162,7 @@ class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(3..<3))
 
         let nextMutation = TextMutation(insert: "\n", at: 3, limit: 3)
-        XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .discard)
+		XCTAssertEqual(interface.runFilter(filter, on: nextMutation, with: providers), .discard)
 
         XCTAssertEqual(leadingRequests.count, 2)
         XCTAssertEqual(leadingRequests[0].0, NSRange(4..<4))

@@ -21,19 +21,21 @@ extension Responder {
 
 public struct TextViewFilterApplier {
     public let filters: [Filter]
+	public let providers: WhitespaceProviders
 
-    public init(filters: [Filter]) {
+	public init(filters: [Filter], providers: WhitespaceProviders) {
         self.filters = filters
+		self.providers = providers
     }
 
-    private func shouldApplyMutation(_ mutation: TextMutation, to textView: TextView) -> Bool {
+	private func shouldApplyMutation(_ mutation: TextMutation, to textView: TextView) -> Bool {
         // don't perform any kind of filtering during undo operations
         if textView.undoActive {
             return true
         }
 
         for filter in filters {
-            let action = filter.processMutation(mutation, in: textView)
+			let action = filter.processMutation(mutation, in: textView, with: providers)
 
             switch action {
             case .none:
