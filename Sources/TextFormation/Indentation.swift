@@ -1,5 +1,6 @@
 import Foundation
 
+/// Represents the indentation of a line relative to another range in the text.
 public enum Indentation {
     case relativeIncrease(NSRange)
     case relativeDecrease(NSRange)
@@ -17,8 +18,8 @@ public enum Indentation {
     }
 }
 
-extension Indentation: Hashable {
-}
+extension Indentation: Hashable {}
+extension Indentation: Sendable {}
 
 public enum IndentationError: Error {
     case unableToComputeReferenceRange
@@ -26,5 +27,5 @@ public enum IndentationError: Error {
     case unableToDetermineAction
 }
 
-extension IndentationError: Hashable {
-}
+extension IndentationError: Hashable {}
+extension IndentationError: Sendable {}
