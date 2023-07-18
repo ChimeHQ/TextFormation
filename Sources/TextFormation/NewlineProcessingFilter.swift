@@ -31,7 +31,7 @@ public class NewlineProcessingFilter {
     private func handleTrailing(for mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) {
 		let set = CharacterSet.whitespacesWithoutNewlines.inverted
 		let location = mutation.range.location
-		guard let nonWhitespaceStart = interface.findPreceedingOccurrenceOfCharacter(in: set, from: location) else {
+		guard let nonWhitespaceStart = interface.findPrecedingOccurrenceOfCharacter(in: set, from: location) else {
 			return
 		}
 
