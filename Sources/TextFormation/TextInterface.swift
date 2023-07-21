@@ -1,6 +1,12 @@
 import Foundation
 import TextStory
 
+#if os(macOS)
+import AppKit
+#elseif os(iOS) || os(tvOS)
+import UIKit
+#endif
+
 public protocol TextInterface: TextStoring {
     var selectedRange: NSRange { get set }
 }
@@ -24,16 +30,55 @@ extension TextInterface {
     }
 }
 
-#if os(macOS)
-import AppKit
+public final class TextInterfaceAdapter: TextInterface {
+	let getSelection: () -> NSRange
+	let setSelection: (NSRange) -> Void
+    private let storage: TextStoring
 
-extension NSTextView: TextInterface {
+    #if os(macOS)
+	@MainActor
+    public init(textView: NSTextView) {
+		self.getSelection = { textView.selectedRange() }
+		self.setSelection = { textView.setSelectedRange($0)}
+        self.storage = TextStorageAdapter(textView: textView)
+    }
+	#elseif os(iOS) || os(tvOS)
+	@MainActor
+	public init(textView: UITextView) {
+		self.getSelection = { textView.selectedRange }
+		self.setSelection = { textView.selectedRange = $0 }
+		self.storage = TextStorageAdapter(textView: textView)
+	}
+	#endif
+
+	@MainActor
+    public convenience init(_ string: String = "") {
+        let view = TextView()
+
+		#if os(macOS)
+		view.string = string
+		#elseif os(iOS) || os(tvOS)
+		view.text = string
+		#endif
+
+        self.init(textView: view)
+    }
+
+
+	public var selectedRange: NSRange {
+		get { getSelection() }
+		set { setSelection(newValue) }
+	}
+
+    public var length: Int {
+        storage.length
+    }
+
+    public func substring(from range: NSRange) -> String? {
+        storage.substring(from: range)
+    }
+
+    public func applyMutation(_ mutation: TextMutation) {
+        storage.applyMutation(mutation)
+    }
 }
-
-#else
-import UIKit
-
-extension UITextView: TextInterface {
-}
-
-#endif

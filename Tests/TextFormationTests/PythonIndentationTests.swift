@@ -1,10 +1,11 @@
 import XCTest
 import TextFormation
 
+@MainActor
 final class PythonIndentationTests: XCTestCase {
 	private func getIndentation(with text: String) throws -> (Int) throws -> Indentation {
 		let indenter = TextualIndenter(patterns: TextualIndenter.pythonPatterns)
-		let content = TestableTextInterface(text)
+		let content = TextInterfaceAdapter(text)
 
 		return { location in
 			try indenter.computeIndentation(at: location, in: content).get()

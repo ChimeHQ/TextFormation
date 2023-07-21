@@ -2,10 +2,11 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-class SkipFilterTests: XCTestCase {
+@MainActor
+final class SkipFilterTests: XCTestCase {
     func testSingleCharacterSkip() {
         let filter = SkipFilter(matching: "}")
-        let interface = TestableTextInterface("}")
+        let interface = TextInterfaceAdapter("}")
 
         let mutation = TextMutation(insert: "}", at: 0, limit: 1)
         XCTAssertEqual(interface.runFilter(filter, on: mutation), .stop)
@@ -16,7 +17,7 @@ class SkipFilterTests: XCTestCase {
 
     func testNoSkip() {
         let filter = SkipFilter(matching: "}")
-        let interface = TestableTextInterface()
+        let interface = TextInterfaceAdapter()
 
         let mutation = TextMutation(insert: "}", at: 0, limit: 0)
         XCTAssertEqual(interface.runFilter(filter, on: mutation), .none)

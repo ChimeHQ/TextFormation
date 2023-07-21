@@ -19,6 +19,7 @@ extension Responder {
     }
 }
 
+@MainActor
 public struct TextViewFilterApplier {
     public let filters: [Filter]
 	public let providers: WhitespaceProviders
@@ -34,8 +35,10 @@ public struct TextViewFilterApplier {
             return true
         }
 
+        let interface = TextInterfaceAdapter(textView: textView)
+
         for filter in filters {
-			let action = filter.processMutation(mutation, in: textView, with: providers)
+			let action = filter.processMutation(mutation, in: interface, with: providers)
 
             switch action {
             case .none:
@@ -51,7 +54,13 @@ public struct TextViewFilterApplier {
     }
 
     private func internalTextView(_ textView: TextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        let mutation = TextMutation(string: text, range: range, limit: textView.length)
+		#if os(macOS)
+        let length = textView.textStorage?.length ?? 0
+		#elseif os(iOS)
+		let length = textView.textStorage.length
+		#endif
+		
+        let mutation = TextMutation(string: text, range: range, limit: length)
 
         textView.undoManager?.beginUndoGrouping()
 

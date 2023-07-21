@@ -2,10 +2,11 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-class StandardOpenPairFilterTests: XCTestCase {
+@MainActor
+final class StandardOpenPairFilterTests: XCTestCase {
     func testMatchOpen() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let interface = TestableTextInterface()
+        let interface = TextInterfaceAdapter()
 
         let openMutation = TextMutation(insert: "{", at: 0, limit: 0)
         XCTAssertEqual(interface.runFilter(filter, on: openMutation), .none)
@@ -19,7 +20,7 @@ class StandardOpenPairFilterTests: XCTestCase {
 
     func testMatchOpenWithSame() {
         let filter = StandardOpenPairFilter(same: "-")
-        let interface = TestableTextInterface()
+        let interface = TextInterfaceAdapter()
 
         let openMutation = TextMutation(insert: "-", at: 0, limit: 0)
         XCTAssertEqual(interface.runFilter(filter, on: openMutation), .none)
@@ -35,7 +36,7 @@ class StandardOpenPairFilterTests: XCTestCase {
         let providers = WhitespaceProviders(leadingWhitespace: { _, _ in return "lll" },
                                             trailingWhitespace: {  _, _ in return "ttt"})
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let interface = TestableTextInterface("a")
+        let interface = TextInterfaceAdapter("a")
 
         let openMutation = TextMutation(insert: "}", at: 1, limit: 1)
 		XCTAssertEqual(interface.runFilter(filter, on: openMutation, with: providers), .none)
@@ -46,7 +47,7 @@ class StandardOpenPairFilterTests: XCTestCase {
 
     func testSkipCloseAfterMatchingOpen() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let interface = TestableTextInterface()
+        let interface = TextInterfaceAdapter()
 
         let openMutation = TextMutation(insert: "{", at: 0, limit: 0)
         XCTAssertEqual(interface.runFilter(filter, on: openMutation), .none)
@@ -67,7 +68,7 @@ class StandardOpenPairFilterTests: XCTestCase {
         let providers = WhitespaceProviders(leadingWhitespace: { _, _ in return "lll" },
                                             trailingWhitespace: {  _, _ in return "ttt"})
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let interface = TestableTextInterface()
+        let interface = TextInterfaceAdapter()
 
         let openMutation = TextMutation(insert: "}", at: 0, limit: 0)
         XCTAssertEqual(interface.runFilter(filter, on: openMutation, with: providers), .discard)
@@ -78,7 +79,7 @@ class StandardOpenPairFilterTests: XCTestCase {
 
     func testSurroundRange() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let interface = TestableTextInterface("abc")
+        let interface = TextInterfaceAdapter("abc")
 
         interface.selectedRange = NSRange(0..<3)
 
@@ -100,7 +101,7 @@ class StandardOpenPairFilterTests: XCTestCase {
 
     func testSkipClose() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let interface = TestableTextInterface("}")
+        let interface = TextInterfaceAdapter("}")
 
         let openMutation = TextMutation(insert: "}", at: 0, limit: 0)
         XCTAssertEqual(interface.runFilter(filter, on: openMutation), .none)
@@ -111,7 +112,7 @@ class StandardOpenPairFilterTests: XCTestCase {
 
     func testDoubleOpen() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let interface = TestableTextInterface()
+        let interface = TextInterfaceAdapter()
 
         let openMutation = TextMutation(insert: "{", at: 0, limit: 0)
         XCTAssertEqual(interface.runFilter(filter, on: openMutation), .none)
@@ -128,7 +129,7 @@ class StandardOpenPairFilterTests: XCTestCase {
 
     func testDoubleOpenDelete() {
         let filter = StandardOpenPairFilter(open: "{", close: "}")
-        let interface = TestableTextInterface("{{}}")
+        let interface = TextInterfaceAdapter("{{}}")
 
         interface.insertionLocation = 2
 

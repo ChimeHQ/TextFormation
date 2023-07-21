@@ -1,7 +1,7 @@
 import Foundation
 import TextStory
 
-public class ClosePairFilter {
+public final class ClosePairFilter {
     private let innerFilter: AfterConsecutiveCharacterFilter
     public let closeString: String
     private var locationAfterSkippedClose: Int?

@@ -2,7 +2,8 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-class NewlineWithinPairFilterTests: XCTestCase {
+@MainActor
+final class NewlineWithinPairFilterTests: XCTestCase {
     func testMatch() {
         var leadingRequests: [(NSRange, String)] = []
 
@@ -15,7 +16,7 @@ class NewlineWithinPairFilterTests: XCTestCase {
                                             trailingWhitespace: {  _, _ in return "ttt"})
 
         let filter = NewlineWithinPairFilter(open: "abc", close: "def")
-        let interface = TestableTextInterface("abcdef")
+        let interface = TextInterfaceAdapter("abcdef")
 
         let mutation = TextMutation(insert: "\n", at: 3, limit: 6)
 		XCTAssertEqual(interface.runFilter(filter, on: mutation, with: providers), .discard)
@@ -40,7 +41,7 @@ class NewlineWithinPairFilterTests: XCTestCase {
                                             trailingWhitespace: {  _, _ in return "ttt"})
 
         let filter = NewlineWithinPairFilter(open: "abc", close: "def")
-        let interface = TestableTextInterface("abcdef")
+        let interface = TextInterfaceAdapter("abcdef")
         interface.insertionLocation = 2
 
         let mutation = TextMutation(insert: "\n", at: 2, limit: 6)

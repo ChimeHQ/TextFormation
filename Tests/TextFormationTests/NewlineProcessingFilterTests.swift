@@ -2,12 +2,13 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
+@MainActor
 final class NewlineProcessingFilterTests: XCTestCase {
 	private static let providers = WhitespaceProviders(leadingWhitespace: { _, _ in "\t" },
 													   trailingWhitespace: {  _, _ in " "})
 
     func testMatchingAfter() {
-        let interface = TestableTextInterface()
+        let interface = TextInterfaceAdapter()
         let filter = NewlineProcessingFilter()
 
         let mutation = TextMutation(insert: "\n", at: 0, limit: 0)
@@ -19,7 +20,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
     }
 
     func testMatchingWithTrailingWhitespace() {
-        let interface = TestableTextInterface("a")
+        let interface = TextInterfaceAdapter("a")
         let filter = NewlineProcessingFilter()
 
         let mutation = TextMutation(insert: "\n", at: 1, limit: 1)
@@ -32,7 +33,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
     }
 
 	func testMatchingAfterWhitespaceOnlyLine() {
-		let interface = TestableTextInterface("\t")
+		let interface = TextInterfaceAdapter("\t")
 		let filter = NewlineProcessingFilter()
 
 		let mutation = TextMutation(insert: "\n", at: 1, limit: 1)
@@ -45,7 +46,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
 	}
 
     func testMatchingWithCharactersAndTrailingTab() {
-        let interface = TestableTextInterface("abc\t")
+        let interface = TextInterfaceAdapter("abc\t")
         let filter = NewlineProcessingFilter()
 
         let mutation = TextMutation(insert: "\n", at: 4, limit: 4)
@@ -57,7 +58,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
     }
 
 	func testNewlineAfterLeadingOnlyLine() {
-		let interface = TestableTextInterface("\t\n\t")
+		let interface = TextInterfaceAdapter("\t\n\t")
 		let filter = NewlineProcessingFilter()
 
 		let mutation = TextMutation(insert: "\n", at: 3, limit: 3)

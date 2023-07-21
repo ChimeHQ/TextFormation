@@ -2,11 +2,12 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
+@MainActor
 final class LineLeadingWhitespaceFilterTests: XCTestCase {
 	private static let providers = WhitespaceProviders(leadingWhitespace: { _, _ in "\t" }, trailingWhitespace: WhitespaceProviders.passthroughProvider)
 
     func testMatching() {
-        let interface = TestableTextInterface()
+        let interface = TextInterfaceAdapter()
         let filter = LineLeadingWhitespaceFilter(string: "abc")
 
         let mutation = TextMutation(insert: "abc", at: 0, limit: 0)
@@ -17,7 +18,7 @@ final class LineLeadingWhitespaceFilterTests: XCTestCase {
     }
 
     func testMatchingOneCharacterAtATime() {
-        let interface = TestableTextInterface("  ")
+        let interface = TextInterfaceAdapter("  ")
         let filter = LineLeadingWhitespaceFilter(string: "abc")
 
 		XCTAssertEqual(interface.runFilter(filter, on: TextMutation(insert: "a", at: 2, limit: 2), with: Self.providers), .none)
@@ -28,7 +29,7 @@ final class LineLeadingWhitespaceFilterTests: XCTestCase {
     }
 
     func testMatchingWithWhitespacePrefix() {
-        let interface = TestableTextInterface("def ")
+        let interface = TextInterfaceAdapter("def ")
         let filter = LineLeadingWhitespaceFilter(string: "abc")
         filter.mustOccurAtLineLeadingWhitespace = false
 
@@ -40,7 +41,7 @@ final class LineLeadingWhitespaceFilterTests: XCTestCase {
     }
 
     func testMatchingWithoutWhitespacePrefix() {
-        let interface = TestableTextInterface("def")
+        let interface = TextInterfaceAdapter("def")
         let filter = LineLeadingWhitespaceFilter(string: "abc")
 
         let mutation = TextMutation(insert: "abc", at: 3, limit: 3)
@@ -52,7 +53,7 @@ final class LineLeadingWhitespaceFilterTests: XCTestCase {
 
 
     func testMatchingWithDifferentIndentation() {
-        let interface = TestableTextInterface(" ")
+        let interface = TextInterfaceAdapter(" ")
         let filter = LineLeadingWhitespaceFilter(string: "abc")
 
         let mutation = TextMutation(insert: "abc", at: 1, limit: 1)
@@ -63,7 +64,7 @@ final class LineLeadingWhitespaceFilterTests: XCTestCase {
     }
 
     func testMatchingWithSame() {
-        let interface = TestableTextInterface("\t")
+        let interface = TextInterfaceAdapter("\t")
         let filter = LineLeadingWhitespaceFilter(string: "\n")
 
         let mutation = TextMutation(insert: "\n", at: 1, limit: 1)

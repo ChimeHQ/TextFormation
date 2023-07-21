@@ -2,12 +2,21 @@
   "object": {
     "pins": [
       {
+        "package": "MainOffender",
+        "repositoryURL": "https://github.com/mattmassicotte/MainOffender",
+        "state": {
+          "branch": null,
+          "revision": "343cc3797618c29b48b037b4e2beea0664e75315",
+          "version": "0.1.0"
+        }
+      },
+      {
         "package": "Rearrange",
         "repositoryURL": "https://github.com/ChimeHQ/Rearrange",
         "state": {
           "branch": null,
-          "revision": "ca31b92e561149b09ed25fb5bccfb7a1677abdbd",
-          "version": "1.5.2"
+          "revision": "8f97f721d8a08c6e01ab9f7460e53819bef72dfa",
+          "version": "1.5.3"
         }
       },
       {
@@ -15,8 +24,8 @@
         "repositoryURL": "https://github.com/ChimeHQ/TextStory",
         "state": {
           "branch": null,
-          "revision": "65ba53be8cce8448be6b4b2543ecf0f8c0221e47",
-          "version": "0.7.1"
+          "revision": "8883fa739aa213e70e6cb109bfbf0a0b551e4cb5",
+          "version": null
         }
       }
     ]

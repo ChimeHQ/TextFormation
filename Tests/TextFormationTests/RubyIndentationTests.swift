@@ -1,10 +1,11 @@
 import XCTest
 import TextFormation
 
-class RubyIndentationTests: XCTestCase {
+@MainActor
+final class RubyIndentationTests: XCTestCase {
     private func getIndentation(with text: String) throws -> (Int) throws -> Indentation {
         let indenter = TextualIndenter(patterns: TextualIndenter.rubyPatterns)
-        let content = TestableTextInterface(text)
+        let content = TextInterfaceAdapter(text)
 
         return { location in
             try indenter.computeIndentation(at: location, in: content).get()

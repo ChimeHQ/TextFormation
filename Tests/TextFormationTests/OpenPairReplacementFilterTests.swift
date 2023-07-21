@@ -2,10 +2,11 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-class OpenPairReplacementFilterTests: XCTestCase {
+@MainActor
+final class OpenPairReplacementFilterTests: XCTestCase {
     func testMatch() {
         let filter = OpenPairReplacementFilter(open: "abc", close: "def")
-        let interface = TestableTextInterface(" ")
+        let interface = TextInterfaceAdapter(" ")
 
         let openMutation = TextMutation(string: "abc", range: NSRange(0..<1), limit: 1)
 
@@ -15,7 +16,7 @@ class OpenPairReplacementFilterTests: XCTestCase {
 
     func testInsertMatch() {
         let filter = OpenPairReplacementFilter(open: "abc", close: "def")
-        let interface = TestableTextInterface(" ")
+        let interface = TextInterfaceAdapter(" ")
 
         let openMutation = TextMutation(string: "abc", range: NSRange(0..<0), limit: 1)
 

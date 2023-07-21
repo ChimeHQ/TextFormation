@@ -2,9 +2,10 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
+@MainActor
 final class TextStoringTests: XCTestCase {
 	func testMatchingSpaceIndentationIncrease() throws {
-		let interface = TestableTextInterface("    \nabc")
+		let interface = TextInterfaceAdapter("    \nabc")
 
 		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<4)), using: "    ", width: 4)
 
@@ -12,7 +13,7 @@ final class TextStoringTests: XCTestCase {
 	}
 
 	func testMatchingTabIndentationIncrease() throws {
-		let interface = TestableTextInterface("\t\nabc")
+		let interface = TextInterfaceAdapter("\t\nabc")
 
 		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<1)), using: "\t", width: 4)
 
@@ -20,7 +21,7 @@ final class TextStoringTests: XCTestCase {
 	}
 
 	func testUnmatchedTabSpaceIndentationIncrease() throws {
-		let interface = TestableTextInterface("\t\nabc")
+		let interface = TextInterfaceAdapter("\t\nabc")
 
 		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<1)), using: "    ", width: 4)
 
@@ -28,7 +29,7 @@ final class TextStoringTests: XCTestCase {
 	}
 
 	func testUnmatchedSpaceTabIndentationIncrease() throws {
-		let interface = TestableTextInterface("    \nabc")
+		let interface = TextInterfaceAdapter("    \nabc")
 
 		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<4)), using: "\t", width: 4)
 
@@ -36,7 +37,7 @@ final class TextStoringTests: XCTestCase {
 	}
 
 	func testUnevenUnitIndentationIncrease() throws {
-		let interface = TestableTextInterface("\t  \nabc")
+		let interface = TextInterfaceAdapter("\t  \nabc")
 
 		let result = interface.whitespaceStringResult(with: .relativeIncrease(NSRange(0..<3)), using: "\t", width: 4)
 
@@ -44,7 +45,7 @@ final class TextStoringTests: XCTestCase {
 	}
 
 	func testUnmatchedTabSpaceIndentationEqual() throws {
-		let interface = TestableTextInterface("\t\nabc")
+		let interface = TextInterfaceAdapter("\t\nabc")
 
 		let result = interface.whitespaceStringResult(with: .equal(NSRange(0..<1)), using: "    ", width: 4)
 
@@ -52,7 +53,7 @@ final class TextStoringTests: XCTestCase {
 	}
 
 	func testUnmatchedSpaceTabIndentationEqual() throws {
-		let interface = TestableTextInterface("    \nabc")
+		let interface = TextInterfaceAdapter("    \nabc")
 
 		let result = interface.whitespaceStringResult(with: .equal(NSRange(0..<4)), using: "\t", width: 4)
 

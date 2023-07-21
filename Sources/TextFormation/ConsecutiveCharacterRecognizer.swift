@@ -1,7 +1,7 @@
 import Foundation
 import TextStory
 
-public class ConsecutiveCharacterRecognizer {
+public final class ConsecutiveCharacterRecognizer {
     public enum State: Hashable {
         case idle
         case tracking(Int, Int)

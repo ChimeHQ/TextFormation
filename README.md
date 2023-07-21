@@ -9,11 +9,9 @@ TextFormation is simple rule system that can be used to implement typing complet
 
 ## Integration
 
-Swift Package Manager:
-
 ```swift
 dependencies: [
-    .package(url: "https://github.com/ChimeHQ/TextFormation")
+    .package(url: "https://github.com/ChimeHQ/TextFormation", from: "0.7.0")
 ]
 ```
 

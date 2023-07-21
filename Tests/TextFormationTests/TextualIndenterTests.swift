@@ -2,45 +2,46 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-class TextualIndenterTests: XCTestCase {
+@MainActor
+final class TextualIndenterTests: XCTestCase {
     func testWithEmptyString() throws {
         let indenter = TextualIndenter()
-        let interface = TestableTextInterface()
+        let interface = TextInterfaceAdapter()
 
         XCTAssertEqual(indenter.computeIndentation(at: 0, in: interface), .failure(.unableToComputeReferenceRange))
     }
 
     func testWithNonEmptyString() throws {
         let indenter = TextualIndenter()
-        let interface = TestableTextInterface("abc")
+        let interface = TextInterfaceAdapter("abc")
 
         XCTAssertEqual(indenter.computeIndentation(at: 1, in: interface), .failure(.unableToComputeReferenceRange))
     }
 
     func testPropagatesPreviousLineIndentation() throws {
         let indenter = TextualIndenter()
-        let interface = TestableTextInterface("\t\n")
+        let interface = TextInterfaceAdapter("\t\n")
 
         XCTAssertEqual(indenter.computeIndentation(at: 2, in: interface), .success(.equal(NSRange(0..<1))))
     }
 
     func testSkipsBlankLines() throws {
         let indenter = TextualIndenter()
-        let interface = TestableTextInterface("\t\n\n")
+        let interface = TextInterfaceAdapter("\t\n\n")
 
         XCTAssertEqual(indenter.computeIndentation(at: 3, in: interface), .success(.equal(NSRange(0..<1))))
     }
 
     func testCustomReferencePredicate() throws {
         let indenter = TextualIndenter(referenceLinePredicate: { $1.length == 3 })
-        let interface = TestableTextInterface("\tab\n\t\t\n")
+        let interface = TextInterfaceAdapter("\tab\n\t\t\n")
 
         XCTAssertEqual(indenter.computeIndentation(at: 7, in: interface), .success(.equal(NSRange(0..<3))))
     }
 
     func testSkipsCurrentLine() throws {
         let indenter = TextualIndenter()
-        let interface = TestableTextInterface("\tabc\n\t\t\tdef\n")
+        let interface = TextInterfaceAdapter("\tabc\n\t\t\tdef\n")
 
         XCTAssertEqual(indenter.computeIndentation(at: 11, in: interface), .success(.equal(NSRange(0..<4))))
     }
@@ -51,7 +52,7 @@ extension TextualIndenterTests {
         let indenter = TextualIndenter()
 
         ["{", "[", "("].forEach { delim in
-            let interface = TestableTextInterface("\t\(delim)\n")
+            let interface = TextInterfaceAdapter("\t\(delim)\n")
 
             XCTAssertEqual(indenter.computeIndentation(at: 3, in: interface), .success(.relativeIncrease(NSRange(0..<2))))
         }
@@ -61,7 +62,7 @@ extension TextualIndenterTests {
         let indenter = TextualIndenter()
 
         ["{", "[", "("].forEach { delim in
-            let interface = TestableTextInterface("\(delim)\n")
+            let interface = TextInterfaceAdapter("\(delim)\n")
 
             XCTAssertEqual(indenter.computeIndentation(at: 2, in: interface), .success(.relativeIncrease(NSRange(0..<1))))
         }
@@ -72,7 +73,7 @@ extension TextualIndenterTests {
             PreceedingLinePrefixIndenter(prefix: "abc"),
         ]
         let indenter = TextualIndenter(patterns: patterns)
-        let interface = TestableTextInterface("\tabc something\n")
+        let interface = TextInterfaceAdapter("\tabc something\n")
 
         XCTAssertEqual(indenter.computeIndentation(at: 15, in: interface), .success(.relativeIncrease(NSRange(0..<14))))
     }
@@ -83,7 +84,7 @@ extension TextualIndenterTests {
         ]
         let indenter = TextualIndenter(patterns: patterns)
 
-        let interface = TestableTextInterface("\t\n\t}")
+        let interface = TextInterfaceAdapter("\t\n\t}")
 
         XCTAssertEqual(indenter.computeIndentation(at: 3, in: interface), .success(.relativeDecrease(NSRange(0..<1))))
     }
@@ -94,7 +95,7 @@ extension TextualIndenterTests {
         ]
         let indenter = TextualIndenter(patterns: patterns)
 
-        let interface = TestableTextInterface("\t}")
+        let interface = TextInterfaceAdapter("\t}")
 
         XCTAssertEqual(indenter.computeIndentation(at: 1, in: interface), .failure(.unableToComputeReferenceRange))
     }
@@ -105,7 +106,7 @@ extension TextualIndenterTests {
         ]
         let indenter = TextualIndenter(patterns: patterns)
 
-        let interface = TestableTextInterface("if true\n\telse")
+        let interface = TextInterfaceAdapter("if true\n\telse")
 
         XCTAssertEqual(indenter.computeIndentation(at: 11, in: interface), .success(.relativeDecrease(NSRange(0..<7))))
     }
@@ -113,7 +114,7 @@ extension TextualIndenterTests {
 
 extension TextualIndenterTests {
     func testIndentationStringWithoutMatchingEmptyLine() {
-        let interface = TestableTextInterface("\t\t\n")
+        let interface = TextInterfaceAdapter("\t\t\n")
         let indenter = TextualIndenter(patterns: [])
 
         let string = indenter.computeIndentationString(in: NSRange(3..<3), for: interface, indentationUnit: "\t", width: 4)
@@ -122,7 +123,7 @@ extension TextualIndenterTests {
     }
 
     func testIndentationStringWithoutMatchingNonEmptyLine() {
-        let interface = TestableTextInterface("\t\tabc\n")
+        let interface = TextInterfaceAdapter("\t\tabc\n")
         let indenter = TextualIndenter(patterns: [])
 
         let string = indenter.computeIndentationString(in: NSRange(6..<6), for: interface, indentationUnit: "\t", width: 4)
@@ -137,7 +138,7 @@ extension TextualIndenterTests {
         ]
         let indenter = TextualIndenter(patterns: patterns)
 
-        let interface = TestableTextInterface("abc\ndef")
+        let interface = TextInterfaceAdapter("abc\ndef")
 
         XCTAssertEqual(indenter.computeIndentation(at: 4, in: interface), .success(.equal(NSRange(0..<3))))
 
@@ -146,7 +147,7 @@ extension TextualIndenterTests {
 
 extension TextualIndenterTests {
     func testPrefixPredicate() {
-        let interface = TestableTextInterface("abc\n  abc\n  def")
+        let interface = TextInterfaceAdapter("abc\n  abc\n  def")
         let predicate = TextualIndenter.nonEmptyLineWithoutPrefixPredicate(prefix: "abc")
 
         XCTAssertFalse(predicate(interface, NSRange(0..<3)))
