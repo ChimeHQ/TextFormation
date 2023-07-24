@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "TextFormation", targets: ["TextFormation"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/ChimeHQ/TextStory", revision: "8883fa739aa213e70e6cb109bfbf0a0b551e4cb5")
+        .package(url: "https://github.com/ChimeHQ/TextStory", from: "0.8.0")
     ],
     targets: [
         .target(name: "TextFormation", dependencies: ["TextStory"], swiftSettings: settings),
