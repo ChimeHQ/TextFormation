@@ -35,6 +35,17 @@ public final class TextInterfaceAdapter: TextInterface {
 	let setSelection: (NSRange) -> Void
     private let storage: TextStoring
 
+	@MainActor
+	public init(
+		getSelection: @escaping () -> NSRange,
+		setSelection: @escaping (NSRange) -> Void,
+		storage: TextStoring
+	) {
+		self.getSelection = getSelection
+		self.setSelection = setSelection
+		self.storage = storage
+	}
+
     #if os(macOS)
 	@MainActor
     public init(textView: NSTextView) {
