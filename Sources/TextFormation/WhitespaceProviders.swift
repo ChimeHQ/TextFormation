@@ -1,5 +1,4 @@
 import Foundation
-import TextStory
 
 extension CharacterSet {
     public static let whitespacesWithoutNewlines = CharacterSet.whitespacesAndNewlines.subtracting(.newlines)

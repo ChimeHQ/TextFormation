@@ -1,5 +1,4 @@
 import Foundation
-import TextStory
 
 public class DeleteCloseFilter {
     public let openString: String

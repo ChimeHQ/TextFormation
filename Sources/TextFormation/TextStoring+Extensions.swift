@@ -1,7 +1,7 @@
 import Foundation
 import TextStory
 
-extension TextStoring {
+extension TextInterface {
     func findFirstLinePreceeding(location: Int, satisifying predicate: TextualIndenter.ReferenceLinePredicate) -> NSRange? {
         var startLoc = findStartOfLine(containing: location)
 
@@ -40,7 +40,7 @@ extension TextStoring {
     }
 }
 
-extension TextStoring {
+extension TextInterface {
 	public func whitespaceStringResult(with indentation: Indentation, using indentUnit: String, width: Int) -> Result<String, IndentationError> {
 		assert(width > 0)
 		

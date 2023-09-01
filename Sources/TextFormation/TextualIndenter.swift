@@ -14,9 +14,9 @@ public struct TextualIndenter {
         self.referenceLinePredicate = referenceLinePredicate
     }
 
-    private func nonWhitespaceContent(from lineRange: NSRange, in storage: TextStoring) -> String? {
-        let leadingWhitespace = storage.leadingWhitespaceRange(in: lineRange) ?? NSRange(location: lineRange.location, length: 0)
-        let trailingWhitespace = storage.trailingWhitespaceRange(in: lineRange) ?? NSRange(location: lineRange.max, length: 0)
+    private func nonWhitespaceContent(from lineRange: NSRange, in interface: TextInterface) -> String? {
+        let leadingWhitespace = interface.leadingWhitespaceRange(in: lineRange) ?? NSRange(location: lineRange.location, length: 0)
+        let trailingWhitespace = interface.trailingWhitespaceRange(in: lineRange) ?? NSRange(location: lineRange.max, length: 0)
 
         // guard against an all-whitespace line
         if leadingWhitespace == trailingWhitespace {
@@ -25,21 +25,21 @@ public struct TextualIndenter {
 
         let contentRange = NSRange(leadingWhitespace.upperBound..<trailingWhitespace.lowerBound)
 
-        return storage.substring(from: contentRange)
+        return interface.substring(from: contentRange)
     }
     
-    public func computeIndentation(at location: Int, in storage: TextStoring) -> IndentationResult {
-        guard let preceedingLineRange = storage.findFirstLinePreceeding(location: location, satisifying: referenceLinePredicate) else {
+    public func computeIndentation(at location: Int, in interface: TextInterface) -> IndentationResult {
+        guard let preceedingLineRange = interface.findFirstLinePreceeding(location: location, satisifying: referenceLinePredicate) else {
             return .failure(.unableToComputeReferenceRange)
         }
 
-        let lineRange = storage.lineRange(containing: location)
+        let lineRange = interface.lineRange(containing: location)
 
-        guard let content = nonWhitespaceContent(from: lineRange, in: storage) else {
+        guard let content = nonWhitespaceContent(from: lineRange, in: interface) else {
             return .failure(.unableToGetReferenceValue)
         }
 
-        guard let preceedingContent = nonWhitespaceContent(from: preceedingLineRange, in: storage) else {
+        guard let preceedingContent = nonWhitespaceContent(from: preceedingLineRange, in: interface) else {
             return .failure(.unableToGetReferenceValue)
         }
 
@@ -60,13 +60,13 @@ public struct TextualIndenter {
         return .success(.equal(preceedingLineRange))
     }
 
-	public func computeIndentationString(in range: NSRange, for storage: TextStoring, indentationUnit: String, width: Int) -> String {
-        let result = computeIndentation(at: range.location, in: storage)
-			.flatMap({ storage.whitespaceStringResult(with: $0, using: indentationUnit, width: width) })
+	public func computeIndentationString(in range: NSRange, for interface: TextInterface, indentationUnit: String, width: Int) -> String {
+        let result = computeIndentation(at: range.location, in: interface)
+			.flatMap({ interface.whitespaceStringResult(with: $0, using: indentationUnit, width: width) })
 
         switch result {
         case .failure:
-            return storage.substring(from: range) ?? ""
+            return interface.substring(from: range) ?? ""
         case .success(let value):
             return value
         }
