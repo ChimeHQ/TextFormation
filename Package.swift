@@ -8,7 +8,7 @@ let settings: [SwiftSetting] = [
 
 let package = Package(
     name: "TextFormation",
-    platforms: [.macOS(.v10_15), .iOS(.v13)],
+    platforms: [.macOS(.v10_13), .iOS(.v13)],
     products: [
         .library(name: "TextFormation", targets: ["TextFormation"]),
     ],
