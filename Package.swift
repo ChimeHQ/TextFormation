@@ -1,10 +1,6 @@
-// swift-tools-version:5.5
+// swift-tools-version: 5.8
 
 import PackageDescription
-
-let settings: [SwiftSetting] = [
-    // .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"])
-]
 
 let package = Package(
     name: "TextFormation",
@@ -13,10 +9,20 @@ let package = Package(
         .library(name: "TextFormation", targets: ["TextFormation"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/ChimeHQ/TextStory", from: "0.8.0")
+        .package(url: "https://github.com/ChimeHQ/TextStory", "0.8.0"..."0.8.0")
     ],
     targets: [
-        .target(name: "TextFormation", dependencies: ["TextStory"], swiftSettings: settings),
-        .testTarget(name: "TextFormationTests", dependencies: ["TextFormation"], swiftSettings: settings),
+        .target(name: "TextFormation", dependencies: ["TextStory"]),
+        .testTarget(name: "TextFormationTests", dependencies: ["TextFormation"]),
     ]
 )
+
+let swiftSettings: [SwiftSetting] = [
+	.enableExperimentalFeature("StrictConcurrency")
+]
+
+for target in package.targets {
+	var settings = target.swiftSettings ?? []
+	settings.append(contentsOf: swiftSettings)
+	target.swiftSettings = settings
+}
