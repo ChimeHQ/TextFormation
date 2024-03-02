@@ -56,7 +56,7 @@ public struct TextViewFilterApplier {
     private func internalTextView(_ textView: TextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
 		#if os(macOS)
         let length = textView.textStorage?.length ?? 0
-		#elseif os(iOS)
+		#elseif os(iOS) || os(tvOS) || os(visionOS)
 		let length = textView.textStorage.length
 		#endif
 		

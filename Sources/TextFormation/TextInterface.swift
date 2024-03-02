@@ -3,7 +3,7 @@ import TextStory
 
 #if os(macOS)
 import AppKit
-#elseif os(iOS) || os(tvOS)
+#elseif os(iOS) || os(tvOS) || os(visionOS)
 import UIKit
 #endif
 
@@ -53,7 +53,7 @@ public final class TextInterfaceAdapter: TextInterface {
 		self.setSelection = { textView.setSelectedRange($0)}
         self.storage = TextStorageAdapter(textView: textView)
     }
-	#elseif os(iOS) || os(tvOS)
+	#elseif os(iOS) || os(tvOS) || os(visionOS)
 	@MainActor
 	public init(textView: UITextView) {
 		self.getSelection = { textView.selectedRange }
@@ -68,7 +68,7 @@ public final class TextInterfaceAdapter: TextInterface {
 
 		#if os(macOS)
 		view.string = string
-		#elseif os(iOS) || os(tvOS)
+		#elseif os(iOS) || os(tvOS) || os(visionOS)
 		view.text = string
 		#endif
 
