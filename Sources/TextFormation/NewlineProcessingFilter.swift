@@ -4,8 +4,8 @@ import TextStory
 public class NewlineProcessingFilter {
     private let recognizer: ConsecutiveCharacterRecognizer
 
-    public init() {
-        self.recognizer = ConsecutiveCharacterRecognizer(matching: "\n")
+    public init(newline: String = "\n") {
+        self.recognizer = ConsecutiveCharacterRecognizer(matching: newline)
     }
 
     private func filterHandler(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {

@@ -68,4 +68,41 @@ final class NewlineProcessingFilterTests: XCTestCase {
 		XCTAssertEqual(interface.string, "\t\n\t\n\t")
 		XCTAssertEqual(interface.insertionLocation, 5)
 	}
+
+    func testMatchingWithUnknownNewline() {
+        let interface = TextInterfaceAdapter("")
+        let filter = NewlineProcessingFilter(newline: "crlf")
+
+        let mutation = TextMutation(insert: "crlf", at: 0, limit: 0)
+
+        XCTAssertEqual(filter.processMutation(mutation, in: interface, with: Self.providers), .discard)
+
+        XCTAssertEqual(interface.string, "crlf\t")
+        XCTAssertEqual(interface.insertionLocation, 5)
+    }
+
+    func testMatchingWithUnknownNewlineAndTrailingWhitespace() {
+        let interface = TextInterfaceAdapter(" ")
+        let filter = NewlineProcessingFilter(newline: "crlf")
+
+        let mutation = TextMutation(insert: "crlf", at: 1, limit: 1)
+
+        XCTAssertEqual(interface.insertionLocation, 1)
+        XCTAssertEqual(filter.processMutation(mutation, in: interface, with: Self.providers), .discard)
+
+        XCTAssertEqual(interface.string, " crlf\t")
+        XCTAssertEqual(interface.insertionLocation, 6)
+    }
+
+    func testMatchingWithUnknownNewlineAndTrailingTab() {
+        let interface = TextInterfaceAdapter("abc\t")
+        let filter = NewlineProcessingFilter(newline: "crlf")
+
+        let mutation = TextMutation(insert: "crlf", at: 4, limit: 4)
+
+        XCTAssertEqual(filter.processMutation(mutation, in: interface, with: Self.providers), .discard)
+
+        XCTAssertEqual(interface.string, "abc crlf\t")
+        XCTAssertEqual(interface.insertionLocation, 9)
+    }
 }
