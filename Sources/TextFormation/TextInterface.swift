@@ -58,7 +58,7 @@ public final class TextInterfaceAdapter: TextInterface {
 	public init(textView: UITextView) {
 		self.getSelection = { textView.selectedRange }
 		self.setSelection = { textView.selectedRange = $0 }
-		self.storage = TextStorageAdapter(textView: textView)
+		self.storage = textView
 	}
 	#endif
 
