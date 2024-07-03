@@ -2,8 +2,8 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-@MainActor
 final class OpenPairReplacementFilterTests: XCTestCase {
+	@MainActor
     func testMatch() {
         let filter = OpenPairReplacementFilter(open: "abc", close: "def")
         let interface = TextInterfaceAdapter(" ")
@@ -14,6 +14,7 @@ final class OpenPairReplacementFilterTests: XCTestCase {
         XCTAssertEqual(interface.string, "abc def")
     }
 
+	@MainActor
     func testInsertMatch() {
         let filter = OpenPairReplacementFilter(open: "abc", close: "def")
         let interface = TextInterfaceAdapter(" ")

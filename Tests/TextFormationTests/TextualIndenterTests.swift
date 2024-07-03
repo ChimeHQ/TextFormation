@@ -2,8 +2,8 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-@MainActor
 final class TextualIndenterTests: XCTestCase {
+	@MainActor
     func testWithEmptyString() throws {
         let indenter = TextualIndenter()
         let interface = TextInterfaceAdapter()
@@ -11,6 +11,7 @@ final class TextualIndenterTests: XCTestCase {
         XCTAssertEqual(indenter.computeIndentation(at: 0, in: interface), .failure(.unableToComputeReferenceRange))
     }
 
+	@MainActor
     func testWithNonEmptyString() throws {
         let indenter = TextualIndenter()
         let interface = TextInterfaceAdapter("abc")
@@ -18,6 +19,7 @@ final class TextualIndenterTests: XCTestCase {
         XCTAssertEqual(indenter.computeIndentation(at: 1, in: interface), .failure(.unableToComputeReferenceRange))
     }
 
+	@MainActor
     func testPropagatesPreviousLineIndentation() throws {
         let indenter = TextualIndenter()
         let interface = TextInterfaceAdapter("\t\n")
@@ -25,6 +27,7 @@ final class TextualIndenterTests: XCTestCase {
         XCTAssertEqual(indenter.computeIndentation(at: 2, in: interface), .success(.equal(NSRange(0..<1))))
     }
 
+	@MainActor
     func testSkipsBlankLines() throws {
         let indenter = TextualIndenter()
         let interface = TextInterfaceAdapter("\t\n\n")
@@ -32,6 +35,7 @@ final class TextualIndenterTests: XCTestCase {
         XCTAssertEqual(indenter.computeIndentation(at: 3, in: interface), .success(.equal(NSRange(0..<1))))
     }
 
+	@MainActor
     func testCustomReferencePredicate() throws {
         let indenter = TextualIndenter(referenceLinePredicate: { $1.length == 3 })
         let interface = TextInterfaceAdapter("\tab\n\t\t\n")
@@ -39,6 +43,7 @@ final class TextualIndenterTests: XCTestCase {
         XCTAssertEqual(indenter.computeIndentation(at: 7, in: interface), .success(.equal(NSRange(0..<3))))
     }
 
+	@MainActor
     func testSkipsCurrentLine() throws {
         let indenter = TextualIndenter()
         let interface = TextInterfaceAdapter("\tabc\n\t\t\tdef\n")
@@ -48,6 +53,7 @@ final class TextualIndenterTests: XCTestCase {
 }
 
 extension TextualIndenterTests {
+	@MainActor
     func testIncreasesIndentation() throws {
         let indenter = TextualIndenter()
 
@@ -58,6 +64,7 @@ extension TextualIndenterTests {
         }
     }
 
+	@MainActor
     func testIncreaseWithoutSurroundingWhitespace() throws {
         let indenter = TextualIndenter()
 
@@ -68,6 +75,7 @@ extension TextualIndenterTests {
         }
     }
 
+	@MainActor
     func testMulticharacterMatchAtLineStart() throws {
         let patterns = [
             PreceedingLinePrefixIndenter(prefix: "abc"),
@@ -78,6 +86,7 @@ extension TextualIndenterTests {
         XCTAssertEqual(indenter.computeIndentation(at: 15, in: interface), .success(.relativeIncrease(NSRange(0..<14))))
     }
 
+	@MainActor
     func testDecreaseIndentation() throws {
         let patterns = [
             CurrentLinePrefixOutdenter(prefix: "}"),
@@ -89,6 +98,7 @@ extension TextualIndenterTests {
         XCTAssertEqual(indenter.computeIndentation(at: 3, in: interface), .success(.relativeDecrease(NSRange(0..<1))))
     }
 
+	@MainActor
     func testDecreaseIndentationWithNoWhitespace() throws {
         let patterns = [
             CurrentLinePrefixOutdenter(prefix: "}"),
@@ -100,6 +110,7 @@ extension TextualIndenterTests {
         XCTAssertEqual(indenter.computeIndentation(at: 1, in: interface), .failure(.unableToComputeReferenceRange))
     }
 
+	@MainActor
     func testConditionalDecreaseIndentation() throws {
         let patterns = [
             CurrentLinePrefixOutdenter(prefix: "else"),
@@ -113,6 +124,7 @@ extension TextualIndenterTests {
 }
 
 extension TextualIndenterTests {
+	@MainActor
     func testIndentationStringWithoutMatchingEmptyLine() {
         let interface = TextInterfaceAdapter("\t\t\n")
         let indenter = TextualIndenter(patterns: [])
@@ -122,6 +134,7 @@ extension TextualIndenterTests {
         XCTAssertEqual(string, "\t\t")
     }
 
+	@MainActor
     func testIndentationStringWithoutMatchingNonEmptyLine() {
         let interface = TextInterfaceAdapter("\t\tabc\n")
         let indenter = TextualIndenter(patterns: [])
@@ -131,6 +144,7 @@ extension TextualIndenterTests {
         XCTAssertEqual(string, "\t\t")
     }
 
+	@MainActor
     func testConflict() {
         let patterns: [PatternMatcher] = [
             PreceedingLineSuffixIndenter(suffix: "abc"),
@@ -146,6 +160,7 @@ extension TextualIndenterTests {
 }
 
 extension TextualIndenterTests {
+	@MainActor
     func testPrefixPredicate() {
         let interface = TextInterfaceAdapter("abc\n  abc\n  def")
         let predicate = TextualIndenter.nonEmptyLineWithoutPrefixPredicate(prefix: "abc")

@@ -1,8 +1,8 @@
 import XCTest
 import TextFormation
 
-@MainActor
 final class RubyIndentationTests: XCTestCase {
+	@MainActor
     private func getIndentation(with text: String) throws -> (Int) throws -> Indentation {
         let indenter = TextualIndenter(patterns: TextualIndenter.rubyPatterns)
         let content = TextInterfaceAdapter(text)
@@ -12,6 +12,7 @@ final class RubyIndentationTests: XCTestCase {
         }
     }
     
+	@MainActor
     func testEmptyIf() throws {
         let text = """
 if true
@@ -24,6 +25,7 @@ end
         XCTAssertEqual(try indentationGetter(8), .relativeIncrease(NSRange(0..<7)))
     }
 
+	@MainActor
     func testEndImmediatelyAfterIndent() throws {
         let text = """
 if true
@@ -35,6 +37,7 @@ end
         XCTAssertEqual(try indentationGetter(8), .equal(NSRange(0..<7)))
     }
 
+	@MainActor
     func testDo() throws {
         let text = """
 block do
@@ -47,6 +50,7 @@ end
         XCTAssertEqual(try indentationGetter(9), .relativeIncrease(NSRange(0..<8)))
     }
 
+	@MainActor
     func testIfWithNonEmptyThen() throws {
         let text = """
 if true
@@ -61,6 +65,7 @@ end
         XCTAssertEqual(try indentationGetter(17), .relativeDecrease(NSRange(8..<15)))
     }
 
+	@MainActor
     func testIfElsifElseEnd() throws {
         let text = """
 if true

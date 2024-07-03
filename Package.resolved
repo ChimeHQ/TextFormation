@@ -1,34 +1,23 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "MainOffender",
-        "repositoryURL": "https://github.com/mattmassicotte/MainOffender",
-        "state": {
-          "branch": null,
-          "revision": "343cc3797618c29b48b037b4e2beea0664e75315",
-          "version": "0.1.0"
-        }
-      },
-      {
-        "package": "Rearrange",
-        "repositoryURL": "https://github.com/ChimeHQ/Rearrange",
-        "state": {
-          "branch": null,
-          "revision": "8f97f721d8a08c6e01ab9f7460e53819bef72dfa",
-          "version": "1.5.3"
-        }
-      },
-      {
-        "package": "TextStory",
-        "repositoryURL": "https://github.com/ChimeHQ/TextStory",
-        "state": {
-          "branch": null,
-          "revision": "8883fa739aa213e70e6cb109bfbf0a0b551e4cb5",
-          "version": "0.8.0"
-        }
+  "pins" : [
+    {
+      "identity" : "rearrange",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ChimeHQ/Rearrange",
+      "state" : {
+        "revision" : "8f97f721d8a08c6e01ab9f7460e53819bef72dfa",
+        "version" : "1.5.3"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "textstory",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ChimeHQ/TextStory",
+      "state" : {
+        "revision" : "8dc9148b46fcf93b08ea9d4ef9bdb5e4f700e008",
+        "version" : "0.9.0"
+      }
+    }
+  ],
+  "version" : 2
 }

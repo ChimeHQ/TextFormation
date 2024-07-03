@@ -2,8 +2,8 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-@MainActor
 final class NewlineWithinPairFilterTests: XCTestCase {
+	@MainActor
     func testMatch() {
         var leadingRequests: [(NSRange, String)] = []
 
@@ -36,6 +36,7 @@ final class NewlineWithinPairFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(7..<7))
     }
 
+	@MainActor
     func testNoMatch() {
         let providers = WhitespaceProviders(leadingWhitespace: {  _, _ in return "lll"},
                                             trailingWhitespace: {  _, _ in return "ttt"})

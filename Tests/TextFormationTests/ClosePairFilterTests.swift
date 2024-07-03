@@ -2,8 +2,8 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-@MainActor
 final class ClosePairFilterTests: XCTestCase {
+	@MainActor
     func testMatching() {
         let filter = ClosePairFilter(open: " do |", close: "|")
         let interface = TextInterfaceAdapter()
@@ -20,6 +20,7 @@ final class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(6..<6))
     }
 
+	@MainActor
     func testCloseAfterMatching() {
         let filter = ClosePairFilter(open: " do |", close: "|")
         let interface = TextInterfaceAdapter()
@@ -34,6 +35,7 @@ final class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(6..<6))
     }
 
+	@MainActor
     func testDeleteAfterMatchingOpen() {
         let filter = ClosePairFilter(open: " do |", close: "|")
         let interface = TextInterfaceAdapter()
@@ -48,6 +50,7 @@ final class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(4..<4))
     }
 
+	@MainActor
     func testMatchWithOpenReplacement() {
         let filter = ClosePairFilter(open: "abc", close: "def")
         let interface = TextInterfaceAdapter("yz")
@@ -65,6 +68,7 @@ final class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(4..<4))
     }
 
+	@MainActor
     func testMatchThenReplacement() {
         let filter = ClosePairFilter(open: "abc", close: "def")
         let interface = TextInterfaceAdapter("yz")
@@ -85,6 +89,7 @@ final class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(4..<4))
     }
 
+	@MainActor
     func testMatchingWithDoubleOpen() {
         let filter = ClosePairFilter(open: "(", close: ")")
         let interface = TextInterfaceAdapter()
@@ -105,6 +110,7 @@ final class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(4..<4))
     }
 
+	@MainActor
     func testMatchingWithTripleOpen() {
         let filter = ClosePairFilter(open: "(", close: ")")
         let interface = TextInterfaceAdapter()
@@ -128,6 +134,7 @@ final class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(interface.insertionLocation, 5)
     }
 
+	@MainActor
     func testMatchThenNewline() {
         let filter = ClosePairFilter(open: "abc", close: "def")
         let interface = TextInterfaceAdapter()
@@ -144,6 +151,7 @@ final class ClosePairFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(4..<4))
     }
 
+	@MainActor
     func testMatchThenNewlineWithWhitespaceProviders() {
         var leadingRequests: [(NSRange, String)] = []
 
@@ -178,6 +186,7 @@ final class ClosePairFilterTests: XCTestCase {
 }
 
 extension ClosePairFilterTests {
+	@MainActor
     func testMatchingWithSameOpenClose() {
         let filter = ClosePairFilter(open: "'", close: "'")
         let interface = TextInterfaceAdapter()
@@ -192,6 +201,7 @@ extension ClosePairFilterTests {
         XCTAssertEqual(interface.insertionLocation, 2)
     }
 
+	@MainActor
     func testCloseAfterMatchingWithSameOpenClose() {
         let filter = ClosePairFilter(open: "'", close: "'")
         let interface = TextInterfaceAdapter()
@@ -206,6 +216,7 @@ extension ClosePairFilterTests {
         XCTAssertEqual(interface.insertionLocation, 2)
     }
 
+	@MainActor
     func testAnotherMutationAfterCloseAfterMatchingWithSameOpenClose() {
         let filter = ClosePairFilter(open: "'", close: "'")
         let interface = TextInterfaceAdapter()
@@ -229,6 +240,7 @@ extension ClosePairFilterTests {
         XCTAssertEqual(interface.insertionLocation, 4)
     }
 
+	@MainActor
     func testMatchWithReplacementWithSameOpenClose() {
         let filter = ClosePairFilter(open: "'", close: "'")
         let interface = TextInterfaceAdapter("yz")
@@ -248,6 +260,7 @@ extension ClosePairFilterTests {
         XCTAssertEqual(interface.insertionLocation, 2)
     }
 
+	@MainActor
     func testMatchThenReplacementWithSameOpenClose() {
         let filter = ClosePairFilter(open: "'", close: "'")
         let interface = TextInterfaceAdapter("yz")

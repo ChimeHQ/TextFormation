@@ -2,11 +2,12 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-@MainActor
 final class NewlineProcessingFilterTests: XCTestCase {
+	@MainActor
 	private static let providers = WhitespaceProviders(leadingWhitespace: { _, _ in "\t" },
 													   trailingWhitespace: {  _, _ in " "})
 
+	@MainActor
     func testMatchingAfter() {
         let interface = TextInterfaceAdapter()
         let filter = NewlineProcessingFilter()
@@ -19,6 +20,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
         XCTAssertEqual(interface.insertionLocation, 2)
     }
 
+	@MainActor
     func testMatchingWithTrailingWhitespace() {
         let interface = TextInterfaceAdapter("a")
         let filter = NewlineProcessingFilter()
@@ -32,6 +34,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
         XCTAssertEqual(interface.insertionLocation, 4)
     }
 
+	@MainActor
 	func testMatchingAfterWhitespaceOnlyLine() {
 		let interface = TextInterfaceAdapter("\t")
 		let filter = NewlineProcessingFilter()
@@ -45,6 +48,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
 		XCTAssertEqual(interface.insertionLocation, 3)
 	}
 
+	@MainActor
     func testMatchingWithCharactersAndTrailingTab() {
         let interface = TextInterfaceAdapter("abc\t")
         let filter = NewlineProcessingFilter()
@@ -57,6 +61,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
         XCTAssertEqual(interface.insertionLocation, 6)
     }
 
+	@MainActor
 	func testNewlineAfterLeadingOnlyLine() {
 		let interface = TextInterfaceAdapter("\t\n\t")
 		let filter = NewlineProcessingFilter()
@@ -69,6 +74,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
 		XCTAssertEqual(interface.insertionLocation, 5)
 	}
 
+	@MainActor
     func testMatchingWithUnknownNewline() {
         let interface = TextInterfaceAdapter("")
         let filter = NewlineProcessingFilter(newline: "crlf")
@@ -81,6 +87,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
         XCTAssertEqual(interface.insertionLocation, 5)
     }
 
+	@MainActor
     func testMatchingWithUnknownNewlineAndTrailingWhitespace() {
         let interface = TextInterfaceAdapter(" ")
         let filter = NewlineProcessingFilter(newline: "crlf")
@@ -94,6 +101,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
         XCTAssertEqual(interface.insertionLocation, 6)
     }
 
+	@MainActor
     func testMatchingWithUnknownNewlineAndTrailingTab() {
         let interface = TextInterfaceAdapter("abc\t")
         let filter = NewlineProcessingFilter(newline: "crlf")

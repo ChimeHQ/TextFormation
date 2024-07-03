@@ -51,7 +51,7 @@ public final class TextInterfaceAdapter: TextInterface {
     public init(textView: NSTextView) {
 		self.getSelection = { textView.selectedRange() }
 		self.setSelection = { textView.setSelectedRange($0)}
-        self.storage = TextStorageAdapter(textView: textView)
+        self.storage = textView
     }
 	#elseif os(iOS) || os(tvOS) || os(visionOS)
 	@MainActor

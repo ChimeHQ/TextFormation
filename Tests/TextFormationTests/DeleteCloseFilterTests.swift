@@ -2,8 +2,8 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-@MainActor
 final class DeleteCloseFilterTests: XCTestCase {
+	@MainActor
     func testDeleteOpenWithMatchingClose() {
         let filter = DeleteCloseFilter(open: "{", close: "}")
 		let interface = TextInterfaceAdapter("{}")
@@ -18,6 +18,7 @@ final class DeleteCloseFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(0..<0))
     }
 
+	@MainActor
     func testDeleteOpenWithMatchingCloseWithPrefixAndSuffix() {
         let filter = DeleteCloseFilter(open: "{", close: "}")
         let interface = TextInterfaceAdapter("ll{}tt")
@@ -32,6 +33,7 @@ final class DeleteCloseFilterTests: XCTestCase {
         XCTAssertEqual(interface.selectedRange, NSRange(2..<2))
     }
 
+	@MainActor
     func testDeleteOpenWithoutMatchingClose() {
         let filter = DeleteCloseFilter(open: "{", close: "}")
         let interface = TextInterfaceAdapter("ll{ }tt")

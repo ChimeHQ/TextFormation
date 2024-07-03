@@ -2,10 +2,11 @@ import XCTest
 import TextStory
 @testable import TextFormation
 
-@MainActor
 final class LineLeadingWhitespaceFilterTests: XCTestCase {
+	@MainActor
 	private static let providers = WhitespaceProviders(leadingWhitespace: { _, _ in "\t" }, trailingWhitespace: WhitespaceProviders.passthroughProvider)
 
+	@MainActor
     func testMatching() {
         let interface = TextInterfaceAdapter()
         let filter = LineLeadingWhitespaceFilter(string: "abc")
@@ -17,6 +18,7 @@ final class LineLeadingWhitespaceFilterTests: XCTestCase {
         XCTAssertEqual(interface.string, "\tabc")
     }
 
+	@MainActor
     func testMatchingOneCharacterAtATime() {
         let interface = TextInterfaceAdapter("  ")
         let filter = LineLeadingWhitespaceFilter(string: "abc")
@@ -28,6 +30,7 @@ final class LineLeadingWhitespaceFilterTests: XCTestCase {
         XCTAssertEqual(interface.string, "\tabc")
     }
 
+	@MainActor
     func testMatchingWithWhitespacePrefix() {
         let interface = TextInterfaceAdapter("def ")
         let filter = LineLeadingWhitespaceFilter(string: "abc")
@@ -40,6 +43,7 @@ final class LineLeadingWhitespaceFilterTests: XCTestCase {
         XCTAssertEqual(interface.string, "\tdef abc")
     }
 
+	@MainActor
     func testMatchingWithoutWhitespacePrefix() {
         let interface = TextInterfaceAdapter("def")
         let filter = LineLeadingWhitespaceFilter(string: "abc")
@@ -51,7 +55,7 @@ final class LineLeadingWhitespaceFilterTests: XCTestCase {
         XCTAssertEqual(interface.string, "defabc")
     }
 
-
+	@MainActor
     func testMatchingWithDifferentIndentation() {
         let interface = TextInterfaceAdapter(" ")
         let filter = LineLeadingWhitespaceFilter(string: "abc")
@@ -63,6 +67,7 @@ final class LineLeadingWhitespaceFilterTests: XCTestCase {
         XCTAssertEqual(interface.string, "\tabc")
     }
 
+	@MainActor
     func testMatchingWithSame() {
         let interface = TextInterfaceAdapter("\t")
         let filter = LineLeadingWhitespaceFilter(string: "\n")

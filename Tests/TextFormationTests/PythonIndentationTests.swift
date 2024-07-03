@@ -1,8 +1,8 @@
 import XCTest
 import TextFormation
 
-@MainActor
 final class PythonIndentationTests: XCTestCase {
+	@MainActor
 	private func getIndentation(with text: String) throws -> (Int) throws -> Indentation {
 		let indenter = TextualIndenter(patterns: TextualIndenter.pythonPatterns)
 		let content = TextInterfaceAdapter(text)
@@ -12,6 +12,7 @@ final class PythonIndentationTests: XCTestCase {
 		}
 	}
 
+	@MainActor
 	func testEmptyIf() throws {
 		let text = """
 if true:
