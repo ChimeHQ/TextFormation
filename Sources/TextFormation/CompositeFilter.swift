@@ -30,3 +30,21 @@ extension CompositeFilter: Filter {
         return .none
     }
 }
+
+public struct NewCompositeFilter: NewFilter {
+	public let filters: [any NewFilter]
+
+	public init(filters: [any NewFilter]) {
+		self.filters = filters
+	}
+
+	public func processMutation<System: TextSystem>(_ range: System.TextRange, string: String, in system: System) -> MutationOutput<System.TextRange>? {
+		for filter in filters {
+			if let output = filter.processMutation(range, string: string, in: system) {
+				return output
+			}
+		}
+
+		return nil
+	}
+}
