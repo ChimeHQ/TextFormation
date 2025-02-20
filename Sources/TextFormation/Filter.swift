@@ -1,4 +1,6 @@
 import Foundation
+
+import Rearrange
 import TextStory
 
 /// Describes the action to be taken after the filter has run.
@@ -52,23 +54,22 @@ public enum Direction {
 	case trailing
 }
 
-public protocol TextSystem {
-	associatedtype TextRange
-	associatedtype TextPosition
 
+public protocol TextSystemInterface : TextRangeCalculating {
 	typealias Output = MutationOutput<TextRange>
 
-	func offset(from: TextPosition, to toPosition: TextPosition) -> Int
-	func positions(composing range: TextRange) -> (TextPosition, TextPosition)
-	func position(from start: TextPosition, offset: Int) -> TextPosition?
-	func textRange(from start: TextPosition, to end: TextPosition) -> TextRange?
+	func substring(in range: TextRange) throws -> String
+	func length(of string: String) -> Int
+	func applyMutation(_ range: TextRange, string: String) throws -> Output?
+	func applyWhitespace(for position: Position, in direction: Direction) throws -> Output?
+}
 
-	func substring(in range: TextRange) -> String?
-	func applyMutation(_ range: TextRange, string: String) -> Output?
-
-	func applyWhitespace(for position: TextPosition, in direction: Direction) -> Output?
+extension TextSystemInterface where TextRange == NSRange {
+	public func length(of string: String) -> Int {
+		string.utf16.count
+	}
 }
 
 public protocol NewFilter {
-	func processMutation<System: TextSystem>(_ range: System.TextRange, string: String, in system: System) -> System.Output?
+	func processMutation<Interface: TextSystemInterface>(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output?
 }

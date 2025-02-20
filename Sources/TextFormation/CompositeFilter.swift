@@ -1,4 +1,5 @@
 import Foundation
+import Rearrange
 import TextStory
 
 public struct CompositeFilter {
@@ -38,13 +39,14 @@ public struct NewCompositeFilter: NewFilter {
 		self.filters = filters
 	}
 
-	public func processMutation<System: TextSystem>(_ range: System.TextRange, string: String, in system: System) -> MutationOutput<System.TextRange>? {
+	public func processMutation<Interface: TextSystemInterface>(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
 		for filter in filters {
-			if let output = filter.processMutation(range, string: string, in: system) {
+			if let output = try filter.processMutation(range, string: string, in: interface) {
 				return output
 			}
 		}
 
 		return nil
+
 	}
 }

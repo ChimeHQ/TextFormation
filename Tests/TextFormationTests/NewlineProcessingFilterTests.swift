@@ -117,7 +117,7 @@ final class NewlineProcessingFilterTests: XCTestCase {
 
 import Testing
 
-final class MockSystem: TextSystem {
+final class MockSystem : TextSystemInterface {
 	typealias TextRange = NSRange
 	typealias TextPosition = Int
 
@@ -137,27 +137,15 @@ final class MockSystem: TextSystem {
 		content as String
 	}
 
-	func offset(from: Int, to toPosition: Int) -> Int {
-		toPosition - from
+	var endOfDocument: Position {
+		content.length
 	}
 
-	func positions(composing range: NSRange) -> (Int, Int) {
-		(range.lowerBound, range.upperBound)
-	}
-
-	func position(from start: Int, offset: Int) -> Int? {
-		start + offset
-	}
-
-	func textRange(from start: Int, to end: Int) -> NSRange? {
-		NSRange(start..<end)
-	}
-
-	func substring(in range: NSRange) -> String? {
+	func substring(in range: NSRange) throws -> String {
 		content.substring(with: range)
 	}
 
-	func applyMutation(_ range: NSRange, string: String) -> TextFormation.MutationOutput<NSRange>? {
+	func applyMutation(_ range: NSRange, string: String) throws -> TextFormation.MutationOutput<NSRange>? {
 		content.replaceCharacters(in: range, with: string)
 
 		let length = string.utf16.count
@@ -166,40 +154,52 @@ final class MockSystem: TextSystem {
 		return .init(selection: selection, delta: length - range.length)
 	}
 
-	func applyTrailingWhitespace(for position: Int) -> TextFormation.MutationOutput<NSRange>? {
-		switch responses.removeFirst() {
-		case let .applyTrailingWhitespace(value, range):
-			return applyMutation(range, string: value)
+	func applyWhitespace(for position: Int, in direction: TextFormation.Direction) throws -> TextFormation.MutationOutput<NSRange>? {
+		let next = responses.first
+		
+		switch (direction, next) {
+		case let (.leading, .applyLeadingWhitespace(value, range)):
+			responses.removeFirst()
+			precondition(position == range.location)
+			return try applyMutation(range, string: value)
+		case let (.trailing, .applyTrailingWhitespace(value, range)):
+			responses.removeFirst()
+			precondition(position == range.location)
+			return try applyMutation(range, string: value)
 		default:
-			fatalError()
+			return nil
 		}
 	}
-
-	func applyLeadingWhitespace(for position: Int) -> TextFormation.MutationOutput<NSRange>? {
-		switch responses.removeFirst() {
-		case let .applyLeadingWhitespace(value, range):
-			return applyMutation(range, string: value)
-		default:
-			fatalError()
-		}
-
-	}
-
 }
 
 struct NewNewlineProcessingFilterTests {
-	@Test func matchingAfter() throws {
+	@Test func matchingAfterNothing() throws {
 		let system = MockSystem(string: "")
 		let filter = NewNewlineProcessingFilter()
 
 		system.responses = [
-			.applyLeadingWhitespace("aaa", NSRange(0..<0)),
-			.applyTrailingWhitespace("bbb", NSRange(4..<4)),
+			.applyLeadingWhitespace("aaa", NSRange(1..<1)),
+			.applyTrailingWhitespace("bbb", NSRange(0..<0)),
 		]
 
-		let output = try #require(filter.processMutation(NSRange(0..<0), string: "\n", in: system))
+		let output = try #require(try filter.processMutation(NSRange(0..<0), string: "\n", in: system))
 
 		#expect(output == MutationOutput(selection: NSRange(7..<7), delta: 7))
-		#expect(system.string == "aaa\nbbb")
+		#expect(system.string == "bbb\naaa")
+	}
+	
+	@Test func matchingAfterNewline() throws {
+		let system = MockSystem(string: "\n")
+		let filter = NewNewlineProcessingFilter()
+
+		system.responses = [
+			.applyLeadingWhitespace("aaa", NSRange(2..<2)),
+			.applyTrailingWhitespace("bbb", NSRange(1..<1)),
+		]
+
+		let output = try #require(try filter.processMutation(NSRange(1..<1), string: "\n", in: system))
+
+		#expect(output == MutationOutput(selection: NSRange(8..<8), delta: 7))
+		#expect(system.string == "\nbbb\naaa")
 	}
 }

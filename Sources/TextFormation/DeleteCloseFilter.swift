@@ -1,4 +1,5 @@
 import Foundation
+import Rearrange
 import TextStory
 
 public class DeleteCloseFilter {
@@ -52,30 +53,28 @@ public struct NewDeleteCloseFilter {
 }
 
 extension NewDeleteCloseFilter: NewFilter {
-	public func processMutation<System: TextSystem>(_ range: System.TextRange, string: String, in system: System) -> MutationOutput<System.TextRange>? {
-		let positions = system.positions(composing: range)
-
+	public func processMutation<Interface: TextSystemInterface>(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
 		// make sure this is a delete
 		guard
 			string == "",
-			system.offset(from: positions.0, to: positions.1) > 0
+			interface.offset(from: range.lowerBound, to: range.upperBound) > 0
 		else {
 			return nil
 		}
 
 		guard
-			let closeEnding = system.position(from: positions.1, offset: length),
-			let fullRange = system.textRange(from: positions.0, to: closeEnding)
+			let closeEnding = interface.position(from: range.upperBound, offset: length),
+			let fullRange = interface.textRange(from: range.lowerBound, to: closeEnding)
 		else {
 			return nil
 		}
 
 		let pattern = openString+closeString
 
-		guard system.substring(in: fullRange) == pattern else {
+		guard try interface.substring(in: fullRange) == pattern else {
 			return nil
 		}
 
-		return system.applyMutation(fullRange, string: "")
+		return try interface.applyMutation(fullRange, string: "")
 	}
 }
