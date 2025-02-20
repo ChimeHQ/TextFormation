@@ -18,7 +18,7 @@ let package = Package(
 		.package(url: "https://github.com/ChimeHQ/TextStory", from: "0.9.0"),
 	],
 	targets: [
-		.target(name: "TextFormation", dependencies: ["TextStory"]),
+		.target(name: "TextFormation", dependencies: ["Rearrange", "TextStory"]),
 		.testTarget(name: "TextFormationTests", dependencies: ["TextFormation"]),
 	]
 )
