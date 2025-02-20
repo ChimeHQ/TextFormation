@@ -1,4 +1,5 @@
 import Foundation
+import Rearrange
 import TextStory
 
 public class NewlineProcessingFilter {
@@ -80,31 +81,37 @@ public struct NewNewlineProcessingFilter {
 }
 
 extension NewNewlineProcessingFilter: NewFilter {
-	public func processMutation<System>(_ range: System.TextRange, string: String, in system: System) -> MutationOutput<System.TextRange>? where System : TextSystem {
+	public func processMutation<Interface: TextSystemInterface>(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
 		if string != newline {
 			return nil
 		}
 
 		// We have to do this first, so the text is in the correct state for whitespace calculations. But this also affects our positions.
-		guard let newlineInsert = system.applyMutation(range, string: string) else {
+		guard let newlineInsert = try interface.applyMutation(range, string: string) else {
 			return nil
 		}
 
-		let positions = system.positions(composing: range)
-		let trailingPosition = positions.0
+		let trailingPosition = range.lowerBound
 
 		// next, do the trailing whitespace
 		guard
-			let leadingPosition = system.position(from: positions.1, offset: newlineInsert.delta),
-			let leadingMutation = system.applyWhitespace(for: leadingPosition, in: .leading),
-			let trailingInsert = system.applyWhitespace(for: trailingPosition, in: .trailing)
+			let leadingPosition = interface.position(from: range.upperBound, offset: newlineInsert.delta),
+			let leadingMutation = try interface.applyWhitespace(for: leadingPosition, in: .leading),
+			let trailingInsert = try interface.applyWhitespace(for: trailingPosition, in: .trailing)
 		else {
 			return nil
 		}
 
 		// finally, we have to compute the final selection
 		let delta = trailingInsert.delta + newlineInsert.delta + leadingMutation.delta
+		
+		guard
+			let insertionPoint = interface.position(from: range.lowerBound, offset: delta),
+			let selection = interface.textRange(from: insertionPoint, to: insertionPoint)
+		else {
+			return nil
+		}
 
-		return MutationOutput<System.TextRange>(selection: trailingInsert.selection, delta: delta)
+		return Interface.Output(selection: selection, delta: delta)
 	}
 }

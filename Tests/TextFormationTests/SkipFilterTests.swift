@@ -27,3 +27,26 @@ final class SkipFilterTests: XCTestCase {
         XCTAssertEqual(interface.insertionLocation, 1)
     }
 }
+
+import Testing
+
+struct NewSkipFilterTests {
+	@Test func singleCharacterSkip() throws {
+		let system = MockSystem(string: "}")
+		let filter = NewSkipFilter(matching: "}")
+		
+		let output = try #require(try filter.processMutation(NSRange(0..<0), string: "}", in: system))
+		
+		#expect(output == MutationOutput(selection: NSRange(1..<1), delta: 0))
+		#expect(system.string == "}")
+	}
+	
+	@Test func noSkip() throws {
+		let system = MockSystem(string: "a")
+		let filter = NewSkipFilter(matching: "}")
+		
+		try #require(try filter.processMutation(NSRange(0..<0), string: "}", in: system) == nil)
+		
+		#expect(system.string == "a")
+	}
+}
