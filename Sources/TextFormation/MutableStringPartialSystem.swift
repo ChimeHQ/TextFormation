@@ -1,7 +1,7 @@
 import Foundation
 
 /// Implements a large portion of the TextSystem protocol for NSMutableAttributedString-compatible backing stores.
-@available(macOS 12, *)
+@available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
 public struct MutableStringPartialSystem {
 	private var content: NSMutableAttributedString
 	
@@ -18,7 +18,7 @@ public struct MutableStringPartialSystem {
 	}
 }
 
-@available(macOS 12, *)
+@available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
 extension MutableStringPartialSystem {
 	func offset(from: Int, to toPosition: Int) -> Int {
 		toPosition - from
