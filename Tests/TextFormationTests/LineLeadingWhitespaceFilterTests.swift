@@ -79,3 +79,17 @@ final class LineLeadingWhitespaceFilterTests: XCTestCase {
         XCTAssertEqual(interface.string, "\t\n")
     }
 }
+
+import Testing
+
+struct NewLineLeadingWhitespaceFilterTests {
+	@Test func testMatching() throws {
+		let system = MockSystem(string: "")
+		let filter = NewLineLeadingWhitespaceFilter(string: "abc")
+
+		let output = try #require(try filter.processMutation(NSRange(0..<0), string: "abc", in: system))
+		
+		#expect(output == MutationOutput(selection: NSRange(1..<1), delta: 0))
+		#expect(system.string == "\tabc")
+	}
+}
