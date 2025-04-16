@@ -1,4 +1,5 @@
 import Foundation
+import Rearrange
 import TextStory
 
 public class LineLeadingWhitespaceFilter {
@@ -56,4 +57,19 @@ extension LineLeadingWhitespaceFilter: Filter {
             return .none
         }
     }
+}
+
+public struct NewLineLeadingWhitespaceFilter {
+	public init(string: String) {
+	}
+}
+
+extension NewLineLeadingWhitespaceFilter : NewFilter {
+	public func processMutation<Interface>(
+		_ range: Interface.TextRange,
+		string: String,
+		in interface: Interface
+	) throws -> Interface.Output? where Interface : TextSystemInterface {
+		return nil
+	}
 }

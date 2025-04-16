@@ -69,3 +69,40 @@ class ConsecutiveCharacterRecognizerTests: XCTestCase {
         XCTAssertEqual(recognizer.state, .idle)
     }
 }
+
+import Testing
+
+struct NewConsecutiveCharacterRecognizerTests {
+	@Test func matching() throws {
+		let system = MockSystem(string: "")
+		var recognizer = NewConsecutiveCharacterRecognizer<MockSystem>(matching: "abc")
+		
+		#expect(try recognizer.processMutation(.init(range: NSRange(0..<0), interface: system, string: "a")) == false)
+		#expect(try recognizer.processMutation(.init(range: NSRange(1..<1), interface: system, string: "b")) == false)
+		#expect(try recognizer.processMutation(.init(range: NSRange(2..<2), interface: system, string: "c")) == true)
+	}
+	
+	@Test func matchingWithMultiCharacterMutations() throws {
+		let system = MockSystem(string: "")
+		var recognizer = NewConsecutiveCharacterRecognizer<MockSystem>(matching: "abc")
+
+		#expect(try recognizer.processMutation(.init(range: NSRange(0..<0), interface: system, string: "a")) == false)
+		#expect(try recognizer.processMutation(.init(range: NSRange(1..<1), interface: system, string: "bc")) == true)
+	}
+	
+	@Test func matchingAfterDuplicatePrefix() throws {
+		let system = MockSystem(string: "")
+		var recognizer = NewConsecutiveCharacterRecognizer<MockSystem>(matching: "abc")
+
+		#expect(try recognizer.processMutation(.init(range: NSRange(0..<0), interface: system, string: "a")) == false)
+		#expect(try recognizer.processMutation(.init(range: NSRange(1..<1), interface: system, string: "a")) == false)
+		#expect(try recognizer.processMutation(.init(range: NSRange(2..<2), interface: system, string: "bc")) == true)
+	}
+
+	@Test func matchingWithSingleMultiCharacterMutation() throws {
+		let system = MockSystem(string: "")
+		var recognizer = NewConsecutiveCharacterRecognizer<MockSystem>(matching: "abc")
+
+		#expect(try recognizer.processMutation(.init(range: NSRange(0..<0), interface: system, string: "abc")) == true)
+	}
+}

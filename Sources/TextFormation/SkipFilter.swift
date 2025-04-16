@@ -43,7 +43,11 @@ public struct NewSkipFilter {
 }
 
 extension NewSkipFilter: NewFilter {
-	public func processMutation<Interface>(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? where Interface : TextSystemInterface {
+	public func processMutation<Interface>(
+		_ range: Interface.TextRange,
+		string: String,
+		in interface: Interface
+	) throws -> Interface.Output? where Interface : TextSystemInterface {
 		if matchString != string {
 			return nil
 		}
@@ -55,14 +59,14 @@ extension NewSkipFilter: NewFilter {
 		let length = interface.length(of: string)
 		guard
 			let upper = interface.position(from: range.lowerBound, offset: length),
-			let postApplyRange = interface.textRange(from: range.lowerBound, to: upper),
+			let replacementRange = interface.textRange(from: range.lowerBound, to: upper),
 			let selection = interface.textRange(from: upper, to: upper)
 		else {
 			// this should actually throw I guess?
 			return nil
 		}
 		
-		if try interface.substring(in: postApplyRange) != string {
+		if try interface.substring(in: replacementRange) != string {
 			return nil
 		}
 		
