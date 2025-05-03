@@ -105,4 +105,25 @@ struct NewConsecutiveCharacterRecognizerTests {
 
 		#expect(try recognizer.processMutation(.init(range: NSRange(0..<0), interface: system, string: "abc")) == true)
 	}
+	
+	@Test func matchingWithReplacementMutation() throws {
+		let system = MockSystem(string: "abc")
+		var recognizer = NewConsecutiveCharacterRecognizer<MockSystem>(matching: "abc")
+
+		#expect(try recognizer.processMutation(.init(range: NSRange(0..<3), interface: system, string: "abc")) == true)
+	}
+	
+	@Test func matchingMutationWithMoreCharacters() throws {
+		let system = MockSystem(string: "abc")
+		var recognizer = NewConsecutiveCharacterRecognizer<MockSystem>(matching: "abc")
+
+		#expect(try recognizer.processMutation(.init(range: NSRange(0..<0), interface: system, string: "abcd")) == false)
+	}
+	
+	@Test func nonMatchingMutationWithMoreCharacters() throws {
+		let system = MockSystem(string: "abc")
+		var recognizer = NewConsecutiveCharacterRecognizer<MockSystem>(matching: "abc")
+
+		#expect(try recognizer.processMutation(.init(range: NSRange(0..<0), interface: system, string: "def")) == false)
+	}
 }
