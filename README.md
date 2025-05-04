@@ -7,6 +7,9 @@
 
 TextFormation is simple rule system that can be used to implement typing completions and whitespace control. Think matching "}" with "{" and indenting.
 
+> [!WARNING]
+> There's some major work happening on the `feature/process-mutation` branch to support much more sophisticated text mutation patterns
+
 ## Integration
 
 ```swift
