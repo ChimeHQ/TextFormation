@@ -59,17 +59,67 @@ extension LineLeadingWhitespaceFilter: Filter {
     }
 }
 
-public struct NewLineLeadingWhitespaceFilter {
+public struct NewLineLeadingWhitespaceFilter<Interface: TextSystemInterface> {
+	private var recognizer: NewConsecutiveCharacterRecognizer<Interface>
+	
+	public var mustOccurAtLineLeadingWhitespace: Bool = true
+	
 	public init(string: String) {
+		self.recognizer = NewConsecutiveCharacterRecognizer(matching: string)
 	}
 }
 
-extension NewLineLeadingWhitespaceFilter : NewFilter {
-	public func processMutation<Interface>(
+extension NewLineLeadingWhitespaceFilter: NewFilter {
+	private func matchHandler(_ mutation: Mutation) throws -> Output? {
+		let interface = mutation.interface
+		
+		guard let whitespaceRange = interface.textRange(of: .leadingWhitespace, for: mutation.range.lowerBound) else {
+			return nil
+		}
+		
+		if mustOccurAtLineLeadingWhitespace {
+			let length = interface.length(of: recognizer.matchingString) - mutation.delta
+			let startDelta = interface.offset(from: whitespaceRange.upperBound, to: mutation.range.lowerBound)
+
+			if startDelta != length {
+				return nil
+			}
+		}
+		
+		guard
+			let mutationOuput = try interface.applyMutation(mutation.range, string: mutation.string)
+		else {
+			return nil
+		}
+		
+		guard
+			let whitespaceOutput = try interface.applyWhitespace(for: whitespaceRange.lowerBound, in: .leading),
+			let selectionStart = interface.position(from: mutationOuput.selection.lowerBound, offset: whitespaceOutput.delta),
+			let selectionEnd = interface.position(from: mutationOuput.selection.upperBound, offset: whitespaceOutput.delta),
+			let selection = interface.textRange(from: selectionStart, to: selectionEnd)
+		else {
+			return mutationOuput
+		}
+		
+		return Output(
+			selection: selection,
+			delta: mutationOuput.delta + whitespaceOutput.delta
+		)
+	}
+	
+	public mutating func processMutation(
 		_ range: Interface.TextRange,
 		string: String,
 		in interface: Interface
-	) throws -> Interface.Output? where Interface : TextSystemInterface {
-		return nil
+	) throws -> Interface.Output? {
+		let mutation = Mutation(range: range, interface: interface, string: string)
+		
+		if try recognizer.processMutation(mutation) {
+			if let value = try matchHandler(mutation) {
+				return value
+			}
+		}
+		
+		return try interface.applyMutation(range, string: string)
 	}
 }

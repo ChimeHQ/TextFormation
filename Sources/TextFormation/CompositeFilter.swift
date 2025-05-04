@@ -32,21 +32,24 @@ extension CompositeFilter: Filter {
     }
 }
 
-public struct NewCompositeFilter: NewFilter {
-	public let filters: [any NewFilter]
+@available(macOS 13.0.0, *)
+public struct NewCompositeFilter<
+	Interface: TextSystemInterface,
+	Subfilter: NewFilter
+>: NewFilter where Subfilter.Interface == Interface {
+	public private(set) var filters: [Subfilter]
 
-	public init(filters: [any NewFilter]) {
+	public init(filters: [Subfilter]) {
 		self.filters = filters
 	}
 
-	public func processMutation<Interface: TextSystemInterface>(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
-		for filter in filters {
-			if let output = try filter.processMutation(range, string: string, in: interface) {
+	public mutating func processMutation(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
+		for index in filters.indices {
+			if let output = try filters[index].processMutation(range, string: string, in: interface) {
 				return output
 			}
 		}
 
 		return nil
-
 	}
 }

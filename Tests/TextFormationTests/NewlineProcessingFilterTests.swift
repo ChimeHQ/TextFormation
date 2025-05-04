@@ -119,11 +119,11 @@ import Testing
 
 final class MockSystem : TextSystemInterface {
 	typealias TextRange = NSRange
-	typealias TextPosition = Int
 
 	enum Response: Hashable {
 		case applyTrailingWhitespace(String, TextRange)
 		case applyLeadingWhitespace(String, TextRange)
+		case componentTextRange(LineComponent, Int, TextRange?)
 	}
 
 	let content: NSMutableString
@@ -170,12 +170,25 @@ final class MockSystem : TextSystemInterface {
 			return nil
 		}
 	}
+	
+	func textRange(of component: LineComponent, for position: Int) -> NSRange? {
+		guard case let .componentTextRange(expectedComp, expectedPos, range) = responses.first else {
+			return nil
+		}
+		
+		responses.removeFirst()
+		
+		precondition(expectedPos == position)
+		precondition(expectedComp == component)
+		
+		return range
+	}
 }
 
 struct NewNewlineProcessingFilterTests {
 	@Test func matchingAfterNothing() throws {
 		let system = MockSystem(string: "")
-		let filter = NewNewlineProcessingFilter()
+		let filter = NewNewlineProcessingFilter<MockSystem>()
 
 		system.responses = [
 			.applyLeadingWhitespace("aaa", NSRange(1..<1)),
@@ -190,7 +203,7 @@ struct NewNewlineProcessingFilterTests {
 	
 	@Test func matchingAfterNewline() throws {
 		let system = MockSystem(string: "\n")
-		let filter = NewNewlineProcessingFilter()
+		let filter = NewNewlineProcessingFilter<MockSystem>()
 
 		system.responses = [
 			.applyLeadingWhitespace("aaa", NSRange(2..<2)),

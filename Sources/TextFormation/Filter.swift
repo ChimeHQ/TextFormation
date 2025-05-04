@@ -77,8 +77,34 @@ public enum Direction {
 	case trailing
 }
 
+/// The components that make up the anatomy of a line of text.
+///
+/// For a left-to-right language, the conponets are:
+///
+///     [leading][content][trailing][ending]
+///
+///
+/// A line that consists only of whitespace is defined as leading.
+///
+///     [leading][ending]
+///
+/// This type is taking from https://github.com/ChimeHQ/Borderline
+public enum LineComponent: Hashable, Sendable {
+	/// the range of whitespace that appears before the content
+	case leadingWhitespace
+	/// The range of whitespace that appears after the content.
+	///
+	/// The line ending characters are **not** part of trailing whitespace.
+	case trailingWhitespace
+	/// the range of non-whitespace within the line
+	case content
+	/// The line terminator characters.
+	case ending
+	/// the entire range of the line, including both whitespace and content
+	case full
+}
 
-public protocol TextSystemInterface : TextRangeCalculating {
+public protocol TextSystemInterface: TextRangeCalculating {
 	typealias Output = MutationOutput<TextRange>
 
 	func substring(in range: TextRange) throws -> String
@@ -86,6 +112,7 @@ public protocol TextSystemInterface : TextRangeCalculating {
 	func length(of string: String) -> Int
 	func applyMutation(_ range: TextRange, string: String) throws -> Output?
 	func applyWhitespace(for position: Position, in direction: Direction) throws -> Output?
+	func textRange(of component: LineComponent, for position: Position) -> TextRange?
 }
 
 extension TextSystemInterface {
@@ -107,6 +134,10 @@ extension TextSystemInterface where TextRange == NSRange {
 	}
 }
 
-public protocol NewFilter {
-	func processMutation<Interface: TextSystemInterface>(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output?
+public protocol NewFilter<Interface> {
+	associatedtype Interface: TextSystemInterface
+	typealias Mutation = NewTextMutation<Interface>
+	typealias Output = Interface.Output
+
+	mutating func processMutation(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Output?
 }
