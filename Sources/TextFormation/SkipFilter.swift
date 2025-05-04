@@ -34,7 +34,7 @@ extension SkipFilter: Filter {
     }
 }
 
-public struct NewSkipFilter {
+public struct NewSkipFilter<Interface: TextSystemInterface> {
 	public let matchString: String
 
 	public init(matching string: String) {
@@ -43,11 +43,11 @@ public struct NewSkipFilter {
 }
 
 extension NewSkipFilter: NewFilter {
-	public func processMutation<Interface>(
+	public func processMutation(
 		_ range: Interface.TextRange,
 		string: String,
 		in interface: Interface
-	) throws -> Interface.Output? where Interface : TextSystemInterface {
+	) throws -> Interface.Output? {
 		if matchString != string {
 			return nil
 		}

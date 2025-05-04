@@ -72,7 +72,7 @@ extension NewlineProcessingFilter: Filter {
     }
 }
 
-public struct NewNewlineProcessingFilter {
+public struct NewNewlineProcessingFilter<Interface: TextSystemInterface> {
 	private let newline: String
 
 	public init(newline: String = "\n") {
@@ -81,7 +81,7 @@ public struct NewNewlineProcessingFilter {
 }
 
 extension NewNewlineProcessingFilter: NewFilter {
-	public func processMutation<Interface: TextSystemInterface>(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
+	public func processMutation(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
 		if string != newline {
 			return nil
 		}

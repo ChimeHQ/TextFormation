@@ -34,7 +34,7 @@ extension DeleteCloseFilter: Filter {
     }
 }
 
-public struct NewDeleteCloseFilter {
+public struct NewDeleteCloseFilter<Interface: TextSystemInterface> {
 	public let openString: String
 	public let closeString: String
 	private let length: Int
@@ -53,7 +53,7 @@ public struct NewDeleteCloseFilter {
 }
 
 extension NewDeleteCloseFilter: NewFilter {
-	public func processMutation<Interface: TextSystemInterface>(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
+	public func processMutation(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
 		// make sure this is a delete
 		guard
 			string == "",
