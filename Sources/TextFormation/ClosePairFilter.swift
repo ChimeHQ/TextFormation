@@ -71,16 +71,29 @@ extension ClosePairFilter: Filter {
     }
 }
 
+/// Inserts a matching close string when an opening is recognized.
+///
+/// The logic of this operation is *extremely* complicated.
 public struct NewClosePairFilter<Interface: TextSystemInterface> {
 	private var locationAfterSkippedClose: Int?
-	private var triggerPosition: Interface.Position?
+	private let processAfterTrigger: Bool
 	private var recognizer: NewConsecutiveCharacterRecognizer<Interface>
+	private var triggerPosition: Interface.Position?
 
 	public let closeString: String
 
 	public init(open: String, close: String) {
 		self.closeString = close
 		self.recognizer = NewConsecutiveCharacterRecognizer(matching: open)
+		
+		// This is tricky! Consider:
+		// open = A, close = A
+		// input: AAB
+		//
+		// This will result in the second "A", causing a trigger, and
+		// pruducing "AABA". This flag allows us to control for this
+		// behavior better.
+		self.processAfterTrigger = open != close
 	}
 }
 
@@ -110,6 +123,27 @@ extension NewClosePairFilter: NewFilter {
 		)
 	}
 	
+	private mutating func handleMutation(_ mutation: NewTextMutation<Interface>) throws -> Output? {
+		let interface = mutation.interface
+		
+		// it has to be an insert at the same location
+		guard
+			let pos = triggerPosition,
+			interface.offset(from: mutation.range.lowerBound, to: pos) == 0,
+			interface.offset(from: mutation.range.upperBound, to: pos) == 0
+		else {
+			return nil
+		}
+		
+		return try triggerHandler(mutation, at: pos)
+	}
+	
+	private mutating func recognizerCheck(_ mutation: NewTextMutation<Interface>) throws {
+		if try recognizer.processMutation(mutation) {
+			self.triggerPosition = mutation.postApplyRange?.upperBound
+		}
+	}
+	
 	public mutating func processMutation(
 		_ range: Interface.TextRange,
 		string: String,
@@ -117,20 +151,16 @@ extension NewClosePairFilter: NewFilter {
 	) throws -> Interface.Output? {
 		let mutation = NewTextMutation(range: range, interface: interface, string: string)
 		
-		if let pos = triggerPosition {
-			// it has to be an insert at the same location
-			let startDelta = interface.offset(from: mutation.range.lowerBound, to: pos)
-			let endDelta = interface.offset(from: mutation.range.upperBound, to: pos)
-			
-			if startDelta == 0, endDelta == 0, let value = try triggerHandler(mutation, at: pos) {
-				return value
-			}
-			
-			return try interface.applyMutation(range, string: string)
+		let output = try handleMutation(mutation)
+		
+		if let output, processAfterTrigger == false {
+			return output
 		}
 		
-		if try recognizer.processMutation(mutation) {
-			self.triggerPosition = mutation.postApplyRange?.upperBound
+		try recognizerCheck(mutation)
+		
+		if let output {
+			return output
 		}
 		
 		return try interface.applyMutation(range, string: string)
