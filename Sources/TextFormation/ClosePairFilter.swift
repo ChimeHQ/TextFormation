@@ -1,4 +1,5 @@
 import Foundation
+import Rearrange
 import TextStory
 
 public final class ClosePairFilter {
@@ -68,4 +69,70 @@ extension ClosePairFilter: Filter {
     public func processMutation(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
 		return innerFilter.processMutation(mutation, in: interface, with: providers)
     }
+}
+
+public struct NewClosePairFilter<Interface: TextSystemInterface> {
+	private var locationAfterSkippedClose: Int?
+	private var triggerPosition: Interface.Position?
+	private var recognizer: NewConsecutiveCharacterRecognizer<Interface>
+
+	public let closeString: String
+
+	public init(open: String, close: String) {
+		self.closeString = close
+		self.recognizer = NewConsecutiveCharacterRecognizer(matching: open)
+	}
+}
+
+extension NewClosePairFilter: NewFilter {
+	private func triggerHandler(_ mutation: Mutation, at position: Interface.Position) throws -> Output? {
+		let interface = mutation.interface
+		
+		if mutation.string == closeString {
+			return nil
+		}
+
+		if mutation.string == "\n" {
+			// TODO: handle newline insert here
+			return nil
+		}
+		
+		guard
+			let closingOutput = try interface.applyMutation(mutation.range, string: closeString),
+			let mutationOutput = try interface.applyMutation(mutation.range, string: mutation.string)
+		else {
+			return nil
+		}
+			
+		return Output(
+			selection: mutationOutput.selection,
+			delta: mutationOutput.delta + closingOutput.delta
+		)
+	}
+	
+	public mutating func processMutation(
+		_ range: Interface.TextRange,
+		string: String,
+		in interface: Interface
+	) throws -> Interface.Output? {
+		let mutation = NewTextMutation(range: range, interface: interface, string: string)
+		
+		if let pos = triggerPosition {
+			// it has to be an insert at the same location
+			let startDelta = interface.offset(from: mutation.range.lowerBound, to: pos)
+			let endDelta = interface.offset(from: mutation.range.upperBound, to: pos)
+			
+			if startDelta == 0, endDelta == 0, let value = try triggerHandler(mutation, at: pos) {
+				return value
+			}
+			
+			return try interface.applyMutation(range, string: string)
+		}
+		
+		if try recognizer.processMutation(mutation) {
+			self.triggerPosition = mutation.postApplyRange?.upperBound
+		}
+		
+		return try interface.applyMutation(range, string: string)
+	}
 }

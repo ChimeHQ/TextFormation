@@ -280,3 +280,113 @@ extension ClosePairFilterTests {
         XCTAssertEqual(interface.insertionLocation, 2)
     }
 }
+
+import Testing
+
+struct NewClosePairFilterTests {
+	@Test func matching() throws {
+		let system = MockSystem(string: "")
+		var filter = NewClosePairFilter<MockSystem>(open: " do |", close: "|")
+
+		let openOutput = try #require(try filter.processMutation(NSRange(0..<0), string: " do |", in: system))
+		#expect(openOutput == MutationOutput(selection: NSRange(5..<5), delta: 5))
+		#expect(system.string == " do |")
+
+		let output = try #require(try filter.processMutation(NSRange(5..<5), string: "a", in: system))
+		
+		#expect(output == MutationOutput(selection: NSRange(6..<6), delta: 2))
+		#expect(system.string == " do |a|")
+	}
+	
+	@Test func closeAfterMatching() throws {
+		let system = MockSystem(string: "")
+		var filter = NewClosePairFilter<MockSystem>(open: " do |", close: "|")
+
+		let openOutput = try #require(try filter.processMutation(NSRange(0..<0), string: " do |", in: system))
+		#expect(openOutput == MutationOutput(selection: NSRange(5..<5), delta: 5))
+		#expect(system.string == " do |")
+
+		let output = try #require(try filter.processMutation(NSRange(5..<5), string: "|", in: system))
+		
+		#expect(output == MutationOutput(selection: NSRange(6..<6), delta: 1))
+		#expect(system.string == " do ||")
+	}
+	
+	@Test func deleteAfterMatchingOpen() throws {
+		let system = MockSystem(string: "")
+		var filter = NewClosePairFilter<MockSystem>(open: " do |", close: "|")
+
+		let openOutput = try #require(try filter.processMutation(NSRange(0..<0), string: " do |", in: system))
+		#expect(openOutput == MutationOutput(selection: NSRange(5..<5), delta: 5))
+		#expect(system.string == " do |")
+
+		let output = try #require(try filter.processMutation(NSRange(4..<5), string: "", in: system))
+		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: -1))
+		#expect(system.string == " do ")
+	}
+	
+	@Test func matchWithOpenReplacement() throws {
+		let system = MockSystem(string: "yz")
+		var filter = NewClosePairFilter<MockSystem>(open: "abc", close: "def")
+
+		let openOutput = try #require(try filter.processMutation(NSRange(0..<1), string: "abc", in: system))
+		#expect(openOutput == MutationOutput(selection: NSRange(3..<3), delta: 2))
+		#expect(system.string == "abcz")
+
+		let output = try #require(try filter.processMutation(NSRange(3..<3), string: " ", in: system))
+		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 4))
+		#expect(system.string == "abc defz")
+	}
+	
+	@Test func matchThenReplacement() throws {
+		let system = MockSystem(string: "yz")
+		var filter = NewClosePairFilter<MockSystem>(open: "abc", close: "def")
+
+		let openOutput = try #require(try filter.processMutation(NSRange(0..<1), string: "abc", in: system))
+		#expect(openOutput == MutationOutput(selection: NSRange(3..<3), delta: 2))
+		#expect(system.string == "abcz")
+
+		let output = try #require(try filter.processMutation(NSRange(3..<4), string: " ", in: system))
+		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 0))
+		#expect(system.string == "abc ")
+	}
+	
+	@Test func matchingWithDoubleOpen() throws {
+		let system = MockSystem(string: "")
+		var filter = NewClosePairFilter<MockSystem>(open: "(", close: ")")
+
+		let openOutput = try #require(try filter.processMutation(NSRange(0..<0), string: "(", in: system))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
+		#expect(system.string == "(")
+
+		let secondOpenOutput = try #require(try filter.processMutation(NSRange(1..<1), string: "(", in: system))
+		#expect(secondOpenOutput == MutationOutput(selection: NSRange(2..<2), delta: 2))
+		#expect(system.string == "(()")
+
+		let output = try #require(try filter.processMutation(NSRange(2..<2), string: "a", in: system))
+		#expect(output == MutationOutput(selection: NSRange(3..<3), delta: 2))
+		#expect(system.string == "((a))")
+
+		let unrelatedOutput = try #require(try filter.processMutation(NSRange(3..<3), string: "b", in: system))
+		#expect(unrelatedOutput == MutationOutput(selection: NSRange(4..<4), delta: 1))
+		#expect(system.string == "((ab))")
+//
+//		let filter = ClosePairFilter(open: "(", close: ")")
+//		let interface = TextInterfaceAdapter()
+//
+//		let openMutation = TextMutation(insert: "(", at: 0, limit: 0)
+//		XCTAssertEqual(interface.runFilter(filter, on: openMutation), .stop)
+//
+//		let secondOpenMutation = TextMutation(insert: "(", at: 1, limit: 1)
+//		XCTAssertEqual(interface.runFilter(filter, on: secondOpenMutation), .stop)
+//
+//		let nextMutation = TextMutation(insert: "a", at: 2, limit: 2)
+//		XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .stop)
+//
+//		let unrelatedMutation = TextMutation(insert: "b", at: 3, limit: 3)
+//		XCTAssertEqual(interface.runFilter(filter, on: unrelatedMutation), .none)
+//
+//		XCTAssertEqual(interface.string, "((ab))")
+//		XCTAssertEqual(interface.selectedRange, NSRange(4..<4))
+	}
+}
