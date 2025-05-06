@@ -81,9 +81,11 @@ public struct NewClosePairFilter<Interface: TextSystemInterface> {
 	private var triggerPosition: Interface.Position?
 
 	public let closeString: String
+	public let newlineSequence: String
 
-	public init(open: String, close: String) {
+	public init(open: String, close: String, newlineSequence: String = "\n") {
 		self.closeString = close
+		self.newlineSequence = newlineSequence
 		self.recognizer = NewConsecutiveCharacterRecognizer(matching: open)
 		
 		// This is tricky! Consider:
@@ -106,8 +108,7 @@ extension NewClosePairFilter: NewFilter {
 		}
 
 		if mutation.string == "\n" {
-			// TODO: handle newline insert here
-			return nil
+			return try handleNewlineInsert(mutation, at: position)
 		}
 		
 		guard
@@ -123,19 +124,55 @@ extension NewClosePairFilter: NewFilter {
 		)
 	}
 	
-	private mutating func handleMutation(_ mutation: NewTextMutation<Interface>) throws -> Output? {
+	private mutating func triggeringPosition(with mutation: NewTextMutation<Interface>) -> Interface.Position? {
+		guard let pos = triggerPosition else {
+			return nil
+		}
+		
 		let interface = mutation.interface
 		
 		// it has to be an insert at the same location
 		guard
-			let pos = triggerPosition,
 			interface.offset(from: mutation.range.lowerBound, to: pos) == 0,
 			interface.offset(from: mutation.range.upperBound, to: pos) == 0
 		else {
+			recognizer.resetState()
 			return nil
 		}
+
+		return pos
+	}
+
+	private func handleNewlineInsert(_ mutation: Mutation, at position: Interface.Position) throws -> Output? {
+		// this is sublte stuff. We really want to insert:
+		// \n<leading>\n<leading><close>
+		// however, indentation calculations are very sensitive
+		// to the curent state of the text. So, we want to
+		// do our mutations in a way that provides the needed
+		// context and text state at the right times.
 		
-		return try triggerHandler(mutation, at: pos)
+		let interface = mutation.interface
+		
+		let length = interface.length(of: newlineSequence)
+		
+		let newlinesAndClose = newlineSequence + newlineSequence + closeString
+
+		guard
+			let firstLeadingPos = interface.position(from: position, offset: length),
+			let secondLeadingPos = interface.position(from: firstLeadingPos, offset: length),
+			let output = try interface.applyMutation(mutation.range, string: newlinesAndClose),
+			let secondLeading = try interface.applyWhitespace(for: secondLeadingPos, in: .leading),
+			let firstLeading = try interface.applyWhitespace(for: firstLeadingPos, in: .leading)
+		else {
+			return nil
+		}
+
+		let delta = output.delta + firstLeading.delta + secondLeading.delta
+		
+		return Output(
+			selection: firstLeading.selection,
+			delta: delta
+		)
 	}
 	
 	private mutating func recognizerCheck(_ mutation: NewTextMutation<Interface>) throws {
@@ -144,21 +181,17 @@ extension NewClosePairFilter: NewFilter {
 		}
 	}
 	
-	public mutating func processMutation(
-		_ mutation: NewTextMutation<Interface>
-	) throws -> Interface.Output? {
-		let output = try handleMutation(mutation)
-		
-		if let output, processAfterTrigger == false {
-			return output
+	public mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
+		guard let pos = triggeringPosition(with: mutation) else {
+			try recognizerCheck(mutation)
+			
+			return try mutation.apply()
 		}
 		
-		try recognizerCheck(mutation)
-		
-		if let output {
-			return output
+		if processAfterTrigger {
+			try recognizerCheck(mutation)
 		}
 		
-		return try mutation.interface.applyMutation(mutation.range, string: mutation.string)
+		return try triggerHandler(mutation, at: pos) ?? mutation.apply()
 	}
 }
