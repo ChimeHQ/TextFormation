@@ -56,6 +56,10 @@ public struct NewTextMutation<Interface: TextSystemInterface> {
 
 		return interface.textRange(from: start, to: end)
 	}
+	
+	public func apply() throws -> Interface.Output? {
+		try interface.applyMutation(range, string: string)
+	}
 }
 
 public struct MutationOutput<TextRange> {
@@ -139,5 +143,23 @@ public protocol NewFilter<Interface> {
 	typealias Mutation = NewTextMutation<Interface>
 	typealias Output = Interface.Output
 
-	mutating func processMutation(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Output?
+	mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Output?
+}
+
+extension NewFilter where Interface.TextRange == NSRange {
+	public mutating func processMutation<R: RangeExpression>(
+		_ r: R,
+		_ string: String,
+		_ interface: Interface
+	) throws -> Output? where R.Bound == Int {
+		let mutation = NewTextMutation(range: NSRange(r), interface: interface, string: string)
+		
+		return try processMutation(mutation)
+	}
+}
+
+extension TextSystemInterface {
+	public func mutation(in range: TextRange, string: String) -> NewTextMutation<Self> {
+		NewTextMutation(range: range, interface: self, string: string)
+	}
 }

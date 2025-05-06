@@ -92,7 +92,7 @@ struct NewLineLeadingWhitespaceFilterTests {
 			.applyLeadingWhitespace("\t", NSRange(0..<0)),
 		]
 		
-		let output = try #require(try filter.processMutation(NSRange(0..<0), string: "abc", in: system))
+		let output = try #require(try filter.processMutation(0..<0, "abc", system))
 		
 		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 4))
 		#expect(system.string == "\tabc")
@@ -107,9 +107,9 @@ struct NewLineLeadingWhitespaceFilterTests {
 			.applyLeadingWhitespace("\t", NSRange(0..<0)),
 		]
 
-		#expect(try filter.processMutation(NSRange(0..<0), string: "a", in: system) != nil)
-		#expect(try filter.processMutation(NSRange(1..<1), string: "b", in: system) != nil)
-		let output = try #require(try filter.processMutation(NSRange(2..<2), string: "c", in: system))
+		#expect(try filter.processMutation(0..<0, "a", system) != nil)
+		#expect(try filter.processMutation(1..<1, "b", system) != nil)
+		let output = try #require(try filter.processMutation(2..<2, "c", system))
 		
 		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 2))
 		#expect(system.string == "\tabc")
@@ -125,8 +125,8 @@ struct NewLineLeadingWhitespaceFilterTests {
 			.applyLeadingWhitespace("\t", NSRange(0..<0)),
 		]
 
-		let output = try #require(try filter.processMutation(NSRange(4..<4), string: "abc", in: system))
-		
+		let output = try #require(try filter.processMutation(4..<4, "abc", system))
+
 		#expect(output == MutationOutput(selection: NSRange(8..<8), delta: 4))
 		#expect(system.string == "\tdef abc")
 	}
@@ -140,7 +140,7 @@ struct NewLineLeadingWhitespaceFilterTests {
 			.applyLeadingWhitespace("\t", NSRange(0..<0)),
 		]
 
-		let output = try #require(try filter.processMutation(NSRange(3..<3), string: "abc", in: system))
+		let output = try #require(try filter.processMutation(3..<3, "abc", system))
 		
 		#expect(output == MutationOutput(selection: NSRange(6..<6), delta: 3))
 		#expect(system.string == "defabc")
@@ -155,7 +155,7 @@ struct NewLineLeadingWhitespaceFilterTests {
 			.applyLeadingWhitespace("\t", NSRange(0..<1)),
 		]
 		
-		let output = try #require(try filter.processMutation(NSRange(1..<1), string: "abc", in: system))
+		let output = try #require(try filter.processMutation(1..<1, "abc", system))
 		
 		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 3))
 		#expect(system.string == "\tabc")
@@ -170,7 +170,7 @@ struct NewLineLeadingWhitespaceFilterTests {
 			.applyLeadingWhitespace("\t", NSRange(0..<1)),
 		]
 		
-		let output = try #require(try filter.processMutation(NSRange(1..<1), string: "abc", in: system))
+		let output = try #require(try filter.processMutation(1..<1, "abc", system))
 		
 		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 3))
 		#expect(system.string == "\tabc")

@@ -145,12 +145,8 @@ extension NewClosePairFilter: NewFilter {
 	}
 	
 	public mutating func processMutation(
-		_ range: Interface.TextRange,
-		string: String,
-		in interface: Interface
+		_ mutation: NewTextMutation<Interface>
 	) throws -> Interface.Output? {
-		let mutation = NewTextMutation(range: range, interface: interface, string: string)
-		
 		let output = try handleMutation(mutation)
 		
 		if let output, processAfterTrigger == false {
@@ -163,6 +159,6 @@ extension NewClosePairFilter: NewFilter {
 			return output
 		}
 		
-		return try interface.applyMutation(range, string: string)
+		return try mutation.interface.applyMutation(mutation.range, string: mutation.string)
 	}
 }
