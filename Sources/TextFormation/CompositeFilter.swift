@@ -43,9 +43,9 @@ public struct NewCompositeFilter<
 		self.filters = filters
 	}
 
-	public mutating func processMutation(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
+	public mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
 		for index in filters.indices {
-			if let output = try filters[index].processMutation(range, string: string, in: interface) {
+			if let output = try filters[index].processMutation(mutation) {
 				return output
 			}
 		}

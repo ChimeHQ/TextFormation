@@ -188,14 +188,14 @@ final class MockSystem : TextSystemInterface {
 struct NewNewlineProcessingFilterTests {
 	@Test func matchingAfterNothing() throws {
 		let system = MockSystem(string: "")
-		let filter = NewNewlineProcessingFilter<MockSystem>()
+		var filter = NewNewlineProcessingFilter<MockSystem>()
 
 		system.responses = [
 			.applyLeadingWhitespace("aaa", NSRange(1..<1)),
 			.applyTrailingWhitespace("bbb", NSRange(0..<0)),
 		]
 
-		let output = try #require(try filter.processMutation(NSRange(0..<0), string: "\n", in: system))
+		let output = try #require(try filter.processMutation(0..<0, "\n", system))
 
 		#expect(output == MutationOutput(selection: NSRange(7..<7), delta: 7))
 		#expect(system.string == "bbb\naaa")
@@ -203,14 +203,14 @@ struct NewNewlineProcessingFilterTests {
 	
 	@Test func matchingAfterNewline() throws {
 		let system = MockSystem(string: "\n")
-		let filter = NewNewlineProcessingFilter<MockSystem>()
+		var filter = NewNewlineProcessingFilter<MockSystem>()
 
 		system.responses = [
 			.applyLeadingWhitespace("aaa", NSRange(2..<2)),
 			.applyTrailingWhitespace("bbb", NSRange(1..<1)),
 		]
 
-		let output = try #require(try filter.processMutation(NSRange(1..<1), string: "\n", in: system))
+		let output = try #require(try filter.processMutation(1..<1, "\n", system))
 
 		#expect(output == MutationOutput(selection: NSRange(8..<8), delta: 7))
 		#expect(system.string == "\nbbb\naaa")

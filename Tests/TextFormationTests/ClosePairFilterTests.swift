@@ -288,11 +288,11 @@ struct NewClosePairFilterTests {
 		let system = MockSystem(string: "")
 		var filter = NewClosePairFilter<MockSystem>(open: " do |", close: "|")
 
-		let openOutput = try #require(try filter.processMutation(NSRange(0..<0), string: " do |", in: system))
+		let openOutput = try #require(try filter.processMutation(0..<0, " do |", system))
 		#expect(openOutput == MutationOutput(selection: NSRange(5..<5), delta: 5))
 		#expect(system.string == " do |")
 
-		let output = try #require(try filter.processMutation(NSRange(5..<5), string: "a", in: system))
+		let output = try #require(try filter.processMutation(5..<5, "a", system))
 		
 		#expect(output == MutationOutput(selection: NSRange(6..<6), delta: 2))
 		#expect(system.string == " do |a|")
@@ -302,11 +302,11 @@ struct NewClosePairFilterTests {
 		let system = MockSystem(string: "")
 		var filter = NewClosePairFilter<MockSystem>(open: " do |", close: "|")
 
-		let openOutput = try #require(try filter.processMutation(NSRange(0..<0), string: " do |", in: system))
+		let openOutput = try #require(try filter.processMutation(0..<0, " do |", system))
 		#expect(openOutput == MutationOutput(selection: NSRange(5..<5), delta: 5))
 		#expect(system.string == " do |")
 
-		let output = try #require(try filter.processMutation(NSRange(5..<5), string: "|", in: system))
+		let output = try #require(try filter.processMutation(5..<5, "|", system))
 		
 		#expect(output == MutationOutput(selection: NSRange(6..<6), delta: 1))
 		#expect(system.string == " do ||")
@@ -316,11 +316,11 @@ struct NewClosePairFilterTests {
 		let system = MockSystem(string: "")
 		var filter = NewClosePairFilter<MockSystem>(open: " do |", close: "|")
 
-		let openOutput = try #require(try filter.processMutation(NSRange(0..<0), string: " do |", in: system))
+		let openOutput = try #require(try filter.processMutation(0..<0, " do |", system))
 		#expect(openOutput == MutationOutput(selection: NSRange(5..<5), delta: 5))
 		#expect(system.string == " do |")
 
-		let output = try #require(try filter.processMutation(NSRange(4..<5), string: "", in: system))
+		let output = try #require(try filter.processMutation(4..<5, "", system))
 		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: -1))
 		#expect(system.string == " do ")
 	}
@@ -329,11 +329,11 @@ struct NewClosePairFilterTests {
 		let system = MockSystem(string: "yz")
 		var filter = NewClosePairFilter<MockSystem>(open: "abc", close: "def")
 
-		let openOutput = try #require(try filter.processMutation(NSRange(0..<1), string: "abc", in: system))
+		let openOutput = try #require(try filter.processMutation(0..<1, "abc", system))
 		#expect(openOutput == MutationOutput(selection: NSRange(3..<3), delta: 2))
 		#expect(system.string == "abcz")
 
-		let output = try #require(try filter.processMutation(NSRange(3..<3), string: " ", in: system))
+		let output = try #require(try filter.processMutation(3..<3, " ", system))
 		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 4))
 		#expect(system.string == "abc defz")
 	}
@@ -342,11 +342,11 @@ struct NewClosePairFilterTests {
 		let system = MockSystem(string: "yz")
 		var filter = NewClosePairFilter<MockSystem>(open: "abc", close: "def")
 
-		let openOutput = try #require(try filter.processMutation(NSRange(0..<1), string: "abc", in: system))
+		let openOutput = try #require(try filter.processMutation(0..<1, "abc", system))
 		#expect(openOutput == MutationOutput(selection: NSRange(3..<3), delta: 2))
 		#expect(system.string == "abcz")
 
-		let output = try #require(try filter.processMutation(NSRange(3..<4), string: " ", in: system))
+		let output = try #require(try filter.processMutation(3..<4, " ", system))
 		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 0))
 		#expect(system.string == "abc ")
 	}
@@ -355,19 +355,19 @@ struct NewClosePairFilterTests {
 		let system = MockSystem(string: "")
 		var filter = NewClosePairFilter<MockSystem>(open: "(", close: ")")
 
-		let openOutput = try #require(try filter.processMutation(NSRange(0..<0), string: "(", in: system))
+		let openOutput = try #require(try filter.processMutation(0..<0, "(", system))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
 		#expect(system.string == "(")
 
-		let secondOpenOutput = try #require(try filter.processMutation(NSRange(1..<1), string: "(", in: system))
+		let secondOpenOutput = try #require(try filter.processMutation(1..<1, "(", system))
 		#expect(secondOpenOutput == MutationOutput(selection: NSRange(2..<2), delta: 2))
 		#expect(system.string == "(()")
 
-		let output = try #require(try filter.processMutation(NSRange(2..<2), string: "a", in: system))
+		let output = try #require(try filter.processMutation(2..<2, "a", system))
 		#expect(output == MutationOutput(selection: NSRange(3..<3), delta: 2))
 		#expect(system.string == "((a))")
 
-		let unrelatedOutput = try #require(try filter.processMutation(NSRange(3..<3), string: "b", in: system))
+		let unrelatedOutput = try #require(try filter.processMutation(3..<3, "b", system))
 		#expect(unrelatedOutput == MutationOutput(selection: NSRange(4..<4), delta: 1))
 		#expect(system.string == "((ab))")
 //

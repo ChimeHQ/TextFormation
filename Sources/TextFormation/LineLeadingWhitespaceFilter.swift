@@ -107,19 +107,13 @@ extension NewLineLeadingWhitespaceFilter: NewFilter {
 		)
 	}
 	
-	public mutating func processMutation(
-		_ range: Interface.TextRange,
-		string: String,
-		in interface: Interface
-	) throws -> Interface.Output? {
-		let mutation = Mutation(range: range, interface: interface, string: string)
-		
+	public mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
 		if try recognizer.processMutation(mutation) {
 			if let value = try matchHandler(mutation) {
 				return value
 			}
 		}
 		
-		return try interface.applyMutation(range, string: string)
+		return try mutation.apply()
 	}
 }

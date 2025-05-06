@@ -81,17 +81,19 @@ public struct NewNewlineProcessingFilter<Interface: TextSystemInterface> {
 }
 
 extension NewNewlineProcessingFilter: NewFilter {
-	public func processMutation(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
-		if string != newline {
+	public func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
+		if mutation.string != newline {
 			return nil
 		}
 
 		// We have to do this first, so the text is in the correct state for whitespace calculations. But this also affects our positions.
-		guard let newlineInsert = try interface.applyMutation(range, string: string) else {
+		guard let newlineInsert = try mutation.apply() else {
 			return nil
 		}
 
+		let range = mutation.range
 		let trailingPosition = range.lowerBound
+		let interface = mutation.interface
 
 		// next, do the trailing whitespace
 		guard

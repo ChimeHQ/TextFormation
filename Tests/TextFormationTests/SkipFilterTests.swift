@@ -33,9 +33,9 @@ import Testing
 struct NewSkipFilterTests {
 	@Test func singleCharacterSkip() throws {
 		let system = MockSystem(string: "}")
-		let filter = NewSkipFilter<MockSystem>(matching: "}")
+		var filter = NewSkipFilter<MockSystem>(matching: "}")
 		
-		let output = try #require(try filter.processMutation(NSRange(0..<0), string: "}", in: system))
+		let output = try #require(try filter.processMutation(0..<0, "}", system))
 		
 		#expect(output == MutationOutput(selection: NSRange(1..<1), delta: 0))
 		#expect(system.string == "}")
@@ -43,9 +43,9 @@ struct NewSkipFilterTests {
 	
 	@Test func noSkip() throws {
 		let system = MockSystem(string: "a")
-		let filter = NewSkipFilter<MockSystem>(matching: "}")
+		var filter = NewSkipFilter<MockSystem>(matching: "}")
 		
-		try #require(try filter.processMutation(NSRange(0..<0), string: "}", in: system) == nil)
+		try #require(try filter.processMutation(0..<0, "}", system) == nil)
 		
 		#expect(system.string == "a")
 	}

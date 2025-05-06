@@ -53,10 +53,13 @@ public struct NewDeleteCloseFilter<Interface: TextSystemInterface> {
 }
 
 extension NewDeleteCloseFilter: NewFilter {
-	public func processMutation(_ range: Interface.TextRange, string: String, in interface: Interface) throws -> Interface.Output? {
+	public func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
+		let interface = mutation.interface
+		let range = mutation.range
+		
 		// make sure this is a delete
 		guard
-			string == "",
+			mutation.string == "",
 			interface.offset(from: range.lowerBound, to: range.upperBound) > 0
 		else {
 			return nil

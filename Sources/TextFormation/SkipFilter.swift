@@ -43,11 +43,11 @@ public struct NewSkipFilter<Interface: TextSystemInterface> {
 }
 
 extension NewSkipFilter: NewFilter {
-	public func processMutation(
-		_ range: Interface.TextRange,
-		string: String,
-		in interface: Interface
-	) throws -> Interface.Output? {
+	public func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
+		let string = mutation.string
+		let interface = mutation.interface
+		let range = mutation.range
+		
 		if matchString != string {
 			return nil
 		}
