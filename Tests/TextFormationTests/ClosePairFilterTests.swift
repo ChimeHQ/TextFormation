@@ -370,23 +370,138 @@ struct NewClosePairFilterTests {
 		let unrelatedOutput = try #require(try filter.processMutation(3..<3, "b", system))
 		#expect(unrelatedOutput == MutationOutput(selection: NSRange(4..<4), delta: 1))
 		#expect(system.string == "((ab))")
+	}
+	
+	@Test func matchingWithTripleOpen() throws {
+		let system = MockSystem(string: "")
+		var filter = NewClosePairFilter<MockSystem>(open: "(", close: ")")
+
+		let openOutput = try #require(try filter.processMutation(0..<0, "(", system))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
+		#expect(system.string == "(")
+
+		let secondOpenOutput = try #require(try filter.processMutation(1..<1, "(", system))
+		#expect(secondOpenOutput == MutationOutput(selection: NSRange(2..<2), delta: 2))
+		#expect(system.string == "(()")
+
+		let thirdOpenOutput = try #require(try filter.processMutation(2..<2, "(", system))
+		#expect(thirdOpenOutput == MutationOutput(selection: NSRange(3..<3), delta: 2))
+		#expect(system.string == "((())")
+
+		let output = try #require(try filter.processMutation(3..<3, "a", system))
+		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 2))
+		#expect(system.string == "(((a)))")
+
+		let unrelatedOutput = try #require(try filter.processMutation(4..<4, "b", system))
+		#expect(unrelatedOutput == MutationOutput(selection: NSRange(5..<5), delta: 1))
+		#expect(system.string == "(((ab)))")
+	}
+	
+	@Test func matchThenNewline() throws {
+		let system = MockSystem(string: "")
+		var filter = NewClosePairFilter<MockSystem>(open: "abc", close: "def")
+		system.responses = [
+			.applyLeadingWhitespace("\t", NSRange(5..<5)),
+			.applyLeadingWhitespace("\t", NSRange(4..<4)),
+		]
+		
+		let openOutput = try #require(try filter.processMutation(0..<0, "abc", system))
+		#expect(openOutput == MutationOutput(selection: NSRange(3..<3), delta: 3))
+		#expect(system.string == "abc")
+
+		let output = try #require(try filter.processMutation(3..<3, "\n", system))
+		#expect(output == MutationOutput(selection: NSRange(5..<5), delta: 7))
+		#expect(system.string == "abc\n\t\n\tdef")
+	}
+	
+	@Test func matchingWithSameOpenClose() throws {
+		let system = MockSystem(string: "")
+		var filter = NewClosePairFilter<MockSystem>(open: "'", close: "'")
+
+		let openOutput = try #require(try filter.processMutation(0..<0, "'", system))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
+		#expect(system.string == "'")
+
+		let output = try #require(try filter.processMutation(1..<1, "a", system))
+		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 2))
+		#expect(system.string == "'a'")
+	}
+	
+	@Test func closeAfterMatchingWithSameOpenClose() throws {
+		let system = MockSystem(string: "")
+		var filter = NewClosePairFilter<MockSystem>(open: "'", close: "'")
+
+		let openOutput = try #require(try filter.processMutation(0..<0, "'", system))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
+		#expect(system.string == "'")
+
+		let output = try #require(try filter.processMutation(1..<1, "'", system))
+		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 1))
+		#expect(system.string == "''")
+	}
+	
+	@Test func anotherMutationAfterCloseAfterMatchingWithSameOpenClose() throws {
+		let system = MockSystem(string: "")
+		var filter = NewClosePairFilter<MockSystem>(open: "'", close: "'")
+
+		let openOutput = try #require(try filter.processMutation(0..<0, "'", system))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
+		#expect(system.string == "'")
+		
+		let closeOutput = try #require(try filter.processMutation(1..<1, "'", system))
+		#expect(closeOutput == MutationOutput(selection: NSRange(2..<2), delta: 1))
+		#expect(system.string == "''")
+
+		let output1 = try #require(try filter.processMutation(2..<2, "a", system))
+		#expect(output1 == MutationOutput(selection: NSRange(3..<3), delta: 1))
+		#expect(system.string == "''a")
+
+		let output2 = try #require(try filter.processMutation(3..<3, "b", system))
+		#expect(output2 == MutationOutput(selection: NSRange(4..<4), delta: 1))
+		#expect(system.string == "''ab")
+	}
+	
+	@Test func matchWithReplacementWithSameOpenClose() throws {
+		let system = MockSystem(string: "yz")
+		var filter = NewClosePairFilter<MockSystem>(open: "'", close: "'")
+
+		let openOutput = try #require(try filter.processMutation(0..<1, "'", system))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 0))
+		#expect(system.string == "'z")
+
+		let output = try #require(try filter.processMutation(1..<1, " ", system))
+		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 2))
+		#expect(system.string == "' 'z")
+	}
+
+	@Test func matchThenReplacementWithSameOpenClose() throws {
+		let system = MockSystem(string: "yz")
+		var filter = NewClosePairFilter<MockSystem>(open: "'", close: "'")
+
+		let openOutput = try #require(try filter.processMutation(0..<1, "'", system))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 0))
+		#expect(system.string == "'z")
+
+		let output = try #require(try filter.processMutation(1..<2, " ", system))
+		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 0))
+		#expect(system.string == "' ")
 //
-//		let filter = ClosePairFilter(open: "(", close: ")")
-//		let interface = TextInterfaceAdapter()
+//		
+//		let filter = ClosePairFilter(open: "'", close: "'")
+//		let interface = TextInterfaceAdapter("yz")
 //
-//		let openMutation = TextMutation(insert: "(", at: 0, limit: 0)
+//		interface.selectedRange = NSRange(0..<1)
+//
+//		let openMutation = TextMutation(string: "'", range: interface.selectedRange, limit: 2)
 //		XCTAssertEqual(interface.runFilter(filter, on: openMutation), .stop)
 //
-//		let secondOpenMutation = TextMutation(insert: "(", at: 1, limit: 1)
-//		XCTAssertEqual(interface.runFilter(filter, on: secondOpenMutation), .stop)
+//		XCTAssertEqual(interface.string, "'z")
+//		XCTAssertEqual(interface.insertionLocation, 1)
 //
-//		let nextMutation = TextMutation(insert: "a", at: 2, limit: 2)
-//		XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .stop)
+//		let nextMutation = TextMutation(string: " ", range: NSRange(1..<2), limit: 2)
+//		XCTAssertEqual(interface.runFilter(filter, on: nextMutation), .none)
 //
-//		let unrelatedMutation = TextMutation(insert: "b", at: 3, limit: 3)
-//		XCTAssertEqual(interface.runFilter(filter, on: unrelatedMutation), .none)
-//
-//		XCTAssertEqual(interface.string, "((ab))")
-//		XCTAssertEqual(interface.selectedRange, NSRange(4..<4))
+//		XCTAssertEqual(interface.string, "' ")
+//		XCTAssertEqual(interface.insertionLocation, 2)
 	}
 }
