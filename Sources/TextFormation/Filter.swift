@@ -36,9 +36,15 @@ public extension Filter {
 
 // ---
 public struct NewTextMutation<Interface: TextSystemInterface> {
-	let range: Interface.TextRange
-	let interface: Interface
-	let string: String
+	public let range: Interface.TextRange
+	public let interface: Interface
+	public let string: String
+	
+	public init(range: Interface.TextRange, interface: Interface, string: String) {
+		self.range = range
+		self.interface = interface
+		self.string = string
+	}
 	
 	public var delta: Int {
 		stringLength - interface.offset(from: range.lowerBound, to: range.upperBound)

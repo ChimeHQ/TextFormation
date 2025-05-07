@@ -1,4 +1,6 @@
 import Foundation
+
+import Rearrange
 import TextStory
 
 public struct StandardOpenPairFilter {
@@ -45,4 +47,35 @@ extension StandardOpenPairFilter: Filter {
     public func processMutation(_ mutation: TextMutation, in interface: TextInterface, with providers: WhitespaceProviders) -> FilterAction {
         return filter.processMutation(mutation, in: interface, with: providers)
     }
+}
+
+public struct NewStandardOpenPairFilter<Interface: TextSystemInterface> {
+	public let openString: String
+	public let closeString: String
+	
+	private let skip: NewSkipFilter<Interface>
+	private let closeWhitespace: NewLineLeadingWhitespaceFilter<Interface>
+	private let closePair: NewClosePairFilter<Interface>
+	private let newlinePair: NewNewlineWithinPairFilter<Interface>
+//	private let openPairReplacement: NewOpenPairReplacementFilter<Interface>
+	private let deleteClose: NewDeleteCloseFilter<Interface>
+	
+	public init(open: String, close: String) {
+		self.openString = open
+		self.closeString = close
+		
+		self.skip = NewSkipFilter(matching: close)
+		self.closeWhitespace = NewLineLeadingWhitespaceFilter(string: close)
+		self.closePair = NewClosePairFilter(open: open, close: close)
+		self.newlinePair = NewNewlineWithinPairFilter(open: open, close: close)
+//		self.openPairReplacement = NewOpenPairReplacementFilter(open: open, close: close)
+		self.deleteClose = NewDeleteCloseFilter(open: open, close: close)
+
+	}
+}
+
+extension NewStandardOpenPairFilter: NewFilter {
+	public mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Output? {
+		nil
+	}
 }
