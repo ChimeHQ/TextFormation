@@ -153,3 +153,34 @@ final class StandardOpenPairFilterTests: XCTestCase {
         XCTAssertEqual(interface.insertionLocation, 0)
     }
 }
+
+import Testing
+
+
+struct NewStandardOpenPairFilterTests {
+	@Test func matchOpen() throws {
+		let system = MockSystem(string: "")
+		var filter = NewStandardOpenPairFilter<MockSystem>(open: "{", close: "}")
+
+		let openOutput = try #require(try system.runFilter(&filter, 0..<0, string: "{"))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
+		#expect(system.string == "{")
+
+		let output = try #require(try system.runFilter(&filter, 1..<1, string: "a"))
+		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 2))
+		#expect(system.string == "{a}")
+	}
+	
+	@Test func matchOpenWithSame() throws {
+		let system = MockSystem(string: "")
+		var filter = NewStandardOpenPairFilter<MockSystem>(same: "-")
+
+		let openOutput = try #require(try system.runFilter(&filter, 0..<0, string: "-"))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
+		#expect(system.string == "-")
+
+		let output = try #require(try system.runFilter(&filter, 1..<1, string: "a"))
+		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 2))
+		#expect(system.string == "-a-")
+	}
+}

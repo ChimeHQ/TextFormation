@@ -117,7 +117,7 @@ public enum LineComponent: Hashable, Sendable {
 public protocol TextSystemInterface: TextRangeCalculating {
 	typealias Output = MutationOutput<TextRange>
 
-	func substring(in range: TextRange) throws -> String
+	func substring(in range: TextRange) throws -> String?
 	/// Defined in units that match the offset parameter of `position(from:, offset:)`
 	func length(of string: String) -> Int
 	func applyMutation(_ range: TextRange, string: String) throws -> Output?
@@ -147,9 +147,8 @@ extension TextSystemInterface where TextRange == NSRange {
 public protocol NewFilter<Interface> {
 	associatedtype Interface: TextSystemInterface
 	typealias Mutation = NewTextMutation<Interface>
-	typealias Output = Interface.Output
 
-	mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Output?
+	mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output?
 }
 
 extension NewFilter where Interface.TextRange == NSRange {
@@ -157,7 +156,7 @@ extension NewFilter where Interface.TextRange == NSRange {
 		_ r: R,
 		_ string: String,
 		_ interface: Interface
-	) throws -> Output? where R.Bound == Int {
+	) throws -> Interface.Output? where R.Bound == Int {
 		let mutation = NewTextMutation(range: NSRange(r), interface: interface, string: string)
 		
 		return try processMutation(mutation)
