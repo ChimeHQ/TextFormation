@@ -100,7 +100,7 @@ public struct NewClosePairFilter<Interface: TextSystemInterface> {
 }
 
 extension NewClosePairFilter: NewFilter {
-	private func triggerHandler(_ mutation: Mutation, at position: Interface.Position) throws -> Output? {
+	private func triggerHandler(_ mutation: Mutation, at position: Interface.Position) throws -> Interface.Output? {
 		let interface = mutation.interface
 		
 		if mutation.string == closeString {
@@ -118,7 +118,7 @@ extension NewClosePairFilter: NewFilter {
 			return nil
 		}
 			
-		return Output(
+		return Interface.Output(
 			selection: mutationOutput.selection,
 			delta: mutationOutput.delta + closingOutput.delta
 		)
@@ -143,7 +143,7 @@ extension NewClosePairFilter: NewFilter {
 		return pos
 	}
 
-	private func handleNewlineInsert(_ mutation: Mutation, at position: Interface.Position) throws -> Output? {
+	private func handleNewlineInsert(_ mutation: Mutation, at position: Interface.Position) throws -> Interface.Output? {
 		// this is sublte stuff. We really want to insert:
 		// \n<leading>\n<leading><close>
 		// however, indentation calculations are very sensitive
@@ -169,7 +169,7 @@ extension NewClosePairFilter: NewFilter {
 
 		let delta = output.delta + firstLeading.delta + secondLeading.delta
 		
-		return Output(
+		return Interface.Output(
 			selection: firstLeading.selection,
 			delta: delta
 		)

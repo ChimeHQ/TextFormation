@@ -70,7 +70,7 @@ public struct NewLineLeadingWhitespaceFilter<Interface: TextSystemInterface> {
 }
 
 extension NewLineLeadingWhitespaceFilter: NewFilter {
-	private func matchHandler(_ mutation: Mutation) throws -> Output? {
+	private func matchHandler(_ mutation: Mutation) throws -> Interface.Output? {
 		let interface = mutation.interface
 		
 		guard let whitespaceRange = interface.textRange(of: .leadingWhitespace, for: mutation.range.lowerBound) else {
@@ -101,7 +101,7 @@ extension NewLineLeadingWhitespaceFilter: NewFilter {
 			return mutationOuput
 		}
 		
-		return Output(
+		return Interface.Output(
 			selection: selection,
 			delta: mutationOuput.delta + whitespaceOutput.delta
 		)
@@ -114,6 +114,6 @@ extension NewLineLeadingWhitespaceFilter: NewFilter {
 			}
 		}
 		
-		return try mutation.apply()
+		return nil
 	}
 }

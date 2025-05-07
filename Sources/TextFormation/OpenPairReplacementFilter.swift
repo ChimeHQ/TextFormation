@@ -54,7 +54,7 @@ public struct NewOpenPairReplacementFilter<Interface: TextSystemInterface> {
 }
 
 extension NewOpenPairReplacementFilter: NewFilter {
-	public mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Output? {
+	public mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
 		let interface = mutation.interface
 		let start = mutation.range.lowerBound
 		let end = mutation.range.upperBound
@@ -91,7 +91,7 @@ extension NewOpenPairReplacementFilter: NewFilter {
 			return nil
 		}
 
-		return Output(
+		return Interface.Output(
 			selection: selection,
 			delta: closing.delta + opening.delta
 		)

@@ -35,18 +35,18 @@ struct NewSkipFilterTests {
 		let system = MockSystem(string: "}")
 		var filter = NewSkipFilter<MockSystem>(matching: "}")
 		
-		let output = try #require(try filter.processMutation(0..<0, "}", system))
+		let output = try #require(try system.runFilter(&filter, 0..<0, string: "}"))
 		
 		#expect(output == MutationOutput(selection: NSRange(1..<1), delta: 0))
 		#expect(system.string == "}")
 	}
 	
 	@Test func noSkip() throws {
-		let system = MockSystem(string: "a")
+		let system = MockSystem(string: "")
 		var filter = NewSkipFilter<MockSystem>(matching: "}")
 		
-		try #require(try filter.processMutation(0..<0, "}", system) == nil)
+		_ = try #require(try system.runFilter(&filter, 0..<0, string: "}"))
 		
-		#expect(system.string == "a")
+		#expect(system.string == "}")
 	}
 }

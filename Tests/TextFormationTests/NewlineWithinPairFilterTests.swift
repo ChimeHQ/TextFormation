@@ -65,7 +65,7 @@ struct NewNewlineWithinPairFilterTests {
 			.applyLeadingWhitespace("\t", NSRange(4..<4)),
 		]
 
-		let output = try #require(try filter.processMutation(3..<3, "\n", system))
+		let output = try #require(try system.runFilter(&filter, 3..<3, string: "\n"))
 		#expect(output == MutationOutput(selection: NSRange(5..<5), delta: 4))
 		#expect(system.string == "abc\n\t\n\tdef")
 	}
