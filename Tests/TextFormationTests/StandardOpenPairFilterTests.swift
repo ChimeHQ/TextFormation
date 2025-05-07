@@ -170,7 +170,7 @@ struct NewStandardOpenPairFilterTests {
 		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 2))
 		#expect(system.string == "{a}")
 	}
-	
+
 	@Test func matchOpenWithSame() throws {
 		let system = MockSystem(string: "")
 		var filter = NewStandardOpenPairFilter<MockSystem>(same: "-")
@@ -182,5 +182,31 @@ struct NewStandardOpenPairFilterTests {
 		let output = try #require(try system.runFilter(&filter, 1..<1, string: "a"))
 		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 2))
 		#expect(system.string == "-a-")
+	}
+
+	@Test func closeWithoutLeadingWhitespace() throws {
+		let system = MockSystem(string: "a")
+		var filter = NewStandardOpenPairFilter<MockSystem>(open: "{", close: "}")
+
+		let openOutput = try #require(try system.runFilter(&filter, 1..<1, string: "}"))
+		#expect(openOutput == MutationOutput(selection: NSRange(2..<2), delta: 1))
+		#expect(system.string == "a}")
+	}
+
+	@Test func testSkipCloseAfterMatchingOpen() throws {
+		let system = MockSystem(string: "")
+		var filter = NewStandardOpenPairFilter<MockSystem>(open: "{", close: "}")
+
+		let openOutput = try #require(try system.runFilter(&filter, 0..<0, string: "{"))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
+		#expect(system.string == "{")
+
+		let output = try #require(try system.runFilter(&filter, 1..<1, string: "a"))
+		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 2))
+		#expect(system.string == "{a}")
+
+		let closeOutput = try #require(try system.runFilter(&filter, 2..<2, string: "}"))
+		#expect(closeOutput == MutationOutput(selection: NSRange(3..<3), delta: 0))
+		#expect(system.string == "{a}")
 	}
 }
