@@ -1,4 +1,5 @@
 {
+  "originHash" : "6091314d1704024c90b8f69fb708629e0f808bd0e0d919bd2e018a35415ba9cd",
   "pins" : [
     {
       "identity" : "rearrange",
@@ -6,9 +7,9 @@
       "location" : "https://github.com/ChimeHQ/Rearrange",
       "state" : {
         "branch" : "main",
-        "revision" : "eae38792ce4cc4c8ba74632d63109b35163f5877"
+        "revision" : "2bfff9a3806321aabf2e57b68f561b70df639306"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
