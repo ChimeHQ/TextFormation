@@ -1,4 +1,4 @@
-// swift-tools-version: 5.8
+// swift-tools-version: 6.0
 
 import PackageDescription
 
@@ -15,20 +15,9 @@ let package = Package(
 	],
 	dependencies: [
 		.package(url: "https://github.com/ChimeHQ/Rearrange", branch: "main"),
-		.package(url: "https://github.com/ChimeHQ/TextStory", from: "0.9.0"),
 	],
 	targets: [
-		.target(name: "TextFormation", dependencies: ["Rearrange", "TextStory"]),
+		.target(name: "TextFormation", dependencies: ["Rearrange"]),
 		.testTarget(name: "TextFormationTests", dependencies: ["TextFormation"]),
 	]
 )
-
-let swiftSettings: [SwiftSetting] = [
-	.enableExperimentalFeature("StrictConcurrency")
-]
-
-for target in package.targets {
-	var settings = target.swiftSettings ?? []
-	settings.append(contentsOf: swiftSettings)
-	target.swiftSettings = settings
-}
