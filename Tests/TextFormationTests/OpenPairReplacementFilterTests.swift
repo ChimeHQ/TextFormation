@@ -3,7 +3,7 @@ import Testing
 
 import TextFormation
 
-struct NewOpenPairReplacementFilterTests {
+struct OpenPairReplacementFilterTests {
 	@Test func match() throws {
 		let system = MockSystem(string: " ")
 		var filter = NewOpenPairReplacementFilter<MockSystem>(open: "abc", close: "def")

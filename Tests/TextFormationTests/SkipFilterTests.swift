@@ -3,7 +3,7 @@ import Testing
 
 import TextFormation
 
-struct NewSkipFilterTests {
+struct SkipFilterTests {
 	@Test func singleCharacterSkip() throws {
 		let system = MockSystem(string: "}")
 		var filter = NewSkipFilter<MockSystem>(matching: "}")

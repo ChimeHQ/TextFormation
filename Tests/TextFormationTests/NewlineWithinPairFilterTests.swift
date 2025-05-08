@@ -3,7 +3,7 @@ import Testing
 
 import TextFormation
 
-struct NewNewlineWithinPairFilterTests {
+struct NewlineWithinPairFilterTests {
 	@Test func match() throws {
 		let system = MockSystem(string: "abcdef")
 		var filter = NewNewlineWithinPairFilter<MockSystem>(open: "abc", close: "def")

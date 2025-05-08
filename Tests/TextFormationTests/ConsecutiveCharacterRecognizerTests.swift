@@ -3,7 +3,7 @@ import Testing
 
 import TextFormation
 
-struct NewConsecutiveCharacterRecognizerTests {
+struct ConsecutiveCharacterRecognizerTests {
 	@Test func matching() throws {
 		let system = MockSystem(string: "")
 		var recognizer = NewConsecutiveCharacterRecognizer<MockSystem>(matching: "abc")

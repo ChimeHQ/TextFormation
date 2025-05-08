@@ -3,7 +3,7 @@ import Testing
 
 import TextFormation
 
-struct NewLineLeadingWhitespaceFilterTests {
+struct LineLeadingWhitespaceFilterTests {
 	@Test func testMatching() throws {
 		let system = MockSystem(string: "")
 		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")

@@ -3,7 +3,7 @@ import Testing
 
 import TextFormation
 
-struct NewNewlineProcessingFilterTests {
+struct NewlineProcessingFilterTests {
 	@Test func matchingAfterNothing() throws {
 		let system = MockSystem(string: "")
 		var filter = NewNewlineProcessingFilter<MockSystem>()
