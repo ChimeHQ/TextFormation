@@ -1,6 +1,6 @@
 import Rearrange
 
-public struct NewNewlineWithinPairFilter<Interface: TextSystemInterface> {
+public struct NewlineWithinPairFilter<Interface: TextSystemInterface> {
 	public let openString: String
 	public let closeString: String
 	public let newlineSequence: String
@@ -12,7 +12,7 @@ public struct NewNewlineWithinPairFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewNewlineWithinPairFilter: Filter {
+extension NewlineWithinPairFilter: Filter {
 	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		let interface = mutation.interface
 		let pos = mutation.range.lowerBound

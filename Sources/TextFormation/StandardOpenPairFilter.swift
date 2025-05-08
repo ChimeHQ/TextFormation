@@ -1,32 +1,32 @@
 import Rearrange
 
-public struct NewStandardOpenPairFilter<Interface: TextSystemInterface> {
+public struct StandardOpenPairFilter<Interface: TextSystemInterface> {
 	public let openString: String
 	public let closeString: String
 	
-	private let skip: NewSkipFilter<Interface>
-	private var closeWhitespace: NewLineLeadingWhitespaceFilter<Interface>?
-	private var closePair: NewClosePairFilter<Interface>
-	private var newlinePair: NewNewlineWithinPairFilter<Interface>
-	private var openPairReplacement: NewOpenPairReplacementFilter<Interface>
-	private let deleteClose: NewDeleteCloseFilter<Interface>
+	private let skip: SkipFilter<Interface>
+	private var closeWhitespace: LineLeadingWhitespaceFilter<Interface>?
+	private var closePair: ClosePairFilter<Interface>
+	private var newlinePair: NewlineWithinPairFilter<Interface>
+	private var openPairReplacement: OpenPairReplacementFilter<Interface>
+	private let deleteClose: DeleteCloseFilter<Interface>
 	
 	public init(open: String, close: String) {
 		self.openString = open
 		self.closeString = close
 		
-		self.skip = NewSkipFilter(matching: close)
+		self.skip = SkipFilter(matching: close)
 		
 		if open != close {
-			self.closeWhitespace = NewLineLeadingWhitespaceFilter(string: close)
+			self.closeWhitespace = LineLeadingWhitespaceFilter(string: close)
 		} else {
 			self.closeWhitespace = nil
 		}
 		
-		self.closePair = NewClosePairFilter(open: open, close: close)
-		self.newlinePair = NewNewlineWithinPairFilter(open: open, close: close)
-		self.openPairReplacement = NewOpenPairReplacementFilter(open: open, close: close)
-		self.deleteClose = NewDeleteCloseFilter(open: open, close: close)
+		self.closePair = ClosePairFilter(open: open, close: close)
+		self.newlinePair = NewlineWithinPairFilter(open: open, close: close)
+		self.openPairReplacement = OpenPairReplacementFilter(open: open, close: close)
+		self.deleteClose = DeleteCloseFilter(open: open, close: close)
 	}
 	
 	public init(same: String) {
@@ -34,7 +34,7 @@ public struct NewStandardOpenPairFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewStandardOpenPairFilter: Filter {
+extension StandardOpenPairFilter: Filter {
 	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		if let output = try skip.processMutation(mutation) {
 			return output

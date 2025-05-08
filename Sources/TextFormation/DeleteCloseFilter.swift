@@ -1,6 +1,6 @@
 import Rearrange
 
-public struct NewDeleteCloseFilter<Interface: TextSystemInterface> {
+public struct DeleteCloseFilter<Interface: TextSystemInterface> {
 	public let openString: String
 	public let closeString: String
 	private let length: Int
@@ -18,7 +18,7 @@ public struct NewDeleteCloseFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewDeleteCloseFilter: Filter {
+extension DeleteCloseFilter: Filter {
 	public func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		let interface = mutation.interface
 		let range = mutation.range

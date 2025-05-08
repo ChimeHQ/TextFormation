@@ -1,6 +1,6 @@
 import Rearrange
 
-public struct NewSkipFilter<Interface: TextSystemInterface> {
+public struct SkipFilter<Interface: TextSystemInterface> {
 	public let matchString: String
 
 	public init(matching string: String) {
@@ -8,7 +8,7 @@ public struct NewSkipFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewSkipFilter: Filter {
+extension SkipFilter: Filter {
 	public func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		let string = mutation.string
 		let interface = mutation.interface

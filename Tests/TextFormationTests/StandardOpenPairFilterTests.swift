@@ -6,7 +6,7 @@ import TextFormation
 struct StandardOpenPairFilterTests {
 	@Test func matchOpen() throws {
 		let system = MockSystem(string: "")
-		var filter = NewStandardOpenPairFilter<MockSystem>(open: "{", close: "}")
+		var filter = StandardOpenPairFilter<MockSystem>(open: "{", close: "}")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "{"))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
@@ -19,7 +19,7 @@ struct StandardOpenPairFilterTests {
 
 	@Test func matchOpenWithSame() throws {
 		let system = MockSystem(string: "")
-		var filter = NewStandardOpenPairFilter<MockSystem>(same: "-")
+		var filter = StandardOpenPairFilter<MockSystem>(same: "-")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "-"))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
@@ -32,7 +32,7 @@ struct StandardOpenPairFilterTests {
 
 	@Test func closeWithoutLeadingWhitespace() throws {
 		let system = MockSystem(string: "a")
-		var filter = NewStandardOpenPairFilter<MockSystem>(open: "{", close: "}")
+		var filter = StandardOpenPairFilter<MockSystem>(open: "{", close: "}")
 
 		let openOutput = try #require(try system.runFilter(&filter, 1..<1, "}"))
 		#expect(openOutput == MutationOutput(selection: NSRange(2..<2), delta: 1))
@@ -41,7 +41,7 @@ struct StandardOpenPairFilterTests {
 
 	@Test func testSkipCloseAfterMatchingOpen() throws {
 		let system = MockSystem(string: "")
-		var filter = NewStandardOpenPairFilter<MockSystem>(open: "{", close: "}")
+		var filter = StandardOpenPairFilter<MockSystem>(open: "{", close: "}")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "{"))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
@@ -58,7 +58,7 @@ struct StandardOpenPairFilterTests {
 	
 	@Test func applyWhitespaceOnClose() throws {
 		let system = MockSystem(string: "")
-		var filter = NewStandardOpenPairFilter<MockSystem>(open: "{", close: "}")
+		var filter = StandardOpenPairFilter<MockSystem>(open: "{", close: "}")
 
 		system.responses = [
 			.whitespaceTextRange(0, .leading, NSRange(0..<0)),
@@ -72,7 +72,7 @@ struct StandardOpenPairFilterTests {
 	
 	@Test func surroundRange() throws {
 		let system = MockSystem(string: "abc")
-		var filter = NewStandardOpenPairFilter<MockSystem>(open: "{", close: "}")
+		var filter = StandardOpenPairFilter<MockSystem>(open: "{", close: "}")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<3, "{"))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<4), delta: 2))
@@ -86,7 +86,7 @@ struct StandardOpenPairFilterTests {
 
 	@Test func skipClose() throws {
 		let system = MockSystem(string: "}")
-		var filter = NewStandardOpenPairFilter<MockSystem>(open: "{", close: "}")
+		var filter = StandardOpenPairFilter<MockSystem>(open: "{", close: "}")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "}"))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 0))
@@ -95,7 +95,7 @@ struct StandardOpenPairFilterTests {
 
 	@Test func doubleOpen() throws {
 		let system = MockSystem(string: "")
-		var filter = NewStandardOpenPairFilter<MockSystem>(open: "{", close: "}")
+		var filter = StandardOpenPairFilter<MockSystem>(open: "{", close: "}")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "{"))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
@@ -112,7 +112,7 @@ struct StandardOpenPairFilterTests {
 
 	@Test func doubleOpenDelete() throws {
 		let system = MockSystem(string: "{{}}")
-		var filter = NewStandardOpenPairFilter<MockSystem>(open: "{", close: "}")
+		var filter = StandardOpenPairFilter<MockSystem>(open: "{", close: "}")
 
 		let deleteOutput = try #require(try system.runFilter(&filter, 1..<2, ""))
 		#expect(deleteOutput == MutationOutput(selection: NSRange(1..<1), delta: -2))

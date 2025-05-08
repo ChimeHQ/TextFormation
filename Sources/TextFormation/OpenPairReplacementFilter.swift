@@ -1,6 +1,6 @@
 import Rearrange
 
-public struct NewOpenPairReplacementFilter<Interface: TextSystemInterface> {
+public struct OpenPairReplacementFilter<Interface: TextSystemInterface> {
 	public let openString: String
 	public let closeString: String
 
@@ -10,7 +10,7 @@ public struct NewOpenPairReplacementFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewOpenPairReplacementFilter: Filter {
+extension OpenPairReplacementFilter: Filter {
 	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		let interface = mutation.interface
 		let start = mutation.range.lowerBound

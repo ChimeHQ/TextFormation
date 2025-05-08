@@ -6,7 +6,7 @@ import TextFormation
 struct NewlineProcessingFilterTests {
 	@Test func matchingAfterNothing() throws {
 		let system = MockSystem(string: "")
-		var filter = NewNewlineProcessingFilter<MockSystem>()
+		var filter = NewlineProcessingFilter<MockSystem>()
 
 		system.responses = [
 			.applyWhitespace(1, .leading, "lll", NSRange(1..<1)),
@@ -20,7 +20,7 @@ struct NewlineProcessingFilterTests {
 	
 	@Test func matchingAfterNewline() throws {
 		let system = MockSystem(string: "\n")
-		var filter = NewNewlineProcessingFilter<MockSystem>()
+		var filter = NewlineProcessingFilter<MockSystem>()
 
 		system.responses = [
 			.applyWhitespace(2, .leading, "lll", NSRange(2..<2)),
@@ -34,7 +34,7 @@ struct NewlineProcessingFilterTests {
 	
 	@Test func matchingWithTrailingWhitespace() throws {
 		let system = MockSystem(string: "a")
-		var filter = NewNewlineProcessingFilter<MockSystem>()
+		var filter = NewlineProcessingFilter<MockSystem>()
 
 		system.responses = [
 			.applyWhitespace(2, .leading, "lll", NSRange(2..<2)),
@@ -48,7 +48,7 @@ struct NewlineProcessingFilterTests {
 
 	@Test func matchingAfterWhitespaceOnlyLine() throws {
 		let system = MockSystem(string: "\t")
-		var filter = NewNewlineProcessingFilter<MockSystem>()
+		var filter = NewlineProcessingFilter<MockSystem>()
 
 		system.responses = [
 			.applyWhitespace(2, .leading, "lll", NSRange(2..<2)),
@@ -62,7 +62,7 @@ struct NewlineProcessingFilterTests {
 
 	@Test func matchingWithCharactersAndTrailingTab() throws {
 		let system = MockSystem(string: "abc\t")
-		var filter = NewNewlineProcessingFilter<MockSystem>()
+		var filter = NewlineProcessingFilter<MockSystem>()
 
 		system.responses = [
 			.applyWhitespace(5, .leading, "lll", NSRange(5..<5)),
@@ -76,7 +76,7 @@ struct NewlineProcessingFilterTests {
 
 	@Test func newlineAfterLeadingOnlyLine() throws {
 		let system = MockSystem(string: "\t\n\t")
-		var filter = NewNewlineProcessingFilter<MockSystem>()
+		var filter = NewlineProcessingFilter<MockSystem>()
 
 		system.responses = [
 			.applyWhitespace(4, .leading, "lll", NSRange(4..<4)),
@@ -90,7 +90,7 @@ struct NewlineProcessingFilterTests {
 
 	@Test func testMatchingWithCustomSequence() throws {
 		let system = MockSystem(string: "")
-		var filter = NewNewlineProcessingFilter<MockSystem>(lineEndingSequence: "crlf")
+		var filter = NewlineProcessingFilter<MockSystem>(lineEndingSequence: "crlf")
 
 		system.responses = [
 			.applyWhitespace(4, .leading, "lll", NSRange(4..<4)),

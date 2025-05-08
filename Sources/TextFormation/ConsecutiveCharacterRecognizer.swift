@@ -1,7 +1,7 @@
 import Foundation
 import Rearrange
 
-public struct NewConsecutiveCharacterRecognizer<Interface: TextSystemInterface> {
+public struct ConsecutiveCharacterRecognizer<Interface: TextSystemInterface> {
 	enum State {
 		case idle
 		case tracking(Interface.Position, Int)

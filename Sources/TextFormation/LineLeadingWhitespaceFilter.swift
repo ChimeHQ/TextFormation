@@ -1,16 +1,16 @@
 import Rearrange
 
-public struct NewLineLeadingWhitespaceFilter<Interface: TextSystemInterface> {
-	private var recognizer: NewConsecutiveCharacterRecognizer<Interface>
+public struct LineLeadingWhitespaceFilter<Interface: TextSystemInterface> {
+	private var recognizer: ConsecutiveCharacterRecognizer<Interface>
 	
 	public var mustOccurAtLineLeadingWhitespace: Bool = true
 	
 	public init(string: String) {
-		self.recognizer = NewConsecutiveCharacterRecognizer(matching: string)
+		self.recognizer = ConsecutiveCharacterRecognizer(matching: string)
 	}
 }
 
-extension NewLineLeadingWhitespaceFilter: Filter {
+extension LineLeadingWhitespaceFilter: Filter {
 	private func matchHandler(_ mutation: Mutation) throws -> Interface.Output? {
 		let interface = mutation.interface
 		

@@ -3,7 +3,7 @@ import Foundation
 import Rearrange
 
 @available(macOS 13.0.0, *)
-public struct NewCompositeFilter<Interface: TextSystemInterface> {
+public struct CompositeFilter<Interface: TextSystemInterface> {
 	public private(set) var filters: [any Filter<Interface>]
 
 	public init(filters: [any Filter<Interface>]) {
@@ -12,7 +12,7 @@ public struct NewCompositeFilter<Interface: TextSystemInterface> {
 }
 
 @available(macOS 13.0.0, *)
-extension NewCompositeFilter: Filter {
+extension CompositeFilter: Filter {
 	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		for index in filters.indices {
 			if let output = try filters[index].processMutation(mutation) {

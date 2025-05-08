@@ -6,7 +6,7 @@ import TextFormation
 struct DeleteCloseFilterTests {
 	@Test func deleteOpenWithMatchingClose() throws {
 		let system = MockSystem(string: "{}")
-		var filter = NewDeleteCloseFilter<MockSystem>(open: "{", close: "}")
+		var filter = DeleteCloseFilter<MockSystem>(open: "{", close: "}")
 		
 		let output = try #require(try system.runFilter(&filter, 0..<1, ""))
 		#expect(output == MutationOutput(selection: NSRange(0..<0), delta: -2))
@@ -15,7 +15,7 @@ struct DeleteCloseFilterTests {
 	
 	@Test func deleteOpenWithMatchingCloseWithPrefixAndSuffix() throws {
 		let system = MockSystem(string: "ll{}tt")
-		var filter = NewDeleteCloseFilter<MockSystem>(open: "{", close: "}")
+		var filter = DeleteCloseFilter<MockSystem>(open: "{", close: "}")
 
 		let output = try #require(try system.runFilter(&filter, 2..<3, ""))
 		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: -2))
@@ -24,7 +24,7 @@ struct DeleteCloseFilterTests {
 
 	@Test func deleteOpenWithoutMatchingClose() throws {
 		let system = MockSystem(string: "ll{ }tt")
-		var filter = NewDeleteCloseFilter<MockSystem>(open: "{", close: "}")
+		var filter = DeleteCloseFilter<MockSystem>(open: "{", close: "}")
 
 		let output = try #require(try system.runFilter(&filter, 2..<3, ""))
 		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: -1))

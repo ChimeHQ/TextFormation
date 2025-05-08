@@ -6,7 +6,7 @@ import TextFormation
 struct ClosePairFilterTests {
 	@Test func matching() throws {
 		let system = MockSystem(string: "")
-		var filter = NewClosePairFilter<MockSystem>(open: " do |", close: "|")
+		var filter = ClosePairFilter<MockSystem>(open: " do |", close: "|")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, " do |"))
 		#expect(openOutput == MutationOutput(selection: NSRange(5..<5), delta: 5))
@@ -20,7 +20,7 @@ struct ClosePairFilterTests {
 	
 	@Test func closeAfterMatching() throws {
 		let system = MockSystem(string: "")
-		var filter = NewClosePairFilter<MockSystem>(open: " do |", close: "|")
+		var filter = ClosePairFilter<MockSystem>(open: " do |", close: "|")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, " do |"))
 		#expect(openOutput == MutationOutput(selection: NSRange(5..<5), delta: 5))
@@ -34,7 +34,7 @@ struct ClosePairFilterTests {
 	
 	@Test func deleteAfterMatchingOpen() throws {
 		let system = MockSystem(string: "")
-		var filter = NewClosePairFilter<MockSystem>(open: " do |", close: "|")
+		var filter = ClosePairFilter<MockSystem>(open: " do |", close: "|")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, " do |"))
 		#expect(openOutput == MutationOutput(selection: NSRange(5..<5), delta: 5))
@@ -47,7 +47,7 @@ struct ClosePairFilterTests {
 	
 	@Test func matchWithOpenReplacement() throws {
 		let system = MockSystem(string: "yz")
-		var filter = NewClosePairFilter<MockSystem>(open: "abc", close: "def")
+		var filter = ClosePairFilter<MockSystem>(open: "abc", close: "def")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<1, "abc"))
 		#expect(openOutput == MutationOutput(selection: NSRange(3..<3), delta: 2))
@@ -60,7 +60,7 @@ struct ClosePairFilterTests {
 	
 	@Test func matchThenReplacement() throws {
 		let system = MockSystem(string: "yz")
-		var filter = NewClosePairFilter<MockSystem>(open: "abc", close: "def")
+		var filter = ClosePairFilter<MockSystem>(open: "abc", close: "def")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<1, "abc"))
 		#expect(openOutput == MutationOutput(selection: NSRange(3..<3), delta: 2))
@@ -73,7 +73,7 @@ struct ClosePairFilterTests {
 	
 	@Test func matchingWithDoubleOpen() throws {
 		let system = MockSystem(string: "")
-		var filter = NewClosePairFilter<MockSystem>(open: "(", close: ")")
+		var filter = ClosePairFilter<MockSystem>(open: "(", close: ")")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "("))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
@@ -94,7 +94,7 @@ struct ClosePairFilterTests {
 	
 	@Test func matchingWithTripleOpen() throws {
 		let system = MockSystem(string: "")
-		var filter = NewClosePairFilter<MockSystem>(open: "(", close: ")")
+		var filter = ClosePairFilter<MockSystem>(open: "(", close: ")")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "("))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
@@ -119,7 +119,7 @@ struct ClosePairFilterTests {
 	
 	@Test func matchThenNewline() throws {
 		let system = MockSystem(string: "")
-		var filter = NewClosePairFilter<MockSystem>(open: "abc", close: "def")
+		var filter = ClosePairFilter<MockSystem>(open: "abc", close: "def")
 		system.responses = [
 			.applyWhitespace(5, .leading, "\t", NSRange(5..<5)),
 			.applyWhitespace(4, .leading, "\t", NSRange(4..<4)),
@@ -136,7 +136,7 @@ struct ClosePairFilterTests {
 	
 	@Test func matchingWithSameOpenClose() throws {
 		let system = MockSystem(string: "")
-		var filter = NewClosePairFilter<MockSystem>(open: "'", close: "'")
+		var filter = ClosePairFilter<MockSystem>(open: "'", close: "'")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "'"))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
@@ -149,7 +149,7 @@ struct ClosePairFilterTests {
 	
 	@Test func closeAfterMatchingWithSameOpenClose() throws {
 		let system = MockSystem(string: "")
-		var filter = NewClosePairFilter<MockSystem>(open: "'", close: "'")
+		var filter = ClosePairFilter<MockSystem>(open: "'", close: "'")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "'"))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
@@ -162,7 +162,7 @@ struct ClosePairFilterTests {
 	
 	@Test func anotherMutationAfterCloseAfterMatchingWithSameOpenClose() throws {
 		let system = MockSystem(string: "")
-		var filter = NewClosePairFilter<MockSystem>(open: "'", close: "'")
+		var filter = ClosePairFilter<MockSystem>(open: "'", close: "'")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "'"))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
@@ -183,7 +183,7 @@ struct ClosePairFilterTests {
 	
 	@Test func matchWithReplacementWithSameOpenClose() throws {
 		let system = MockSystem(string: "yz")
-		var filter = NewClosePairFilter<MockSystem>(open: "'", close: "'")
+		var filter = ClosePairFilter<MockSystem>(open: "'", close: "'")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<1, "'"))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 0))
@@ -196,7 +196,7 @@ struct ClosePairFilterTests {
 
 	@Test func matchThenReplacementWithSameOpenClose() throws {
 		let system = MockSystem(string: "yz")
-		var filter = NewClosePairFilter<MockSystem>(open: "'", close: "'")
+		var filter = ClosePairFilter<MockSystem>(open: "'", close: "'")
 
 		let openOutput = try #require(try system.runFilter(&filter, 0..<1, "'"))
 		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 0))

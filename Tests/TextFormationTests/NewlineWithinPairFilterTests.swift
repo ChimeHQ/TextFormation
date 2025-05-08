@@ -6,7 +6,7 @@ import TextFormation
 struct NewlineWithinPairFilterTests {
 	@Test func match() throws {
 		let system = MockSystem(string: "abcdef")
-		var filter = NewNewlineWithinPairFilter<MockSystem>(open: "abc", close: "def")
+		var filter = NewlineWithinPairFilter<MockSystem>(open: "abc", close: "def")
 
 		system.responses = [
 			.applyWhitespace(5, .leading, "\t", NSRange(5..<5)),
@@ -20,7 +20,7 @@ struct NewlineWithinPairFilterTests {
 
 	@Test func noMatch() throws {
 		let system = MockSystem(string: "abcdef")
-		var filter = NewNewlineWithinPairFilter<MockSystem>(open: "abc", close: "def")
+		var filter = NewlineWithinPairFilter<MockSystem>(open: "abc", close: "def")
 
 		system.responses = [
 			.applyWhitespace(5, .leading, "\t", NSRange(5..<5)),

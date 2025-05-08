@@ -5,10 +5,10 @@ import Rearrange
 /// Inserts a matching close string when an opening is recognized.
 ///
 /// The logic of this operation is *extremely* complicated.
-public struct NewClosePairFilter<Interface: TextSystemInterface> {
+public struct ClosePairFilter<Interface: TextSystemInterface> {
 	private var locationAfterSkippedClose: Int?
 	private let processAfterTrigger: Bool
-	private var recognizer: NewConsecutiveCharacterRecognizer<Interface>
+	private var recognizer: ConsecutiveCharacterRecognizer<Interface>
 	private var triggerPosition: Interface.Position?
 
 	public let closeString: String
@@ -17,7 +17,7 @@ public struct NewClosePairFilter<Interface: TextSystemInterface> {
 	public init(open: String, close: String, newlineSequence: String = "\n") {
 		self.closeString = close
 		self.newlineSequence = newlineSequence
-		self.recognizer = NewConsecutiveCharacterRecognizer(matching: open)
+		self.recognizer = ConsecutiveCharacterRecognizer(matching: open)
 		
 		// This is tricky! Consider:
 		// open = A, close = A
@@ -30,7 +30,7 @@ public struct NewClosePairFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewClosePairFilter: Filter {
+extension ClosePairFilter: Filter {
 	private func triggerHandler(_ mutation: Mutation, at position: Interface.Position) throws -> Interface.Output? {
 		let interface = mutation.interface
 		

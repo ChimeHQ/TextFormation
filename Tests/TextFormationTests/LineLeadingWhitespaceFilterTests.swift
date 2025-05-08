@@ -6,7 +6,7 @@ import TextFormation
 struct LineLeadingWhitespaceFilterTests {
 	@Test func testMatching() throws {
 		let system = MockSystem(string: "")
-		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
+		var filter = LineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 
 		system.responses = [
 			.whitespaceTextRange(0, .leading, NSRange(0..<0)),
@@ -21,7 +21,7 @@ struct LineLeadingWhitespaceFilterTests {
 	
 	@Test func matchingOneCharacterAtATime() throws {
 		let system = MockSystem(string: "")
-		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
+		var filter = LineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 		
 		system.responses = [
 			.whitespaceTextRange(2, .leading, NSRange(0..<0)),
@@ -38,7 +38,7 @@ struct LineLeadingWhitespaceFilterTests {
 	
 	@Test func matchingWithWhitespacePrefix() throws {
 		let system = MockSystem(string: "def ")
-		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
+		var filter = LineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 		filter.mustOccurAtLineLeadingWhitespace = false
 
 		system.responses = [
@@ -54,7 +54,7 @@ struct LineLeadingWhitespaceFilterTests {
 	
 	@Test func matchingWithoutWhitespacePrefix() throws {
 		let system = MockSystem(string: "def")
-		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
+		var filter = LineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 		
 		system.responses = [
 			.whitespaceTextRange(3, .leading, NSRange(0..<0)),
@@ -69,7 +69,7 @@ struct LineLeadingWhitespaceFilterTests {
 	
 	@Test func matchingWithDifferentIndentation() throws {
 		let system = MockSystem(string: " ")
-		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
+		var filter = LineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 
 		system.responses = [
 			.whitespaceTextRange(1, .leading, NSRange(0..<1)),
@@ -84,7 +84,7 @@ struct LineLeadingWhitespaceFilterTests {
 	
 	@Test func matchingWithSameIndentation() throws {
 		let system = MockSystem(string: "\t")
-		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
+		var filter = LineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 
 		system.responses = [
 			.whitespaceTextRange(1, .leading, NSRange(0..<1)),
@@ -99,7 +99,7 @@ struct LineLeadingWhitespaceFilterTests {
 	
 	@Test func noMatch() throws {
 		let system = MockSystem(string: "")
-		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
+		var filter = LineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 
 		let output = try #require(try system.runFilter(&filter, 0..<0, "ab"))
 		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 2))

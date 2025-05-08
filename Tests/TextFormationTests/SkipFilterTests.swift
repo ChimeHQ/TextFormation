@@ -6,7 +6,7 @@ import TextFormation
 struct SkipFilterTests {
 	@Test func singleCharacterSkip() throws {
 		let system = MockSystem(string: "}")
-		var filter = NewSkipFilter<MockSystem>(matching: "}")
+		var filter = SkipFilter<MockSystem>(matching: "}")
 		
 		let output = try #require(try system.runFilter(&filter, 0..<0, "}"))
 		
@@ -16,7 +16,7 @@ struct SkipFilterTests {
 	
 	@Test func noSkip() throws {
 		let system = MockSystem(string: "")
-		var filter = NewSkipFilter<MockSystem>(matching: "}")
+		var filter = SkipFilter<MockSystem>(matching: "}")
 		
 		_ = try #require(try system.runFilter(&filter, 0..<0, "}"))
 		
