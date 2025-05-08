@@ -8,15 +8,6 @@
         "branch" : "main",
         "revision" : "eae38792ce4cc4c8ba74632d63109b35163f5877"
       }
-    },
-    {
-      "identity" : "textstory",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ChimeHQ/TextStory",
-      "state" : {
-        "revision" : "8dc9148b46fcf93b08ea9d4ef9bdb5e4f700e008",
-        "version" : "0.9.0"
-      }
     }
   ],
   "version" : 2
