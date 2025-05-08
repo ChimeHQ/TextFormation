@@ -1,5 +1,6 @@
 import Foundation
 
+#if os(macOS) || os(iOS) || os(tvOS) || os(visionOS)
 /// Implements a large portion of the TextSystem protocol for NSMutableAttributedString-compatible backing stores.
 @available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
 public struct MutableStringPartialSystem {
@@ -65,3 +66,4 @@ extension MutableStringPartialSystem {
 		return MutationOutput<NSRange>(selection: newSelection, delta: delta)
 	}
 }
+#endif
