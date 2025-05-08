@@ -35,7 +35,7 @@ struct NewSkipFilterTests {
 		let system = MockSystem(string: "}")
 		var filter = NewSkipFilter<MockSystem>(matching: "}")
 		
-		let output = try #require(try system.runFilter(&filter, 0..<0, string: "}"))
+		let output = try #require(try system.runFilter(&filter, 0..<0, "}"))
 		
 		#expect(output == MutationOutput(selection: NSRange(1..<1), delta: 0))
 		#expect(system.string == "}")
@@ -45,7 +45,7 @@ struct NewSkipFilterTests {
 		let system = MockSystem(string: "")
 		var filter = NewSkipFilter<MockSystem>(matching: "}")
 		
-		_ = try #require(try system.runFilter(&filter, 0..<0, string: "}"))
+		_ = try #require(try system.runFilter(&filter, 0..<0, "}"))
 		
 		#expect(system.string == "}")
 	}

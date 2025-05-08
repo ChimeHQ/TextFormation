@@ -8,7 +8,7 @@ final class MockSystem: TextSystemInterface {
 	enum Response: Hashable {
 		case applyTrailingWhitespace(String, TextRange)
 		case applyLeadingWhitespace(String, TextRange)
-		case componentTextRange(LineComponent, Int, TextRange?)
+		case whitespaceTextRange(Int, Direction, TextRange?)
 	}
 
 	let content: NSMutableString
@@ -60,15 +60,15 @@ final class MockSystem: TextSystemInterface {
 		}
 	}
 	
-	func textRange(of component: LineComponent, for position: Int) -> NSRange? {
-		guard case let .componentTextRange(expectedComp, expectedPos, range) = responses.first else {
+	func whitespaceTextRange(at position: Position, in direction: Direction) -> NSRange? {
+		guard case let .whitespaceTextRange(expectedPos, expectedDir, range) = responses.first else {
 			return nil
 		}
 		
 		responses.removeFirst()
 		
 		precondition(expectedPos == position)
-		precondition(expectedComp == component)
+		precondition(expectedDir == direction)
 		
 		return range
 	}

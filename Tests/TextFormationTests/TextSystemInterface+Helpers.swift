@@ -12,11 +12,11 @@ extension TextSystemInterface where TextRange == NSRange {
 		
 		return try applyMutation(range, string: string)
 	}
-	
+
 	func runFilter<F: NewFilter<Self>, R: RangeExpression>(
 		_ filter: inout F,
 		_ range: R,
-		string: String
+		_ string: String
 	) throws -> Output? where R.Bound == Int {
 		try runFilter(&filter, range: NSRange(range), string: string)
 	}

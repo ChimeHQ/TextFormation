@@ -185,13 +185,13 @@ extension NewClosePairFilter: NewFilter {
 		guard let pos = triggeringPosition(with: mutation) else {
 			try recognizerCheck(mutation)
 			
-			return try mutation.apply()
+			return nil
 		}
 		
 		if processAfterTrigger {
 			try recognizerCheck(mutation)
 		}
 		
-		return try triggerHandler(mutation, at: pos) ?? mutation.apply()
+		return try triggerHandler(mutation, at: pos)
 	}
 }
