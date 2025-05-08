@@ -34,8 +34,8 @@ public struct NewStandardOpenPairFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewStandardOpenPairFilter: NewFilter {
-	public mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
+extension NewStandardOpenPairFilter: Filter {
+	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		if let output = try skip.processMutation(mutation) {
 			return output
 		}

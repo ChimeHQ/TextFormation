@@ -10,7 +10,7 @@ public struct NewLineLeadingWhitespaceFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewLineLeadingWhitespaceFilter: NewFilter {
+extension NewLineLeadingWhitespaceFilter: Filter {
 	private func matchHandler(_ mutation: Mutation) throws -> Interface.Output? {
 		let interface = mutation.interface
 		
@@ -48,7 +48,7 @@ extension NewLineLeadingWhitespaceFilter: NewFilter {
 		)
 	}
 	
-	public mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
+	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		if try recognizer.processMutation(mutation) {
 			if let value = try matchHandler(mutation) {
 				return value

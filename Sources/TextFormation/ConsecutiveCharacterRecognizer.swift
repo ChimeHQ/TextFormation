@@ -20,7 +20,7 @@ public struct NewConsecutiveCharacterRecognizer<Interface: TextSystemInterface> 
 		self.state = .idle
 	}
 	
-	private mutating func processPossibleFirstMutation(_ mutation: NewTextMutation<Interface>) {
+	private mutating func processPossibleFirstMutation(_ mutation: TextMutation<Interface>) {
 		self.state = .idle
 
 		if matchingString.hasPrefix(mutation.string) == false {
@@ -39,7 +39,7 @@ public struct NewConsecutiveCharacterRecognizer<Interface: TextSystemInterface> 
 		self.state = .tracking(postApplyRange.upperBound, mutation.string.count)
 	}
 
-	private mutating func updateState(_ mutation: NewTextMutation<Interface>) throws {
+	private mutating func updateState(_ mutation: TextMutation<Interface>) throws {
 		if mutation.string.isEmpty {
 			resetState()
 			return
@@ -81,7 +81,7 @@ public struct NewConsecutiveCharacterRecognizer<Interface: TextSystemInterface> 
 	}
 
 	@discardableResult
-	public mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Bool {
+	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Bool {
 		try updateState(mutation)
 
 		switch state {

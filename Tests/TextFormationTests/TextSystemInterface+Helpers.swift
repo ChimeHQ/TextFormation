@@ -3,8 +3,8 @@ import Foundation
 import TextFormation
 
 extension TextSystemInterface where TextRange == NSRange {
-	func runFilter<F: NewFilter<Self>>(_ filter: inout F, range: TextRange, string: String) throws -> Output? {
-		let mutation = NewTextMutation(range: range, interface: self, string: string)
+	func runFilter<F: Filter<Self>>(_ filter: inout F, range: TextRange, string: String) throws -> Output? {
+		let mutation = TextMutation(range: range, interface: self, string: string)
 		
 		if let output = try filter.processMutation(mutation) {
 			return output
@@ -13,7 +13,7 @@ extension TextSystemInterface where TextRange == NSRange {
 		return try applyMutation(range, string: string)
 	}
 
-	func runFilter<F: NewFilter<Self>, R: RangeExpression>(
+	func runFilter<F: Filter<Self>, R: RangeExpression>(
 		_ filter: inout F,
 		_ range: R,
 		_ string: String

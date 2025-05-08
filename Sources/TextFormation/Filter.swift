@@ -21,23 +21,23 @@ extension MutationOutput: Hashable where TextRange: Hashable {}
 extension MutationOutput: Sendable where TextRange: Sendable {}
 
 /// Describes a type that can process and apply text mutations.
-public protocol NewFilter<Interface> {
+public protocol Filter<Interface> {
 	associatedtype Interface: TextSystemInterface
-	typealias Mutation = NewTextMutation<Interface>
+	typealias Mutation = TextMutation<Interface>
 
-	mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output?
+	mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output?
 }
 
 #if canImport(Foundation)
 import Foundation
 
-extension NewFilter where Interface.TextRange == NSRange {
+extension Filter where Interface.TextRange == NSRange {
 	public mutating func processMutation<R: RangeExpression>(
 		_ r: R,
 		_ string: String,
 		_ interface: Interface
 	) throws -> Interface.Output? where R.Bound == Int {
-		let mutation = NewTextMutation(range: NSRange(r), interface: interface, string: string)
+		let mutation = TextMutation(range: NSRange(r), interface: interface, string: string)
 		
 		return try processMutation(mutation)
 	}

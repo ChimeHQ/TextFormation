@@ -1,6 +1,6 @@
 import Rearrange
 
-public struct NewTextMutation<Interface: TextSystemInterface> {
+public struct TextMutation<Interface: TextSystemInterface> {
 	public let range: Interface.TextRange
 	public let interface: Interface
 	public let string: String

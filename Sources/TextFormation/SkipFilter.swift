@@ -8,8 +8,8 @@ public struct NewSkipFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewSkipFilter: NewFilter {
-	public func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
+extension NewSkipFilter: Filter {
+	public func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		let string = mutation.string
 		let interface = mutation.interface
 		let range = mutation.range

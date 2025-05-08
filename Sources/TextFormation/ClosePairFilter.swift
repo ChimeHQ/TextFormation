@@ -30,7 +30,7 @@ public struct NewClosePairFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewClosePairFilter: NewFilter {
+extension NewClosePairFilter: Filter {
 	private func triggerHandler(_ mutation: Mutation, at position: Interface.Position) throws -> Interface.Output? {
 		let interface = mutation.interface
 		
@@ -55,7 +55,7 @@ extension NewClosePairFilter: NewFilter {
 		)
 	}
 	
-	private mutating func triggeringPosition(with mutation: NewTextMutation<Interface>) -> Interface.Position? {
+	private mutating func triggeringPosition(with mutation: TextMutation<Interface>) -> Interface.Position? {
 		guard let pos = triggerPosition else {
 			return nil
 		}
@@ -106,13 +106,13 @@ extension NewClosePairFilter: NewFilter {
 		)
 	}
 	
-	private mutating func recognizerCheck(_ mutation: NewTextMutation<Interface>) throws {
+	private mutating func recognizerCheck(_ mutation: TextMutation<Interface>) throws {
 		if try recognizer.processMutation(mutation) {
 			self.triggerPosition = mutation.postApplyRange?.upperBound
 		}
 	}
 	
-	public mutating func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
+	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		guard let pos = triggeringPosition(with: mutation) else {
 			try recognizerCheck(mutation)
 			

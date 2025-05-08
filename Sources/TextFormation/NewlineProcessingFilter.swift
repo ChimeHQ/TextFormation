@@ -8,8 +8,8 @@ public struct NewNewlineProcessingFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewNewlineProcessingFilter: NewFilter {
-	public func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
+extension NewNewlineProcessingFilter: Filter {
+	public func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		if mutation.string != lineEndingSequence {
 			return nil
 		}

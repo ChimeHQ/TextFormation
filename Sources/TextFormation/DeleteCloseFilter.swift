@@ -18,8 +18,8 @@ public struct NewDeleteCloseFilter<Interface: TextSystemInterface> {
 	}
 }
 
-extension NewDeleteCloseFilter: NewFilter {
-	public func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
+extension NewDeleteCloseFilter: Filter {
+	public func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		let interface = mutation.interface
 		let range = mutation.range
 		
