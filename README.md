@@ -1,20 +1,24 @@
+<div align="center">
+
 [![Build Status][build status badge]][build status]
 [![License][license badge]][license]
 [![Platforms][platforms badge]][platforms]
 [![Documentation][documentation badge]][documentation]
+
+</div>
 
 # TextFormation
 
 TextFormation is simple rule system that can be used to implement typing completions and whitespace control. Think matching "}" with "{" and indenting.
 
 > [!WARNING]
-> There's some major work happening on the `feature/process-mutation` branch to support much more sophisticated text mutation patterns
+> This library is undergoing some major changes. Not all functionality is currently implemented in the main branch yet.
 
 ## Integration
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/ChimeHQ/TextFormation", from: "0.8.0")
+    .package(url: "https://github.com/ChimeHQ/TextFormation", branch: "main")
 ]
 ```
 
@@ -104,11 +108,15 @@ TextualIndenter.rubyPatterns
 TextualIndenter.pythonPatterns
 ```
 
-### Suggestions or Feedback
+## Contributing and Collaboration
 
-We'd love to hear from you! Get in touch via an issue or pull request.
+I would love to hear from you! Issues or pull requests work great. Both a [Matrix space][matrix] and [Discord][discord] are available for live help, but I have a strong bias towards answering in the form of documentation. You can also find me on [the web](https://www.massicotte.org).
 
-Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+I prefer collaboration, and would love to find ways to work together if you have a similar project.
+
+I prefer indentation with tabs for improved accessibility. But, I'd rather you use the system you want and make a PR than hesitate because of whitespace.
+
+By participating in this project you agree to abide by the [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
 
 [build status]: https://github.com/ChimeHQ/TextFormation/actions
 [build status badge]: https://github.com/ChimeHQ/TextFormation/workflows/CI/badge.svg
