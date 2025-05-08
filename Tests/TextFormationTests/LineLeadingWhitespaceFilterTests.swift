@@ -88,11 +88,11 @@ struct NewLineLeadingWhitespaceFilterTests {
 		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 
 		system.responses = [
-			.componentTextRange(.leadingWhitespace, 0, NSRange(0..<0)),
+			.whitespaceTextRange(0, .leading, NSRange(0..<0)),
 			.applyLeadingWhitespace("\t", NSRange(0..<0)),
 		]
 		
-		let output = try #require(try system.runFilter(&filter, 0..<0, string: "abc"))
+		let output = try #require(try system.runFilter(&filter, 0..<0, "abc"))
 		
 		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 4))
 		#expect(system.string == "\tabc")
@@ -103,13 +103,13 @@ struct NewLineLeadingWhitespaceFilterTests {
 		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 		
 		system.responses = [
-			.componentTextRange(.leadingWhitespace, 2, NSRange(0..<0)),
+			.whitespaceTextRange(2, .leading, NSRange(0..<0)),
 			.applyLeadingWhitespace("\t", NSRange(0..<0)),
 		]
 
-		#expect(try system.runFilter(&filter, 0..<0, string: "a") != nil)
-		#expect(try system.runFilter(&filter, 1..<1, string: "b") != nil)
-		let output = try #require(try system.runFilter(&filter, 2..<2, string: "c"))
+		#expect(try system.runFilter(&filter, 0..<0, "a") != nil)
+		#expect(try system.runFilter(&filter, 1..<1, "b") != nil)
+		let output = try #require(try system.runFilter(&filter, 2..<2, "c"))
 		
 		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 2))
 		#expect(system.string == "\tabc")
@@ -121,11 +121,11 @@ struct NewLineLeadingWhitespaceFilterTests {
 		filter.mustOccurAtLineLeadingWhitespace = false
 
 		system.responses = [
-			.componentTextRange(.leadingWhitespace, 4, NSRange(0..<0)),
+			.whitespaceTextRange(4, .leading, NSRange(0..<0)),
 			.applyLeadingWhitespace("\t", NSRange(0..<0)),
 		]
 
-		let output = try #require(try system.runFilter(&filter, 4..<4, string: "abc"))
+		let output = try #require(try system.runFilter(&filter, 4..<4, "abc"))
 
 		#expect(output == MutationOutput(selection: NSRange(8..<8), delta: 4))
 		#expect(system.string == "\tdef abc")
@@ -136,11 +136,11 @@ struct NewLineLeadingWhitespaceFilterTests {
 		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 		
 		system.responses = [
-			.componentTextRange(.leadingWhitespace, 3, NSRange(0..<0)),
+			.whitespaceTextRange(3, .leading, NSRange(0..<0)),
 			.applyLeadingWhitespace("\t", NSRange(0..<0)),
 		]
 
-		let output = try #require(try system.runFilter(&filter, 3..<3, string: "abc"))
+		let output = try #require(try system.runFilter(&filter, 3..<3, "abc"))
 		
 		#expect(output == MutationOutput(selection: NSRange(6..<6), delta: 3))
 		#expect(system.string == "defabc")
@@ -151,11 +151,11 @@ struct NewLineLeadingWhitespaceFilterTests {
 		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 
 		system.responses = [
-			.componentTextRange(.leadingWhitespace, 1, NSRange(0..<1)),
+			.whitespaceTextRange(1, .leading, NSRange(0..<1)),
 			.applyLeadingWhitespace("\t", NSRange(0..<1)),
 		]
 		
-		let output = try #require(try system.runFilter(&filter, 1..<1, string: "abc"))
+		let output = try #require(try system.runFilter(&filter, 1..<1, "abc"))
 		
 		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 3))
 		#expect(system.string == "\tabc")
@@ -166,11 +166,11 @@ struct NewLineLeadingWhitespaceFilterTests {
 		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 
 		system.responses = [
-			.componentTextRange(.leadingWhitespace, 1, NSRange(0..<1)),
+			.whitespaceTextRange(1, .leading, NSRange(0..<1)),
 			.applyLeadingWhitespace("\t", NSRange(0..<1)),
 		]
 		
-		let output = try #require(try system.runFilter(&filter, 1..<1, string: "abc"))
+		let output = try #require(try system.runFilter(&filter, 1..<1, "abc"))
 		
 		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 3))
 		#expect(system.string == "\tabc")
@@ -180,7 +180,7 @@ struct NewLineLeadingWhitespaceFilterTests {
 		let system = MockSystem(string: "")
 		var filter = NewLineLeadingWhitespaceFilter<MockSystem>(string: "abc")
 
-		let output = try #require(try system.runFilter(&filter, 0..<0, string: "ab"))
+		let output = try #require(try system.runFilter(&filter, 0..<0, "ab"))
 		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 2))
 		#expect(system.string == "ab")
 	}

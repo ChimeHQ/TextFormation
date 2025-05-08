@@ -73,7 +73,7 @@ extension NewLineLeadingWhitespaceFilter: NewFilter {
 	private func matchHandler(_ mutation: Mutation) throws -> Interface.Output? {
 		let interface = mutation.interface
 		
-		guard let whitespaceRange = interface.textRange(of: .leadingWhitespace, for: mutation.range.lowerBound) else {
+		guard let whitespaceRange = interface.whitespaceTextRange(at: mutation.range.lowerBound, in: .leading) else {
 			return nil
 		}
 		
