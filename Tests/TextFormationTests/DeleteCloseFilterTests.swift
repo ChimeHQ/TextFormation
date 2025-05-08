@@ -1,50 +1,61 @@
-import XCTest
-import TextStory
-@testable import TextFormation
+import Foundation
+import Testing
 
-final class DeleteCloseFilterTests: XCTestCase {
-	@MainActor
-    func testDeleteOpenWithMatchingClose() {
-        let filter = DeleteCloseFilter(open: "{", close: "}")
-		let interface = TextInterfaceAdapter("{}")
+import TextFormation
 
-        interface.selectedRange = NSRange(0..<1)
+struct DeleteCloseFilterTests {
+	@Test func deleteOpenWithMatchingClose() throws {
+		let system = MockSystem(string: "{}")
+		var filter = NewDeleteCloseFilter<MockSystem>(open: "{", close: "}")
+		
+		let output = try #require(try system.runFilter(&filter, 0..<1, ""))
+		#expect(output == MutationOutput(selection: NSRange(0..<0), delta: -2))
+		#expect(system.string == "")
 
-        let mutation = TextMutation(delete: interface.selectedRange, limit: 2)
-
-        XCTAssertEqual(interface.runFilter(filter, on: mutation), .stop)
-
-        XCTAssertEqual(interface.string, "")
-        XCTAssertEqual(interface.selectedRange, NSRange(0..<0))
-    }
-
-	@MainActor
-    func testDeleteOpenWithMatchingCloseWithPrefixAndSuffix() {
-        let filter = DeleteCloseFilter(open: "{", close: "}")
-        let interface = TextInterfaceAdapter("ll{}tt")
-
-        interface.selectedRange = NSRange(2..<3)
-
-        let mutation = TextMutation(delete: interface.selectedRange, limit: 6)
-
-        XCTAssertEqual(interface.runFilter(filter, on: mutation), .stop)
-
-        XCTAssertEqual(interface.string, "lltt")
-        XCTAssertEqual(interface.selectedRange, NSRange(2..<2))
-    }
-
-	@MainActor
-    func testDeleteOpenWithoutMatchingClose() {
-        let filter = DeleteCloseFilter(open: "{", close: "}")
-        let interface = TextInterfaceAdapter("ll{ }tt")
-
-        interface.selectedRange = NSRange(2..<3)
-
-        let mutation = TextMutation(delete: interface.selectedRange, limit: 7)
-
-        XCTAssertEqual(interface.runFilter(filter, on: mutation), .none)
-
-        XCTAssertEqual(interface.string, "ll }tt")
-        XCTAssertEqual(interface.selectedRange, NSRange(2..<2))
-    }
+	}
+	
+//	@MainActor
+//    func testDeleteOpenWithMatchingClose() {
+//        let filter = DeleteCloseFilter(open: "{", close: "}")
+//		let interface = TextInterfaceAdapter("{}")
+//
+//        interface.selectedRange = NSRange(0..<1)
+//
+//        let mutation = TextMutation(delete: interface.selectedRange, limit: 2)
+//
+//        XCTAssertEqual(interface.runFilter(filter, on: mutation), .stop)
+//
+//        XCTAssertEqual(interface.string, "")
+//        XCTAssertEqual(interface.selectedRange, NSRange(0..<0))
+//    }
+//
+//	@MainActor
+//    func testDeleteOpenWithMatchingCloseWithPrefixAndSuffix() {
+//        let filter = DeleteCloseFilter(open: "{", close: "}")
+//        let interface = TextInterfaceAdapter("ll{}tt")
+//
+//        interface.selectedRange = NSRange(2..<3)
+//
+//        let mutation = TextMutation(delete: interface.selectedRange, limit: 6)
+//
+//        XCTAssertEqual(interface.runFilter(filter, on: mutation), .stop)
+//
+//        XCTAssertEqual(interface.string, "lltt")
+//        XCTAssertEqual(interface.selectedRange, NSRange(2..<2))
+//    }
+//
+//	@MainActor
+//    func testDeleteOpenWithoutMatchingClose() {
+//        let filter = DeleteCloseFilter(open: "{", close: "}")
+//        let interface = TextInterfaceAdapter("ll{ }tt")
+//
+//        interface.selectedRange = NSRange(2..<3)
+//
+//        let mutation = TextMutation(delete: interface.selectedRange, limit: 7)
+//
+//        XCTAssertEqual(interface.runFilter(filter, on: mutation), .none)
+//
+//        XCTAssertEqual(interface.string, "ll }tt")
+//        XCTAssertEqual(interface.selectedRange, NSRange(2..<2))
+//    }
 }
