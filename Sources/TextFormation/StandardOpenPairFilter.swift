@@ -7,8 +7,8 @@ public struct StandardOpenPairFilter<Interface: TextSystemInterface> {
 	private let skip: SkipFilter<Interface>
 	private var closeWhitespace: LineLeadingWhitespaceFilter<Interface>?
 	private var closePair: ClosePairFilter<Interface>
-	private var newlinePair: NewlineWithinPairFilter<Interface>
-	private var openPairReplacement: OpenPairReplacementFilter<Interface>
+	private let newlinePair: NewlineWithinPairFilter<Interface>
+	private let openPairReplacement: OpenPairReplacementFilter<Interface>
 	private let deleteClose: DeleteCloseFilter<Interface>
 	
 	public init(open: String, close: String) {

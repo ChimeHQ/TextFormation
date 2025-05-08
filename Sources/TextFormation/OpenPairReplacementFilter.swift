@@ -11,7 +11,7 @@ public struct OpenPairReplacementFilter<Interface: TextSystemInterface> {
 }
 
 extension OpenPairReplacementFilter: Filter {
-	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
+	public func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		let interface = mutation.interface
 		let start = mutation.range.lowerBound
 		let end = mutation.range.upperBound
