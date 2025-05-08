@@ -24,13 +24,7 @@ dependencies: [
 
 ## Concept
 
-TextFormation's core model is a `Filter`. Filters are typically set up once for a given language. From there, changes in the form of a `TextMutation` are fed in. The filter examines a `TextMutation` **before** it has been applied. A filter can have three possible result actions.
-
-- `none` indicates that the mutation should be passed to the next filter in the list
-- `stop` means no further filtering should be applied
-- `discard` is just like stop, but also means the `TextMutation` shouldn't be applied
-
-Filters do not necessarily change the text. You must respect the filter action, ensuring that the mutation is actually applied in the cases of `none` and `stop`. The design of the filters tries hard to allow mutations to occur to help maintain the expected selection and undo behaviors of a standard text view.
+TextFormation's core model is a `Filter`. Filters are typically set up once for a given language. From there, changes in the form of a `TextMutation` are fed in. The filter examines a `TextMutation` **before** it has been applied. Filters can be stateful, but if they return `MutationOutput`, it means they have processed the mutation and no futher action should be taken.
 
 ## Usage
 

@@ -2,42 +2,15 @@ import Foundation
 
 import Rearrange
 
-public struct NewTextMutation<Interface: TextSystemInterface> {
-	public let range: Interface.TextRange
-	public let interface: Interface
-	public let string: String
-	
-	public init(range: Interface.TextRange, interface: Interface, string: String) {
-		self.range = range
-		self.interface = interface
-		self.string = string
-	}
-	
-	public var delta: Int {
-		stringLength - interface.offset(from: range.lowerBound, to: range.upperBound)
-	}
-	
-	public var stringLength: Int {
-		interface.length(of: string)
-	}
-	
-	public var postApplyRange: Interface.TextRange? {
-		let start = range.lowerBound
-		guard let end = interface.position(from: range.upperBound, offset: delta) else {
-			return nil
-		}
-
-		return interface.textRange(from: start, to: end)
-	}
-	
-	public func apply() throws -> Interface.Output? {
-		try interface.applyMutation(range, string: string)
-	}
-}
-
+/// Describes the actions taken by a filter.
 public struct MutationOutput<TextRange> {
-	public let selection: TextRange
+	/// The total difference in text storage size after any mutations.
+	///
+	/// The units of this value match the `offset` of the interface.
 	public let delta: Int
+
+	/// The selection range appropriate for the applied mutations.
+	public let selection: TextRange
 
 	public init(selection: TextRange, delta: Int) {
 		self.selection = selection
@@ -48,41 +21,6 @@ public struct MutationOutput<TextRange> {
 extension MutationOutput: Equatable where TextRange: Equatable {}
 extension MutationOutput: Hashable where TextRange: Hashable {}
 extension MutationOutput: Sendable where TextRange: Sendable {}
-
-public enum Direction: Hashable, Sendable {
-	case leading
-	case trailing
-}
-
-public protocol TextSystemInterface: TextRangeCalculating {
-	typealias Output = MutationOutput<TextRange>
-
-	func substring(in range: TextRange) throws -> String?
-	/// Defined in units that match the offset parameter of `position(from:, offset:)`
-	func length(of string: String) -> Int
-	func applyMutation(_ range: TextRange, string: String) throws -> Output?
-	func applyWhitespace(for position: Position, in direction: Direction) throws -> Output?
-	func whitespaceTextRange(at position: Position, in direction: Direction) -> TextRange?
-}
-
-extension TextSystemInterface {
-	func substring(from position: Position, length: Int) throws -> String? {
-		guard
-			let end = self.position(from: position, offset: length),
-			let range = self.textRange(from: position, to: end)
-		else {
-			return nil
-		}
-		
-		return try substring(in: range)
-	}
-}
-
-extension TextSystemInterface where TextRange == NSRange {
-	public func length(of string: String) -> Int {
-		string.utf16.count
-	}
-}
 
 public protocol NewFilter<Interface> {
 	associatedtype Interface: TextSystemInterface
@@ -100,11 +38,5 @@ extension NewFilter where Interface.TextRange == NSRange {
 		let mutation = NewTextMutation(range: NSRange(r), interface: interface, string: string)
 		
 		return try processMutation(mutation)
-	}
-}
-
-extension TextSystemInterface {
-	public func mutation(in range: TextRange, string: String) -> NewTextMutation<Self> {
-		NewTextMutation(range: range, interface: self, string: string)
 	}
 }
