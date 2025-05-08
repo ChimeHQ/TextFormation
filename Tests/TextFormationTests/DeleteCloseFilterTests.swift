@@ -11,51 +11,23 @@ struct DeleteCloseFilterTests {
 		let output = try #require(try system.runFilter(&filter, 0..<1, ""))
 		#expect(output == MutationOutput(selection: NSRange(0..<0), delta: -2))
 		#expect(system.string == "")
-
 	}
 	
-//	@MainActor
-//    func testDeleteOpenWithMatchingClose() {
-//        let filter = DeleteCloseFilter(open: "{", close: "}")
-//		let interface = TextInterfaceAdapter("{}")
-//
-//        interface.selectedRange = NSRange(0..<1)
-//
-//        let mutation = TextMutation(delete: interface.selectedRange, limit: 2)
-//
-//        XCTAssertEqual(interface.runFilter(filter, on: mutation), .stop)
-//
-//        XCTAssertEqual(interface.string, "")
-//        XCTAssertEqual(interface.selectedRange, NSRange(0..<0))
-//    }
-//
-//	@MainActor
-//    func testDeleteOpenWithMatchingCloseWithPrefixAndSuffix() {
-//        let filter = DeleteCloseFilter(open: "{", close: "}")
-//        let interface = TextInterfaceAdapter("ll{}tt")
-//
-//        interface.selectedRange = NSRange(2..<3)
-//
-//        let mutation = TextMutation(delete: interface.selectedRange, limit: 6)
-//
-//        XCTAssertEqual(interface.runFilter(filter, on: mutation), .stop)
-//
-//        XCTAssertEqual(interface.string, "lltt")
-//        XCTAssertEqual(interface.selectedRange, NSRange(2..<2))
-//    }
-//
-//	@MainActor
-//    func testDeleteOpenWithoutMatchingClose() {
-//        let filter = DeleteCloseFilter(open: "{", close: "}")
-//        let interface = TextInterfaceAdapter("ll{ }tt")
-//
-//        interface.selectedRange = NSRange(2..<3)
-//
-//        let mutation = TextMutation(delete: interface.selectedRange, limit: 7)
-//
-//        XCTAssertEqual(interface.runFilter(filter, on: mutation), .none)
-//
-//        XCTAssertEqual(interface.string, "ll }tt")
-//        XCTAssertEqual(interface.selectedRange, NSRange(2..<2))
-//    }
+	@Test func deleteOpenWithMatchingCloseWithPrefixAndSuffix() throws {
+		let system = MockSystem(string: "ll{}tt")
+		var filter = NewDeleteCloseFilter<MockSystem>(open: "{", close: "}")
+
+		let output = try #require(try system.runFilter(&filter, 2..<3, ""))
+		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: -2))
+		#expect(system.string == "lltt")
+    }
+
+	@Test func deleteOpenWithoutMatchingClose() throws {
+		let system = MockSystem(string: "ll{ }tt")
+		var filter = NewDeleteCloseFilter<MockSystem>(open: "{", close: "}")
+
+		let output = try #require(try system.runFilter(&filter, 2..<3, ""))
+		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: -1))
+		#expect(system.string == "ll }tt")
+    }
 }
