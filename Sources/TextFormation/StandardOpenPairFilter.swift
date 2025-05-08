@@ -1,5 +1,3 @@
-import Foundation
-
 import Rearrange
 
 public struct NewStandardOpenPairFilter<Interface: TextSystemInterface> {
