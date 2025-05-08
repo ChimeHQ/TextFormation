@@ -121,8 +121,8 @@ struct NewClosePairFilterTests {
 		let system = MockSystem(string: "")
 		var filter = NewClosePairFilter<MockSystem>(open: "abc", close: "def")
 		system.responses = [
-			.applyLeadingWhitespace("\t", NSRange(5..<5)),
-			.applyLeadingWhitespace("\t", NSRange(4..<4)),
+			.applyWhitespace(5, .leading, "\t", NSRange(5..<5)),
+			.applyWhitespace(4, .leading, "\t", NSRange(4..<4)),
 		]
 		
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "abc"))

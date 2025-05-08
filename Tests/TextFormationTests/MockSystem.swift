@@ -6,9 +6,8 @@ final class MockSystem: TextSystemInterface {
 	typealias TextRange = NSRange
 
 	enum Response: Hashable {
-		case applyTrailingWhitespace(String, TextRange)
-		case applyLeadingWhitespace(String, TextRange)
 		case whitespaceTextRange(Int, Direction, TextRange?)
+		case applyWhitespace(Int, Direction, String, TextRange)
 	}
 
 	let content: NSMutableString
@@ -44,20 +43,16 @@ final class MockSystem: TextSystemInterface {
 	}
 
 	func applyWhitespace(for position: Int, in direction: TextFormation.Direction) throws -> TextFormation.MutationOutput<NSRange>? {
-		let next = responses.first
-		
-		switch (direction, next) {
-		case let (.leading, .applyLeadingWhitespace(value, range)):
-			responses.removeFirst()
-			precondition(position == range.location)
-			return try applyMutation(range, string: value)
-		case let (.trailing, .applyTrailingWhitespace(value, range)):
-			responses.removeFirst()
-			precondition(position == range.location)
-			return try applyMutation(range, string: value)
-		default:
+		guard case let .applyWhitespace(expectedPos, expectedDir, string, range) = responses.first else {
 			return nil
 		}
+		
+		responses.removeFirst()
+		
+		precondition(position == expectedPos)
+		precondition(direction == expectedDir)
+
+		return try applyMutation(range, string: string)
 	}
 	
 	func whitespaceTextRange(at position: Position, in direction: Direction) -> NSRange? {

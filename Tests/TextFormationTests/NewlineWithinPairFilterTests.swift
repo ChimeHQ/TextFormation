@@ -9,8 +9,8 @@ struct NewNewlineWithinPairFilterTests {
 		var filter = NewNewlineWithinPairFilter<MockSystem>(open: "abc", close: "def")
 
 		system.responses = [
-			.applyLeadingWhitespace("\t", NSRange(5..<5)),
-			.applyLeadingWhitespace("\t", NSRange(4..<4)),
+			.applyWhitespace(5, .leading, "\t", NSRange(5..<5)),
+			.applyWhitespace(4, .leading, "\t", NSRange(4..<4)),
 		]
 
 		let output = try #require(try system.runFilter(&filter, 3..<3, "\n"))
@@ -23,8 +23,8 @@ struct NewNewlineWithinPairFilterTests {
 		var filter = NewNewlineWithinPairFilter<MockSystem>(open: "abc", close: "def")
 
 		system.responses = [
-			.applyLeadingWhitespace("\t", NSRange(5..<5)),
-			.applyLeadingWhitespace("\t", NSRange(4..<4)),
+			.applyWhitespace(5, .leading, "\t", NSRange(5..<5)),
+			.applyWhitespace(4, .leading, "\t", NSRange(4..<4)),
 		]
 
 		let output = try #require(try system.runFilter(&filter, 2..<2, "\n"))

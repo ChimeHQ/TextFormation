@@ -10,7 +10,7 @@ struct NewLineLeadingWhitespaceFilterTests {
 
 		system.responses = [
 			.whitespaceTextRange(0, .leading, NSRange(0..<0)),
-			.applyLeadingWhitespace("\t", NSRange(0..<0)),
+			.applyWhitespace(0, .leading, "\t", NSRange(0..<0)),
 		]
 		
 		let output = try #require(try system.runFilter(&filter, 0..<0, "abc"))
@@ -25,7 +25,7 @@ struct NewLineLeadingWhitespaceFilterTests {
 		
 		system.responses = [
 			.whitespaceTextRange(2, .leading, NSRange(0..<0)),
-			.applyLeadingWhitespace("\t", NSRange(0..<0)),
+			.applyWhitespace(0, .leading, "\t", NSRange(0..<0)),
 		]
 
 		#expect(try system.runFilter(&filter, 0..<0, "a") != nil)
@@ -43,7 +43,7 @@ struct NewLineLeadingWhitespaceFilterTests {
 
 		system.responses = [
 			.whitespaceTextRange(4, .leading, NSRange(0..<0)),
-			.applyLeadingWhitespace("\t", NSRange(0..<0)),
+			.applyWhitespace(0, .leading, "\t", NSRange(0..<0)),
 		]
 
 		let output = try #require(try system.runFilter(&filter, 4..<4, "abc"))
@@ -58,7 +58,7 @@ struct NewLineLeadingWhitespaceFilterTests {
 		
 		system.responses = [
 			.whitespaceTextRange(3, .leading, NSRange(0..<0)),
-			.applyLeadingWhitespace("\t", NSRange(0..<0)),
+			.applyWhitespace(0, .leading, "\t", NSRange(0..<0)),
 		]
 
 		let output = try #require(try system.runFilter(&filter, 3..<3, "abc"))
@@ -73,7 +73,7 @@ struct NewLineLeadingWhitespaceFilterTests {
 
 		system.responses = [
 			.whitespaceTextRange(1, .leading, NSRange(0..<1)),
-			.applyLeadingWhitespace("\t", NSRange(0..<1)),
+			.applyWhitespace(0, .leading, "\t", NSRange(0..<1)),
 		]
 		
 		let output = try #require(try system.runFilter(&filter, 1..<1, "abc"))
@@ -88,7 +88,7 @@ struct NewLineLeadingWhitespaceFilterTests {
 
 		system.responses = [
 			.whitespaceTextRange(1, .leading, NSRange(0..<1)),
-			.applyLeadingWhitespace("\t", NSRange(0..<1)),
+			.applyWhitespace(0, .leading, "\t", NSRange(0..<1)),
 		]
 		
 		let output = try #require(try system.runFilter(&filter, 1..<1, "abc"))

@@ -62,7 +62,7 @@ struct NewStandardOpenPairFilterTests {
 
 		system.responses = [
 			.whitespaceTextRange(0, .leading, NSRange(0..<0)),
-			.applyLeadingWhitespace("\t", NSRange(0..<0)),
+			.applyWhitespace(0, .leading, "\t", NSRange(0..<0)),
 		]
 
 		let output = try #require(try system.runFilter(&filter, 0..<0, "}"))

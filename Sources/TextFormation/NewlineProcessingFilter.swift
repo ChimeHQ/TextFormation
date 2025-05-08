@@ -1,16 +1,16 @@
 import Rearrange
 
 public struct NewNewlineProcessingFilter<Interface: TextSystemInterface> {
-	private let newline: String
+	private let lineEndingSequence: String
 
-	public init(newline: String = "\n") {
-		self.newline = newline
+	public init(lineEndingSequence: String = "\n") {
+		self.lineEndingSequence = lineEndingSequence
 	}
 }
 
 extension NewNewlineProcessingFilter: NewFilter {
 	public func processMutation(_ mutation: NewTextMutation<Interface>) throws -> Interface.Output? {
-		if mutation.string != newline {
+		if mutation.string != lineEndingSequence {
 			return nil
 		}
 
