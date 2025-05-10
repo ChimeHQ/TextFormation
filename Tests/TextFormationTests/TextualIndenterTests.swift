@@ -3,8 +3,7 @@ import Testing
 
 import TextFormation
 
-import Rearrange
-
+#if compiler(>=6.1) && (os(macOS) || os(iOS) || os(tvOS) || os(visionOS))
 extension TextualContext where TextRange == NSRange {
 	init<R: RangeExpression>(
 		preceding: R,
@@ -214,3 +213,5 @@ struct TextualIndenterTests {
 //        XCTAssertTrue(predicate(interface, NSRange(10..<15)))
 //    }
 //}
+
+#endif
