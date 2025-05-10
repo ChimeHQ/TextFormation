@@ -1,12 +1,12 @@
-import Foundation
+import Rearrange
 
 /// Represents the indentation of a line relative to another range in the text.
-public enum Indentation {
-    case relativeIncrease(NSRange)
-    case relativeDecrease(NSRange)
-    case equal(NSRange)
+public enum Indentation<TextRange: Bounded> {
+    case relativeIncrease(TextRange)
+    case relativeDecrease(TextRange)
+    case equal(TextRange)
 
-    public var range: NSRange {
+    public var range: TextRange {
         switch self {
         case .relativeIncrease(let range):
             return range
@@ -18,8 +18,9 @@ public enum Indentation {
     }
 }
 
-extension Indentation: Hashable {}
-extension Indentation: Sendable {}
+extension Indentation: Equatable where TextRange: Equatable {}
+extension Indentation: Hashable where TextRange: Hashable {}
+extension Indentation: Sendable where TextRange: Sendable {}
 
 public enum IndentationError: Error {
     case unableToComputeReferenceRange

@@ -1,24 +1,35 @@
-import Foundation
+import Rearrange
 
-public struct TextualContext {
-    public let currentLineRange: NSRange
-    public let preceedingLineRange: NSRange
-    public let strippedCurrentLine: String
-    public let strippedPreceedingLine: String
+public struct TextualContext<TextRange: Bounded> {
+	public struct Line {
+		public let range: TextRange
+		public let nonwhitespaceContent: String
+		
+		public init(range: TextRange, nonwhitespaceContent: String) {
+			self.range = range
+			self.nonwhitespaceContent = nonwhitespaceContent
+		}
+	}
+	
+    public let current: Line
+    public let preceding: Line
 
-    public init(currentLineRange: NSRange, preceedingLineRange: NSRange, strippedCurrentLine: String, strippedPreceedingLine: String) {
-        self.currentLineRange = currentLineRange
-        self.preceedingLineRange = preceedingLineRange
-        self.strippedCurrentLine = strippedCurrentLine
-        self.strippedPreceedingLine = strippedPreceedingLine
+	public init(
+		current: Line,
+		preceding: Line
+	) {
+        self.current = current
+        self.preceding = preceding
     }
 }
 
-public protocol PatternMatcher {
-    func action(for context: TextualContext) -> Indentation?
+public protocol PatternMatcher<TextRange> {
+	associatedtype TextRange: Bounded
+	
+    func action(for context: TextualContext<TextRange>) -> Indentation<TextRange>?
 }
 
-public struct PreceedingLineSuffixIndenter {
+public struct PreceedingLineSuffixIndenter<TextRange: Bounded> {
     public let suffix: String
 
     public init(suffix: String) {
@@ -27,16 +38,16 @@ public struct PreceedingLineSuffixIndenter {
 }
 
 extension PreceedingLineSuffixIndenter: PatternMatcher {
-    public func action(for context: TextualContext) -> Indentation? {
-        if context.strippedPreceedingLine.hasSuffix(suffix) == false {
+    public func action(for context: TextualContext<TextRange>) -> Indentation<TextRange>? {
+		if context.preceding.nonwhitespaceContent.hasSuffix(suffix) == false {
             return nil
         }
 
-        return .relativeIncrease(context.preceedingLineRange)
+		return .relativeIncrease(context.preceding.range)
     }
 }
 
-public struct PreceedingLinePrefixIndenter {
+public struct PreceedingLinePrefixIndenter<TextRange: Bounded> {
     public let prefix: String
 
     public init(prefix: String) {
@@ -45,16 +56,16 @@ public struct PreceedingLinePrefixIndenter {
 }
 
 extension PreceedingLinePrefixIndenter: PatternMatcher {
-    public func action(for context: TextualContext) -> Indentation? {
-        if context.strippedPreceedingLine.hasPrefix(prefix) == false {
+    public func action(for context: TextualContext<TextRange>) -> Indentation<TextRange>? {
+        if context.preceding.nonwhitespaceContent.hasPrefix(prefix) == false {
             return nil
         }
 
-        return .relativeIncrease(context.preceedingLineRange)
+        return .relativeIncrease(context.preceding.range)
     }
 }
 
-public struct CurrentLinePrefixOutdenter {
+public struct CurrentLinePrefixOutdenter<TextRange: Bounded> {
     public let prefix: String
 
     public init(prefix: String) {
@@ -63,32 +74,32 @@ public struct CurrentLinePrefixOutdenter {
 }
 
 extension CurrentLinePrefixOutdenter: PatternMatcher {
-    public func action(for context: TextualContext) -> Indentation? {
-        if context.strippedCurrentLine.hasPrefix(prefix) == false {
+    public func action(for context: TextualContext<TextRange>) -> Indentation<TextRange>? {
+		if context.current.nonwhitespaceContent.hasPrefix(prefix) == false {
             return nil
         }
 
-        return .relativeDecrease(context.preceedingLineRange)
+		return .relativeDecrease(context.preceding.range)
     }
 }
 
-public struct PreceedingLineConditionalMatcher {
-    let matcher: PatternMatcher
+public struct PreceedingLineConditionalMatcher<TextRange: Bounded, Matcher: PatternMatcher> where Matcher.TextRange == TextRange {
+    let matcher: Matcher
     let previousPrefix: String
 
-    public init(matcher: PatternMatcher, previousPrefix: String) {
+    public init(matcher: Matcher, previousPrefix: String) {
         self.matcher = matcher
         self.previousPrefix = previousPrefix
     }
 }
 
 extension PreceedingLineConditionalMatcher: PatternMatcher {
-    public func action(for context: TextualContext) -> Indentation? {
+    public func action(for context: TextualContext<TextRange>) -> Indentation<TextRange>? {
         guard let indentation = matcher.action(for: context) else {
             return nil
         }
 
-        if context.strippedPreceedingLine.hasPrefix(previousPrefix) {
+        if context.preceding.nonwhitespaceContent.hasPrefix(previousPrefix) {
             return nil
         }
 

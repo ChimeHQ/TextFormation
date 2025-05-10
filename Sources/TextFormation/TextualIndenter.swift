@@ -1,3 +1,66 @@
+import Rearrange
+
+#if compiler(>=6.1)
+@available(macOS 13, iOS 16, tvOS 16, watchOS 9, *)
+public struct TextualIndenter<TextRange: Bounded> where TextRange: Hashable {
+	public typealias ContextProvider = (Position) throws -> TextualContext<TextRange>
+	public typealias IndentationResult = Result<Indentation<TextRange>, IndentationError>
+	public typealias Matcher = any PatternMatcher<TextRange>
+	public typealias Position = TextRange.Bound
+	
+	public let patterns: [Matcher]
+	public let provider: ContextProvider
+	
+	public init(
+		patterns: [Matcher],
+		provider: @escaping ContextProvider
+	) {
+		self.patterns = patterns
+		self.provider = provider
+	}
+	
+	public func computeIndentation(at position: Position) throws -> Indentation<TextRange> {
+		let context = try provider(position)
+		
+        // unique them, just in case two matches produce the same identical action
+        let potentialIndents = Set(patterns.compactMap({ $0.action(for: context) }))
+
+        if let indent = potentialIndents.first, potentialIndents.count == 1 {
+            return indent
+        }
+
+        // we have no matches, or conflicting matches
+
+		return .equal(context.preceding.range)
+	}
+	
+//	func computeTextualContent(at position: Position) throws -> TextualContext {
+//        guard let preceedingLineRange = storage.findFirstLinePreceeding(location: location, satisifying: referenceLinePredicate) else {
+//            return .failure(.unableToComputeReferenceRange)
+//        }
+//
+//        let lineRange = storage.lineRange(containing: location)
+//
+//        guard
+//			let content = nonWhitespaceContent(from: lineRange, in: storage),
+//			let preceedingContent = nonWhitespaceContent(from: preceedingLineRange, in: storage)
+//		else {
+//            return .failure(.unableToGetReferenceValue)
+//        }
+//
+//        guard  else {
+//            return .failure(.unableToGetReferenceValue)
+//        }
+//
+//        let context = TextualContext(currentLineRange: lineRange,
+//                                     preceedingLineRange: preceedingLineRange,
+//                                     strippedCurrentLine: content,
+//                                     strippedPreceedingLine: preceedingContent)
+
+//	}
+}
+#endif
+
 //import Foundation
 //import TextStory
 //

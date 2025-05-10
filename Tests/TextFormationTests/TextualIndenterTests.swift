@@ -1,3 +1,46 @@
+import Foundation
+import Testing
+
+import TextFormation
+
+import Rearrange
+
+extension TextualContext where TextRange == NSRange {
+	init<R: RangeExpression>(
+		preceding: R,
+		_ precedingContent: String,
+		current: R,
+		_ currentContent: String
+	) where R.Bound == TextRange.Bound {
+		self.init(
+			current: Self.Line(range: NSRange(current), nonwhitespaceContent: currentContent),
+			preceding: Self.Line(range: NSRange(preceding), nonwhitespaceContent: currentContent)
+		)
+	}
+}
+
+struct TextualIndenterTests {
+	@Test func emptyString() throws {
+		let indenter = TextualIndenter<NSRange>(patterns: TextualIndenter.basicPatterns, provider: { pos in
+			try #require(pos == 0)
+
+			throw IndentationError.unableToComputeReferenceRange
+		})
+		
+		#expect(throws: (any Error).self) { try indenter.computeIndentation(at: 0) }
+	}
+	
+	@Test func propagatesPreviousLineIndentation() throws {
+		let indenter = TextualIndenter<NSRange>(patterns: TextualIndenter.basicPatterns, provider: { pos in
+			try #require(pos == 0)
+			
+			return TextualContext(preceding: 0..<1, "\t", current: 2..<2, "")
+		})
+		
+		#expect(try indenter.computeIndentation(at: 0) == .equal(NSRange(0..<1)))
+	}
+}
+
 //import XCTest
 //import TextStory
 //@testable import TextFormation

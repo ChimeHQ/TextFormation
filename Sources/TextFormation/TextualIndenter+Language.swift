@@ -1,23 +1,25 @@
-//import Foundation
-//
-//public extension TextualIndenter {
-//	static var basicPatterns: [PatternMatcher] {
-//		[
-//			CurrentLinePrefixOutdenter(prefix: "}"),
-//			CurrentLinePrefixOutdenter(prefix: ")"),
-//			CurrentLinePrefixOutdenter(prefix: "]"),
-//
-//			PreceedingLinePrefixIndenter(prefix: "{"),
-//			PreceedingLinePrefixIndenter(prefix: "("),
-//			PreceedingLinePrefixIndenter(prefix: "["),
-//
-//			PreceedingLineSuffixIndenter(suffix: "{"),
-//			PreceedingLineSuffixIndenter(suffix: "("),
-//			PreceedingLineSuffixIndenter(suffix: "["),
-//		]
-//	}
-//}
-//
+#if compiler(>=6.1)
+@available(macOS 13, iOS 16, tvOS 16, watchOS 9, *)
+
+extension TextualIndenter {
+	public static var basicPatterns: [Matcher] {
+		[
+			CurrentLinePrefixOutdenter(prefix: "}"),
+			CurrentLinePrefixOutdenter(prefix: ")"),
+			CurrentLinePrefixOutdenter(prefix: "]"),
+
+			PreceedingLinePrefixIndenter(prefix: "{"),
+			PreceedingLinePrefixIndenter(prefix: "("),
+			PreceedingLinePrefixIndenter(prefix: "["),
+
+			PreceedingLineSuffixIndenter(suffix: "{"),
+			PreceedingLineSuffixIndenter(suffix: "("),
+			PreceedingLineSuffixIndenter(suffix: "["),
+		]
+	}
+}
+#endif
+
 //public extension TextualIndenter {
 //	/// Specialized indentation patterns for Ruby.
 //	static var rubyPatterns: [PatternMatcher] {
