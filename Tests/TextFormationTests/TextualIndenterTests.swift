@@ -19,6 +19,7 @@ extension TextualContext where TextRange == NSRange {
 }
 
 struct TextualIndenterTests {
+	@available(macOS 13, iOS 16, tvOS 16, watchOS 9, *)
 	@Test func emptyString() throws {
 		let indenter = TextualIndenter<NSRange>(patterns: TextualIndenter.basicPatterns, provider: { pos in
 			try #require(pos == 0)
@@ -29,6 +30,7 @@ struct TextualIndenterTests {
 		#expect(throws: (any Error).self) { try indenter.computeIndentation(at: 0) }
 	}
 	
+	@available(macOS 13, iOS 16, tvOS 16, watchOS 9, *)
 	@Test func propagatesPreviousLineIndentation() throws {
 		let indenter = TextualIndenter<NSRange>(patterns: TextualIndenter.basicPatterns, provider: { pos in
 			try #require(pos == 0)
