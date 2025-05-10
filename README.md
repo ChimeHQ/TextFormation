@@ -11,6 +11,11 @@
 
 TextFormation is simple rule system that can be used to implement typing completions and whitespace control. Think matching "}" with "{" and indenting.
 
+- Text system agnostic
+- Many pre-built filters for commmon language patterns
+- Compatible with multi-cursor systems
+- Support for multiple line-ending encodings
+
 > [!WARNING]
 > This library is undergoing some major changes. Not all functionality is currently implemented in the main branch yet.
 
@@ -24,74 +29,43 @@ dependencies: [
 
 ## Concept
 
-TextFormation's core model is a `Filter`. Filters are typically set up once for a given language. From there, changes in the form of a `TextMutation` are fed in. The filter examines a `TextMutation` **before** it has been applied. Filters can be stateful, but if they return `MutationOutput`, it means they have processed the mutation and no futher action should be taken.
+TextFormation's core model is a `Filter`. Filters are typically set up once for a given language. From there, changes in the form of a `TextMutation` are fed in. The filter examines a `TextMutation` **before** it has been applied. Filters can be stateful, but if they return `MutationOutput`, it means it has processed the mutation and no futher action should be taken.
 
-## Usage
+TextFormation is fully text system-agnostic and it models the text system using an abstraction based on types from  [Rearrange](https://github.com/ChimeHQ/Rearrange).
 
-Careful use of filter nesting, possibly `CompositeFilter`, and these actions can produce some pretty powerful behaviors. Here's an example of a chain that produces typing completions that roughly matches what Xcode does for open/close curly braces:
+## Filters
+
+Using TextFormation requires that you provide a `TextSystemInterface` implementation. This type is responsible for supporting the querying and mutation capabilties filters need, along with an abstraction for how text positions and ranges are represented.
+
+Careful filter ordering can produce some pretty powerful behaviors. Here's an example of a chain that produces typing completions that roughly matches what Xcode does for open/close curly braces:
 
 ```swift
 // skip over closings
-let skip = SkipFilter(matching: "}")
+let skip = SkipFilter<MyTextSystem>(matching: "}")
 
-// apply whitespace to our close
-let closeWhitespace = LineLeadingWhitespaceFilter(string: "}")
+// apply whitespace to the closing delimiter
+let closeWhitespace = LineLeadingWhitespaceFilter<MyTextSystem>(string: "}")
 
 // handle newlines inserted in between opening and closing
-let newlinePair = NewlineWithinPairFilter(open: "{", close: "}")
+let newlinePair = NewlineWithinPairFilter<MyTextSystem>(open: "{", close: "}")
 
 // auto-insert closings after an opening, with special-handling for newlines
-let closePair = ClosePairFilter(open: "{", close: "}")
+let closePair = ClosePairFilter<MyTextSystem>(open: "{", close: "}")
 
 // surround selection-replacements with the pair
-let openPairReplacement = OpenPairReplacementFilter(open: "{", close: "}")
+let openPairReplacement = OpenPairReplacementFilter<MyTextSystem>(open: "{", close: "}")
 
 // delete a matching close when adjacent and the opening is deleted
-let deleteClose = DeleteCloseFilter(open: "{", close: "}")
-
-let filters: [Filter] = [skip, closeWhitespace, openPairReplacement, newlinePair, closePair, deleteClose]
-
-// treat a "stop" as only applying to our local chain
-let filter = CompositeFilter(filters: filters, handler: { (_, action) in
-    switch action {
-    case .stop, .none:
-        return .none
-    case .discard:
-        return .discard
-    }
-})
+let deleteClose = DeleteCloseFilter<MyTextSystem>(open: "{", close: "}")
 ```
 
 This kind of usage is probably going to be common, so all this behavior is wrapped up in a pre-made filter: `StandardOpenPairFilter`.
 
 ```swift
-let filter = StandardOpenPairFilter(open: "{", close: "}")
+let filter = StandardOpenPairFilter<MyTextSystem>(open: "{", close: "}")
 ```
 
-Using filters:
-
-```swift
-// simple indentation algorithm that uses minimal text context
-let indenter = TextualIndenter()
-
-// delete any trailing whitespace, and use our indenter to compute
-// any needed leading whitespace using a four-space unit
-let providers = WhitespaceProviders(leadingWhitespace: indenter.substitionProvider(indentationUnit: "    ", width: 4),
-                                    trailingWhitespace: { _, _ in return "" })
-
-let action = filter.shouldProcessMutation(mutation, in: textView, with: providers)
-```
-
-There's also a nice little type called `TextViewFilterApplier` that can make it easier to connect filters up to an `NSTextView` or `UITextView`. All you need to do use one of the stand-in delegate methods:
-
-```swift
-public func textView(_ textView: NSTextView, shouldChangeTextInRanges affectedRanges: [NSValue], replacementStrings: [String]?) -> Bool
-public func textView(_ textView: NSTextView, shouldChangeTextInRange affectedRange: NSRange, replacementString: String?) -> Bool
-
-public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
-```
-
-### Indenting
+## Indentation
 
 Correctly indenting in the general case may require parsing. It also typically needs some understanding of the user's preferences. The included `TextualIndenter` type has a pattern-based system that can perform sufficiently in many situations.
 
