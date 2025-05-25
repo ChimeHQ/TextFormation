@@ -85,21 +85,74 @@ extension ClosePairFilter: Filter {
 		let interface = mutation.interface
 		
 		let length = interface.length(of: newlineSequence)
-		
+
 		let newlinesAndClose = newlineSequence + newlineSequence + closeString
 
+		// attempt the initial mutation, with no whitespace
 		guard
-			let firstLeadingPos = interface.position(from: position, offset: length),
-			let secondLeadingPos = interface.position(from: firstLeadingPos, offset: length),
-			let output = try interface.applyMutation(mutation.range, string: newlinesAndClose),
-			let secondLeading = try interface.applyWhitespace(for: secondLeadingPos, in: .leading),
-			let firstLeading = try interface.applyWhitespace(for: firstLeadingPos, in: .leading)
+			let output = try interface.applyMutation(mutation.range, string: newlinesAndClose)
 		else {
 			return nil
 		}
 
-		let delta = output.delta + firstLeading.delta + secondLeading.delta
-		
+		var delta = output.delta
+
+		// step 1: trailing whitespace for the before the first newline
+		guard
+			let firstTrailing = try interface.applyWhitespace(for: position, in: .trailing)
+		else {
+			let fallbackPos = interface
+				.position(from: position, offset: length)
+				.flatMap { interface.textRange(from: $0, to: $0) }
+
+			return Interface.Output(
+				selection: fallbackPos ?? output.selection,
+				delta: delta
+			)
+		}
+
+		delta += firstTrailing.delta
+
+		guard
+			let firstLeadingPos = interface.position(from: position, offset: length + firstTrailing.delta)
+		else {
+			let fallbackPos = interface
+				.position(from: position, offset: length + firstTrailing.delta)
+				.flatMap { interface.textRange(from: $0, to: $0) }
+
+			return Interface.Output(
+				selection: fallbackPos ?? output.selection,
+				delta: delta
+			)
+		}
+
+		let fallbackSelection = interface.textRange(from: firstLeadingPos, to: firstLeadingPos) ?? output.selection
+
+		// step 2: leading whitespace after first newline
+		guard
+			let firstLeading = try interface.applyWhitespace(for: firstLeadingPos, in: .leading)
+		else {
+			return Interface.Output(
+				selection: fallbackSelection,
+				delta: delta
+			)
+		}
+
+		delta += firstLeading.delta
+
+		// step 3: leading whitespace after the second newline
+		guard
+			let secondLeadingPos = interface.position(from: firstLeadingPos, offset: length + firstLeading.delta),
+			let secondLeading = try interface.applyWhitespace(for: secondLeadingPos, in: .leading)
+		else {
+			return Interface.Output(
+				selection: fallbackSelection,
+				delta: delta
+			)
+		}
+
+		delta += secondLeading.delta
+
 		return Interface.Output(
 			selection: firstLeading.selection,
 			delta: delta

@@ -121,8 +121,9 @@ struct ClosePairFilterTests {
 		let system = MockSystem(string: "")
 		var filter = ClosePairFilter<MockSystem>(open: "abc", close: "def")
 		system.responses = [
-			.applyWhitespace(5, .leading, "\t", NSRange(5..<5)),
-			.applyWhitespace(4, .leading, "\t", NSRange(4..<4)),
+			.applyWhitespace(3, .trailing, "t", NSRange(3..<3)),
+			.applyWhitespace(5, .leading, "l", NSRange(5..<5)),
+			.applyWhitespace(7, .leading, "l", NSRange(7..<7)),
 		]
 		
 		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "abc"))
@@ -130,8 +131,8 @@ struct ClosePairFilterTests {
 		#expect(system.string == "abc")
 
 		let output = try #require(try system.runFilter(&filter, 3..<3, "\n"))
-		#expect(output == MutationOutput(selection: NSRange(5..<5), delta: 7))
-		#expect(system.string == "abc\n\t\n\tdef")
+		#expect(output == MutationOutput(selection: NSRange(6..<6), delta: 8))
+		#expect(system.string == "abct\nl\nldef")
 	}
 	
 	@Test func matchingWithSameOpenClose() throws {
@@ -205,5 +206,39 @@ struct ClosePairFilterTests {
 		let output = try #require(try system.runFilter(&filter, 1..<2, " "))
 		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: 0))
 		#expect(system.string == "' ")
+	}
+
+	@Test func matchingWithNewlineNoWhitespaceReturned() throws {
+		let system = MockSystem(string: "")
+		var filter = ClosePairFilter<MockSystem>(open: "abc", close: "def")
+
+		system.responses = [
+		]
+
+		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "abc"))
+		#expect(openOutput == MutationOutput(selection: NSRange(3..<3), delta: 3))
+		#expect(system.string == "abc")
+
+		let output = try #require(try system.runFilter(&filter, 3..<3, "\n"))
+		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 5))
+		#expect(system.string == "abc\n\ndef")
+	}
+
+	@Test func matchingWithNewlineOnlyFirstWhitespaceReturned() throws {
+		let system = MockSystem(string: "")
+		var filter = ClosePairFilter<MockSystem>(open: "abc", close: "def")
+
+		system.responses = [
+			.applyWhitespace(3, .trailing, "t", NSRange(3..<3))
+		]
+
+		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "abc"))
+		#expect(openOutput == MutationOutput(selection: NSRange(3..<3), delta: 3))
+		#expect(system.string == "abc")
+
+		// this selection calculation could be better
+		let output = try #require(try system.runFilter(&filter, 3..<3, "\n"))
+		#expect(output == MutationOutput(selection: NSRange(5..<5), delta: 6))
+		#expect(system.string == "abct\n\ndef")
 	}
 }
