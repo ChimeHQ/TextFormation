@@ -101,4 +101,17 @@ struct NewlineProcessingFilterTests {
 		#expect(output == MutationOutput(selection: NSRange(10..<10), delta: 10))
 		#expect(system.string == "tttcrlflll")
 	}
+
+	@Test func matchingWithNoTrailingReturned() throws {
+		let system = MockSystem(string: "")
+		var filter = NewlineProcessingFilter<MockSystem>()
+
+		system.responses = [
+			.applyWhitespace(1, .leading, "lll", NSRange(1..<1)),
+		]
+
+		let output = try #require(try system.runFilter(&filter, 0..<0, "\n"))
+		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 4))
+		#expect(system.string == "\nlll")
+	}
 }

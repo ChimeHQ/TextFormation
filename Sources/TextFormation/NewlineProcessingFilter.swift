@@ -23,13 +23,21 @@ extension NewlineProcessingFilter: Filter {
 		let trailingPosition = range.lowerBound
 		let interface = mutation.interface
 
-		// next, do the trailing whitespace
+		// next, do the whitespace
 		guard
 			let leadingPosition = interface.position(from: range.upperBound, offset: newlineInsert.delta),
-			let leadingMutation = try interface.applyWhitespace(for: leadingPosition, in: .leading),
+			let leadingMutation = try interface.applyWhitespace(for: leadingPosition, in: .leading)
+		else {
+			return newlineInsert
+		}
+
+		guard
 			let trailingInsert = try interface.applyWhitespace(for: trailingPosition, in: .trailing)
 		else {
-			return nil
+			return Interface.Output(
+				selection: leadingMutation.selection,
+				delta: leadingMutation.delta + newlineInsert.delta
+			)
 		}
 
 		// finally, we have to compute the final selection
@@ -39,7 +47,10 @@ extension NewlineProcessingFilter: Filter {
 			let insertionPoint = interface.position(from: range.lowerBound, offset: delta),
 			let selection = interface.textRange(from: insertionPoint, to: insertionPoint)
 		else {
-			return nil
+			return Interface.Output(
+				selection: leadingMutation.selection,
+				delta: delta
+			)
 		}
 
 		return Interface.Output(selection: selection, delta: delta)
