@@ -3,25 +3,19 @@ import Rearrange
 #if compiler(>=6.1)
 @available(macOS 13, iOS 16, tvOS 16, watchOS 9, *)
 public struct TextualIndenter<TextRange: Bounded> where TextRange: Hashable {
-	public typealias ContextProvider = (Position) throws -> TextualContext<TextRange>
 	public typealias IndentationResult = Result<Indentation<TextRange>, IndentationError>
 	public typealias Matcher = any PatternMatcher<TextRange>
 	public typealias Position = TextRange.Bound
 	
 	public let patterns: [Matcher]
-	public let provider: ContextProvider
 	
 	public init(
-		patterns: [Matcher],
-		provider: @escaping ContextProvider
+		patterns: [Matcher] = Self.basicPatterns
 	) {
 		self.patterns = patterns
-		self.provider = provider
 	}
 	
-	public func computeIndentation(at position: Position) throws -> Indentation<TextRange> {
-		let context = try provider(position)
-		
+	public func computeIndentation(at position: Position, context: TextualContext<TextRange>) throws -> Indentation<TextRange> {
         // unique them, just in case two matches produce the same identical action
         let potentialIndents = Set(patterns.compactMap({ $0.action(for: context) }))
 
@@ -31,7 +25,7 @@ public struct TextualIndenter<TextRange: Bounded> where TextRange: Hashable {
 
         // we have no matches, or conflicting matches
 
-		return .equal(context.preceding.range)
+		return .equal(context.precedingLeadingWhitespaceRange)
 	}
 	
 //	func computeTextualContent(at position: Position) throws -> TextualContext {

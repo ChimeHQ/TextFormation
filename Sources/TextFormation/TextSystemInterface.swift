@@ -27,6 +27,14 @@ extension TextSystemInterface {
 		
 		return try substring(in: range)
 	}
+
+	func insert(at position: Position, string: String) throws -> Output? {
+		guard let range = textRange(from: position, to: position) else {
+			return nil
+		}
+
+		return try applyMutation(range, string: string)
+	}
 }
 
 #if canImport(Foundation)

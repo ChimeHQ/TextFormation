@@ -1,25 +1,18 @@
 import Rearrange
 
 public struct TextualContext<TextRange: Bounded> {
-	public struct Line {
-		public let range: TextRange
-		public let nonwhitespaceContent: String
-		
-		public init(range: TextRange, nonwhitespaceContent: String) {
-			self.range = range
-			self.nonwhitespaceContent = nonwhitespaceContent
-		}
-	}
-	
-    public let current: Line
-    public let preceding: Line
+	public let current: String
+	public let preceding: String
+	public let precedingLeadingWhitespaceRange: TextRange
 
 	public init(
-		current: Line,
-		preceding: Line
+		current: String,
+		preceding: String,
+		precedingLeadingWhitespaceRange: TextRange
 	) {
         self.current = current
         self.preceding = preceding
+		self.precedingLeadingWhitespaceRange = precedingLeadingWhitespaceRange
     }
 }
 
@@ -39,11 +32,11 @@ public struct PreceedingLineSuffixIndenter<TextRange: Bounded> {
 
 extension PreceedingLineSuffixIndenter: PatternMatcher {
     public func action(for context: TextualContext<TextRange>) -> Indentation<TextRange>? {
-		if context.preceding.nonwhitespaceContent.hasSuffix(suffix) == false {
+		if context.preceding.hasSuffix(suffix) == false {
             return nil
         }
 
-		return .relativeIncrease(context.preceding.range)
+		return .relativeIncrease(context.precedingLeadingWhitespaceRange)
     }
 }
 
@@ -57,11 +50,11 @@ public struct PreceedingLinePrefixIndenter<TextRange: Bounded> {
 
 extension PreceedingLinePrefixIndenter: PatternMatcher {
     public func action(for context: TextualContext<TextRange>) -> Indentation<TextRange>? {
-        if context.preceding.nonwhitespaceContent.hasPrefix(prefix) == false {
+        if context.preceding.hasPrefix(prefix) == false {
             return nil
         }
 
-        return .relativeIncrease(context.preceding.range)
+        return .relativeIncrease(context.precedingLeadingWhitespaceRange)
     }
 }
 
@@ -75,11 +68,11 @@ public struct CurrentLinePrefixOutdenter<TextRange: Bounded> {
 
 extension CurrentLinePrefixOutdenter: PatternMatcher {
     public func action(for context: TextualContext<TextRange>) -> Indentation<TextRange>? {
-		if context.current.nonwhitespaceContent.hasPrefix(prefix) == false {
+		if context.current.hasPrefix(prefix) == false {
             return nil
         }
 
-		return .relativeDecrease(context.preceding.range)
+		return .relativeDecrease(context.precedingLeadingWhitespaceRange)
     }
 }
 
@@ -99,7 +92,7 @@ extension PreceedingLineConditionalMatcher: PatternMatcher {
             return nil
         }
 
-        if context.preceding.nonwhitespaceContent.hasPrefix(previousPrefix) {
+        if context.preceding.hasPrefix(previousPrefix) {
             return nil
         }
 

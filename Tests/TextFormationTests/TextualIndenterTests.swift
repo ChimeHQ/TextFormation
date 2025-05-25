@@ -3,42 +3,22 @@ import Testing
 
 import TextFormation
 
-#if compiler(>=6.1) && (os(macOS) || os(iOS) || os(tvOS) || os(visionOS))
-extension TextualContext where TextRange == NSRange {
-	init<R: RangeExpression>(
-		preceding: R,
-		_ precedingContent: String,
-		current: R,
-		_ currentContent: String
-	) where R.Bound == TextRange.Bound {
-		self.init(
-			current: Self.Line(range: NSRange(current), nonwhitespaceContent: currentContent),
-			preceding: Self.Line(range: NSRange(preceding), nonwhitespaceContent: currentContent)
-		)
-	}
-}
-
+#if compiler(>=6.1)
 struct TextualIndenterTests {
 	@available(macOS 13, iOS 16, tvOS 16, watchOS 9, *)
 	@Test func emptyString() throws {
-		let indenter = TextualIndenter<NSRange>(patterns: TextualIndenter.basicPatterns, provider: { pos in
-			try #require(pos == 0)
+		let indenter = TextualIndenter<NSRange>(patterns: TextualIndenter.basicPatterns)
+		let context = TextualContext(current: "", preceding: "", precedingLeadingWhitespaceRange: NSRange.zero)
 
-			throw IndentationError.unableToComputeReferenceRange
-		})
-		
-		#expect(throws: (any Error).self) { try indenter.computeIndentation(at: 0) }
+		#expect(try indenter.computeIndentation(at: 0, context: context) == .equal(NSRange(0..<0)))
 	}
 	
 	@available(macOS 13, iOS 16, tvOS 16, watchOS 9, *)
 	@Test func propagatesPreviousLineIndentation() throws {
-		let indenter = TextualIndenter<NSRange>(patterns: TextualIndenter.basicPatterns, provider: { pos in
-			try #require(pos == 0)
-			
-			return TextualContext(preceding: 0..<1, "\t", current: 2..<2, "")
-		})
-		
-		#expect(try indenter.computeIndentation(at: 0) == .equal(NSRange(0..<1)))
+		let indenter = TextualIndenter<NSRange>(patterns: TextualIndenter.basicPatterns)
+		let context = TextualContext(current: "", preceding: "\t", precedingLeadingWhitespaceRange: NSRange(0..<1))
+
+		#expect(try indenter.computeIndentation(at: 0, context: context) == .equal(NSRange(0..<1)))
 	}
 }
 
