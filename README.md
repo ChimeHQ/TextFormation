@@ -9,15 +9,17 @@
 
 # TextFormation
 
-TextFormation is simple rule system that can be used to implement typing completions and whitespace control. Think matching "}" with "{" and indenting.
+TextFormation is simple rule system that can be used to implement typing completions and whitespace control.
+
+Think matching typing "{", hitting return, and getting "}" with indenting.
 
 - Text system agnostic
-- Many pre-built filters for commmon language patterns
-- Compatible with multi-cursor systems
-- Support for multiple line-ending encodings
+- Many pre-built filters for common language patterns
+- Compatible with multiple cursors editing systems
+- Flexible whitespace calculations
 
 > [!WARNING]
-> This library is undergoing some major changes. Not all functionality is currently implemented in the main branch yet.
+> The main branch has undergone some major changes to support new capabilities. Not all indentation calculation features are available quite yet.
 
 ## Integration
 
@@ -29,13 +31,11 @@ dependencies: [
 
 ## Concept
 
-TextFormation's core model is a `Filter`. Filters are typically set up once for a given language. From there, changes in the form of a `TextMutation` are fed in. The filter examines a `TextMutation` **before** it has been applied. Filters can be stateful, but if they return `MutationOutput`, it means it has processed the mutation and no futher action should be taken.
+TextFormation's core model is a `Filter`. Filters are typically set up once for a given language. From there, changes in the form of a `TextMutation` are fed in. The filter examines a `TextMutation` **before** it has been applied. Filters can be stateful, but if they return `MutationOutput`, it means it has processed the mutation and no further action should be taken.
 
-TextFormation is fully text system-agnostic and it models the text system using an abstraction based on types from  [Rearrange](https://github.com/ChimeHQ/Rearrange).
+TextFormation is fully text system-agnostic and it models the text system using an abstraction based on types from [Rearrange](https://github.com/ChimeHQ/Rearrange). This requires that you provide a `TextSystemInterface` implementation. This type is responsible for supporting the querying and mutation capabilities filters need, along with an abstraction for how text positions and ranges are represented.
 
 ## Filters
-
-Using TextFormation requires that you provide a `TextSystemInterface` implementation. This type is responsible for supporting the querying and mutation capabilties filters need, along with an abstraction for how text positions and ranges are represented.
 
 Careful filter ordering can produce some pretty powerful behaviors. Here's an example of a chain that produces typing completions that roughly matches what Xcode does for open/close curly braces:
 
@@ -69,7 +69,7 @@ let filter = StandardOpenPairFilter<MyTextSystem>(open: "{", close: "}")
 
 Correctly indenting in the general case may require parsing. It also typically needs some understanding of the user's preferences. The included `TextualIndenter` type has a pattern-based system that can perform sufficiently in many situations.
 
-It also includes pre-defined patterns for some languages:
+It includes `basicPatterns` that work well for many languages. There are also some pre-defined patterns:
 
 ```swift
 TextualIndenter.rubyPatterns
