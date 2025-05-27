@@ -16,7 +16,7 @@ extension NewlineWithinPairFilter: Filter {
 	public func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		let interface = mutation.interface
 		let pos = mutation.range.lowerBound
-		
+
 		// check for a newline insert
 		guard
 			mutation.string == newlineSequence,
@@ -24,10 +24,10 @@ extension NewlineWithinPairFilter: Filter {
 		else {
 			return nil
 		}
-		
+
 		// verify its after an open
 		let openLength = interface.length(of: openString)
-		
+
 		guard
 			let openStart = interface.position(from: pos, offset: -openLength),
 			let openRange = interface.textRange(from: openStart, to: pos),
@@ -35,10 +35,10 @@ extension NewlineWithinPairFilter: Filter {
 		else {
 			return nil
 		}
-		
+
 		// verify it's before a close
 		let closeLength = interface.length(of: closeString)
-		
+
 		guard
 			let closeEnd = interface.position(from: pos, offset: closeLength),
 			let closeRange = interface.textRange(from: pos, to: closeEnd),
@@ -49,17 +49,23 @@ extension NewlineWithinPairFilter: Filter {
 
 		// this is relatively complex and is nearly the same as what ClosePairFilter has to do
 		let length = interface.length(of: newlineSequence)
-		
+
 		let string = newlineSequence + newlineSequence
 
 		guard
 			let firstLeadingPos = interface.position(from: pos, offset: length),
-			let secondLeadingPos = interface.position(from: firstLeadingPos, offset: length),
-			let output = try interface.applyMutation(mutation.range, string: string),
+			let secondLeadingPos = interface.position(from: firstLeadingPos, offset: length)
+		else {
+			return nil
+		}
+
+		let output = try interface.applyMutation(mutation.range, string: string)
+
+		guard
 			let secondLeading = try interface.applyWhitespace(for: secondLeadingPos, in: .leading),
 			let firstLeading = try interface.applyWhitespace(for: firstLeadingPos, in: .leading)
 		else {
-			return nil
+			return output
 		}
 
 		let delta = output.delta + firstLeading.delta + secondLeading.delta

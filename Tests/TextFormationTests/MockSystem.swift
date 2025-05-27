@@ -38,7 +38,7 @@ final class MockSystem: TextSystemInterface {
 		return content.substring(with: range)
 	}
 
-	func applyMutation(_ range: NSRange, string: String) throws -> TextFormation.MutationOutput<NSRange>? {
+	func applyMutation(_ range: NSRange, string: String) throws -> TextFormation.MutationOutput<NSRange> {
 		content.replaceCharacters(in: range, with: string)
 
 		let length = string.utf16.count

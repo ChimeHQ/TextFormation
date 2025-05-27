@@ -25,21 +25,22 @@ extension OpenPairReplacementFilter: Filter {
 		}
 		
 		guard
-			let closeRange = interface.textRange(from: end, to: end),
-			let closing = try interface.applyMutation(closeRange, string: closeString)
+			let closeRange = interface.textRange(from: end, to: end)
 		else {
 			return nil
 		}
 
+		let closing = try interface.applyMutation(closeRange, string: closeString)
 		let openLength = interface.length(of: openString)
 		
 		guard
-			let openRange = interface.textRange(from: start, to: start),
-			let opening = try interface.applyMutation(openRange, string: openString)
+			let openRange = interface.textRange(from: start, to: start)
 		else {
-			return nil
+			return closing
 		}
-		
+
+		let opening = try interface.applyMutation(openRange, string: openString)
+
 		guard
 			let selectionStart = interface.position(from: start, offset: openLength),
 			let selectionEnd = interface.position(from: end, offset: openLength),

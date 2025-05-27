@@ -27,11 +27,7 @@ extension LineLeadingWhitespaceFilter: Filter {
 			}
 		}
 		
-		guard
-			let mutationOuput = try interface.applyMutation(mutation.range, string: mutation.string)
-		else {
-			return nil
-		}
+		let mutationOuput = try interface.applyMutation(mutation.range, string: mutation.string)
 		
 		guard
 			let whitespaceOutput = try interface.applyWhitespace(for: whitespaceRange.lowerBound, in: .leading),

@@ -14,7 +14,7 @@ public protocol TextSystemInterface: TextRangeCalculating {
 	///
 	/// Defined in units that match the offset parameter of `position(from:, offset:)`
 	func length(of string: String) -> Int
-	func applyMutation(_ range: TextRange, string: String) throws -> Output?
+	func applyMutation(_ range: TextRange, string: String) throws -> Output
 
 	/// Calculate the whitespace for the line containing a position.
 	func whitespaceTextRange(at position: Position, in direction: Direction) -> TextRange?

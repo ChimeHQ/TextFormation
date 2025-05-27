@@ -42,13 +42,9 @@ extension ClosePairFilter: Filter {
 			return try handleNewlineInsert(mutation, at: position)
 		}
 		
-		guard
-			let closingOutput = try interface.applyMutation(mutation.range, string: closeString),
-			let mutationOutput = try interface.applyMutation(mutation.range, string: mutation.string)
-		else {
-			return nil
-		}
-			
+		let closingOutput = try interface.applyMutation(mutation.range, string: closeString)
+		let mutationOutput = try interface.applyMutation(mutation.range, string: mutation.string)
+
 		return Interface.Output(
 			selection: mutationOutput.selection,
 			delta: mutationOutput.delta + closingOutput.delta
@@ -89,11 +85,7 @@ extension ClosePairFilter: Filter {
 		let newlinesAndClose = newlineSequence + newlineSequence + closeString
 
 		// attempt the initial mutation, with no whitespace
-		guard
-			let output = try interface.applyMutation(mutation.range, string: newlinesAndClose)
-		else {
-			return nil
-		}
+		let output = try interface.applyMutation(mutation.range, string: newlinesAndClose)
 
 		var delta = output.delta
 
