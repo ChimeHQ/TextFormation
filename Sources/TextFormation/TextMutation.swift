@@ -1,5 +1,15 @@
 import Rearrange
 
+public struct RangedString<TextRange: Bounded> {
+	public let range: TextRange
+	public let string: String
+
+	public init(range: TextRange, string: String) {
+		self.range = range
+		self.string = string
+	}
+}
+
 public struct TextMutation<Interface: TextSystemInterface> {
 	public let range: Interface.TextRange
 	public let interface: Interface

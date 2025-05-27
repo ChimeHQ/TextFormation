@@ -9,11 +9,20 @@ public protocol TextSystemInterface: TextRangeCalculating {
 	typealias Output = MutationOutput<TextRange>
 
 	func substring(in range: TextRange) throws -> String?
+
+	/// Measure the length of a string.
+	///
 	/// Defined in units that match the offset parameter of `position(from:, offset:)`
 	func length(of string: String) -> Int
 	func applyMutation(_ range: TextRange, string: String) throws -> Output?
-	func applyWhitespace(for position: Position, in direction: Direction) throws -> Output?
+
+	/// Calculate the whitespace for the line containing a position.
 	func whitespaceTextRange(at position: Position, in direction: Direction) -> TextRange?
+
+	/// Adjust the whitespace for the line containing a position.
+	///
+	/// If no adjustment is necessary or possible, nil is returned.
+	func whitespaceMutation(for position: Position, in direction: Direction) throws -> RangedString<TextRange>?
 }
 
 extension TextSystemInterface {
@@ -34,6 +43,20 @@ extension TextSystemInterface {
 		}
 
 		return try applyMutation(range, string: string)
+	}
+}
+
+extension TextSystemInterface {
+	public func applyMutation(_ mutation: RangedString<TextRange>) throws -> Output? {
+		try applyMutation(mutation.range, string: mutation.string)
+	}
+
+	public func applyWhitespace(for position: Position, in direction: Direction) throws -> Output? {
+		guard let mutation = try whitespaceMutation(for: position, in: direction) else {
+			return nil
+		}
+
+		return try applyMutation(mutation)
 	}
 }
 

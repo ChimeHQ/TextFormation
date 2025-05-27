@@ -77,4 +77,22 @@ final class MockSystem: TextSystemInterface {
 		
 		return range
 	}
+
+	func whitespaceMutation(for position: Position, in direction: Direction) throws -> RangedString<TextRange>? {
+		guard case let .applyWhitespace(expectedPos, expectedDir, string, range) = responses.first else {
+			return nil
+		}
+
+		if position != expectedPos {
+			throw MockSystemError.unexpectedPosition(position, expectedPos)
+		}
+
+		if direction != expectedDir {
+			throw MockSystemError.unexpectedDirection(direction, expectedDir)
+		}
+
+		responses.removeFirst()
+
+		return RangedString(range: range, string: string)
+	}
 }
