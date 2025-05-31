@@ -28,6 +28,11 @@ public struct ClosePairFilter<Interface: TextSystemInterface> {
 		// behavior better.
 		self.processAfterTrigger = open != close
 	}
+
+	private mutating func resetState() {
+		recognizer.resetState()
+		self.triggerPosition = nil
+	}
 }
 
 extension ClosePairFilter: Filter {
@@ -63,7 +68,7 @@ extension ClosePairFilter: Filter {
 			interface.offset(from: mutation.range.lowerBound, to: pos) == 0,
 			interface.offset(from: mutation.range.upperBound, to: pos) == 0
 		else {
-			recognizer.resetState()
+			resetState()
 			return nil
 		}
 

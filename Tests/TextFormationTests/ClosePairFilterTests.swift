@@ -208,6 +208,27 @@ struct ClosePairFilterTests {
 		#expect(system.string == "' ")
 	}
 
+	@Test func matchingThenDeleteAndInsert() throws {
+		let system = MockSystem(string: "")
+		var filter = ClosePairFilter<MockSystem>(open: "'", close: "'")
+
+		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "'"))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
+		#expect(system.string == "'")
+
+		let insert1 = try #require(try system.runFilter(&filter, 1..<1, "a"))
+		#expect(insert1 == MutationOutput(selection: NSRange(2..<2), delta: 2))
+		#expect(system.string == "'a'")
+
+		let delete = try #require(try system.runFilter(&filter, 1..<2, ""))
+		#expect(delete == MutationOutput(selection: NSRange(1..<1), delta: -1))
+		#expect(system.string == "''")
+
+		let insert2 = try #require(try system.runFilter(&filter, 1..<1, "a"))
+		#expect(insert2 == MutationOutput(selection: NSRange(2..<2), delta: 1))
+		#expect(system.string == "'a'")
+	}
+
 	@Test func matchingWithNewlineNoWhitespaceReturned() throws {
 		let system = MockSystem(string: "")
 		var filter = ClosePairFilter<MockSystem>(open: "abc", close: "def")
