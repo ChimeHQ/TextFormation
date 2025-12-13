@@ -41,6 +41,7 @@ extension MutableStringPartialSystem {
 		content.attributedSubstring(from: range).string
 	}
 
+	@preconcurrency @MainActor
 	public func applyMutation(in range: NSRange, string: String, undoManager: UndoManager? = nil) -> MutationOutput<NSRange> {
 		let nsAttrString = NSAttributedString(string: string)
 		let length = nsAttrString.length
