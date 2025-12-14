@@ -9,6 +9,9 @@ public struct NewlineProcessingFilter<Interface: TextSystemInterface> {
 }
 
 extension NewlineProcessingFilter: Filter {
+	public mutating func processShift(by offset: Int, interface: Interface) throws {
+	}
+
 	public func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		if mutation.string != lineEndingSequence {
 			return nil

@@ -14,7 +14,7 @@ public struct TextMutation<Interface: TextSystemInterface> {
 	public let range: Interface.TextRange
 	public let interface: Interface
 	public let string: String
-	
+
 	public init(range: Interface.TextRange, interface: Interface, string: String) {
 		self.range = range
 		self.interface = interface

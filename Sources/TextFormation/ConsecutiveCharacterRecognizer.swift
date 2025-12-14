@@ -80,10 +80,27 @@ public struct ConsecutiveCharacterRecognizer<Interface: TextSystemInterface> {
 		}
 	}
 
+	public mutating func processShift(by offset: Int, interface: Interface) throws {
+		switch state {
+		case .idle:
+			break
+		case .tracking(let position, let int):
+			guard let newPos = interface.position(from: position, offset: offset) else {
+				self.state = .idle
+				break
+			}
+
+			self.state = .tracking(newPos, int)
+		case .triggered:
+			break
+		}
+	}
+	
 	@discardableResult
 	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Bool {
 		try updateState(mutation)
 
+		print(state)
 		switch state {
 		case .triggered:
 			return true

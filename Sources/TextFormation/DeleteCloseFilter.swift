@@ -19,6 +19,9 @@ public struct DeleteCloseFilter<Interface: TextSystemInterface> {
 }
 
 extension DeleteCloseFilter: Filter {
+	public mutating func processShift(by offset: Int, interface: Interface) throws {
+	}
+	
 	public func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		let interface = mutation.interface
 		let range = mutation.range

@@ -9,6 +9,9 @@ public struct SkipFilter<Interface: TextSystemInterface> {
 }
 
 extension SkipFilter: Filter {
+	public mutating func processShift(by offset: Int, interface: Interface) throws {
+	}
+
 	public func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		let string = mutation.string
 		let interface = mutation.interface

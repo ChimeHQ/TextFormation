@@ -35,6 +35,11 @@ public struct StandardOpenPairFilter<Interface: TextSystemInterface> {
 }
 
 extension StandardOpenPairFilter: Filter {
+	public mutating func processShift(by offset: Int, interface: Interface) throws {
+		try closeWhitespace?.processShift(by: offset, interface: interface)
+		try closePair.processShift(by: offset, interface: interface)
+	}
+
 	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		if let output = try skip.processMutation(mutation) {
 			return output

@@ -25,6 +25,7 @@ public protocol Filter<Interface> {
 	associatedtype Interface: TextSystemInterface
 	typealias Mutation = TextMutation<Interface>
 
+	mutating func processShift(by offset: Int, interface: Interface) throws
 	mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output?
 }
 

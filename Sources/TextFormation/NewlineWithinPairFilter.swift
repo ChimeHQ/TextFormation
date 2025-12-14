@@ -13,6 +13,9 @@ public struct NewlineWithinPairFilter<Interface: TextSystemInterface> {
 }
 
 extension NewlineWithinPairFilter: Filter {
+	public mutating func processShift(by offset: Int, interface: Interface) throws {
+	}
+	
 	public func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		let interface = mutation.interface
 		let pos = mutation.range.lowerBound

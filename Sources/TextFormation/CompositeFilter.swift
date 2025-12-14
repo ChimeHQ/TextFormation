@@ -14,6 +14,12 @@ public struct CompositeFilter<Interface: TextSystemInterface> {
 
 @available(macOS 13, iOS 16, tvOS 16, watchOS 9, *)
 extension CompositeFilter: Filter {
+	public mutating func processShift(by offset: Int, interface: Interface) throws {
+		for index in filters.indices {
+			try filters[index].processShift(by: offset, interface: interface)
+		}
+	}
+
 	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		for index in filters.indices {
 			if let output = try filters[index].processMutation(mutation) {

@@ -43,7 +43,11 @@ extension LineLeadingWhitespaceFilter: Filter {
 			delta: mutationOuput.delta + whitespaceOutput.delta
 		)
 	}
-	
+
+	public mutating func processShift(by offset: Int, interface: Interface) throws {
+		try recognizer.processShift(by: offset, interface: interface)
+	}
+
 	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		if try recognizer.processMutation(mutation) {
 			if let value = try matchHandler(mutation) {

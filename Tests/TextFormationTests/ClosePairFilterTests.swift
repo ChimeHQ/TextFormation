@@ -262,4 +262,23 @@ struct ClosePairFilterTests {
 		#expect(output == MutationOutput(selection: NSRange(5..<5), delta: 6))
 		#expect(system.string == "abct\n\ndef")
 	}
+
+	@Test func processingShift() throws {
+		let system = MockSystem(string: "")
+		var filter = ClosePairFilter<MockSystem>(open: "(", close: ")")
+
+		let openOutput = try #require(try system.runFilter(&filter, 0..<0, "("))
+		#expect(openOutput == MutationOutput(selection: NSRange(1..<1), delta: 1))
+		#expect(system.string == "(")
+
+		// simulate inserting 2 characters before the paren
+		_ = try system.applyMutation(NSRange(0..<0), string: "  ")
+		try filter.processShift(by: 2, interface: system)
+
+		let output = try #require(try filter.processMutation(3..<3, "a", system))
+
+		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 2))
+		#expect(output == MutationOutput(selection: NSRange(4..<4), delta: 2))
+		#expect(system.string == "  (a)")
+	}
 }

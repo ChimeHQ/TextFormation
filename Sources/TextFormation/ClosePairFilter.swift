@@ -6,7 +6,6 @@ import Rearrange
 ///
 /// The logic of this operation is *extremely* complicated.
 public struct ClosePairFilter<Interface: TextSystemInterface> {
-	private var locationAfterSkippedClose: Int?
 	private let processAfterTrigger: Bool
 	private var recognizer: ConsecutiveCharacterRecognizer<Interface>
 	private var triggerPosition: Interface.Position?
@@ -161,7 +160,15 @@ extension ClosePairFilter: Filter {
 			self.triggerPosition = mutation.postApplyRange?.upperBound
 		}
 	}
-	
+
+	public mutating func processShift(by offset: Int, interface: Interface) throws {
+		try recognizer.processShift(by: offset, interface: interface)
+
+		if let pos = triggerPosition {
+			self.triggerPosition = interface.position(from: pos, offset: offset)
+		}
+	}
+
 	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Interface.Output? {
 		guard let pos = triggeringPosition(with: mutation) else {
 			try recognizerCheck(mutation)
