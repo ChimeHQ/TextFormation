@@ -20,10 +20,10 @@ concurrency:
 jobs:
   test:
     name: Test
-    runs-on: macOS-15
+    runs-on: macOS-26
     timeout-minutes: 30
     env:
-      DEVELOPER_DIR: /Applications/Xcode_26.0.app
+      DEVELOPER_DIR: /Applications/Xcode_26.4.app
     strategy:
       matrix:
         destination:
@@ -34,20 +34,25 @@ jobs:
           - "platform=watchOS Simulator,name=Apple Watch Series 11 (42mm),OS=26.0"
           - "platform=visionOS Simulator,name=Apple Vision Pro,OS=26.0"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Test platform ${{ matrix.destination }}
         run: set -o pipefail && xcodebuild -scheme TextFormation -destination "${{ matrix.destination }}" test | xcbeautify
 
   linux_test:
     name: Test Linux
     runs-on: ubuntu-latest
+    container:
+      image: swift:${{matrix.swift-version}}
     timeout-minutes: 30
+    strategy:
+      matrix:
+        swift-version:
+          - "6.1"
+          - "6.2"
+          - "latest"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Swiftly
-        uses: vapor/swiftly-action@v0.2.0
-        with:
-          toolchain: latest
+        uses: actions/checkout@v6
+      - run: swift --version
       - name: Test
         run: swift test
