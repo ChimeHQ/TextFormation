@@ -43,7 +43,7 @@ extension DeleteCloseFilter: Filter {
 
 		let pattern = openString+closeString
 
-		guard try interface.substring(in: fullRange) == pattern else {
+		guard (try? interface.substring(in: fullRange)) == pattern else {
 			return nil
 		}
 

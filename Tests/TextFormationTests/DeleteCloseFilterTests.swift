@@ -30,4 +30,13 @@ struct DeleteCloseFilterTests {
 		#expect(output == MutationOutput(selection: NSRange(2..<2), delta: -1))
 		#expect(system.string == "ll }tt")
     }
+
+	@Test func deleteAllContent() throws {
+		let system = MockSystem(string: "abc")
+		var filter = DeleteCloseFilter<MockSystem>(open: "{", close: "}")
+
+		let output = try #require(try system.runFilter(&filter, 0..<3, ""))
+		#expect(output == MutationOutput(selection: NSRange(0..<0), delta: -3))
+		#expect(system.string == "")
+	}
 }

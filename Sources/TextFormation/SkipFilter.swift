@@ -35,7 +35,7 @@ extension SkipFilter: Filter {
 			return nil
 		}
 		
-		if try interface.substring(in: replacementRange) != string {
+		if (try? interface.substring(in: replacementRange)) != string {
 			return nil
 		}
 		

@@ -5,6 +5,7 @@ import TextFormation
 enum MockSystemError: Error {
 	case unexpectedPosition(Int, Int)
 	case unexpectedDirection(TextFormation.Direction, TextFormation.Direction)
+	case invalidRange(NSRange, Int)
 }
 
 final class MockSystem: TextSystemInterface {
@@ -31,8 +32,8 @@ final class MockSystem: TextSystemInterface {
 	}
 
 	func substring(in range: NSRange) throws -> String? {
-		if range.location < 0 || range.max > content.length {
-			return nil
+		guard validRange(range) else {
+			throw MockSystemError.invalidRange(range, content.length)
 		}
 		
 		return content.substring(with: range)

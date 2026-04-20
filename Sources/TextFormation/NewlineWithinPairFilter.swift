@@ -34,7 +34,7 @@ extension NewlineWithinPairFilter: Filter {
 		guard
 			let openStart = interface.position(from: pos, offset: -openLength),
 			let openRange = interface.textRange(from: openStart, to: pos),
-			try interface.substring(in: openRange) == openString
+			(try? interface.substring(in: openRange)) == openString
 		else {
 			return nil
 		}
@@ -45,7 +45,7 @@ extension NewlineWithinPairFilter: Filter {
 		guard
 			let closeEnd = interface.position(from: pos, offset: closeLength),
 			let closeRange = interface.textRange(from: pos, to: closeEnd),
-			try interface.substring(in: closeRange) == closeString
+			(try? interface.substring(in: closeRange)) == closeString
 		else {
 			return nil
 		}

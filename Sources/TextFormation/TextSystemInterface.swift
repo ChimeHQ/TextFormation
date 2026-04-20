@@ -8,6 +8,9 @@ public enum Direction: Hashable, Sendable {
 public protocol TextSystemInterface: TextRangeCalculating {
 	typealias Output = MutationOutput<TextRange>
 
+	/// Retrieve a substring from the content by range.
+	///
+	/// The long-term goal is to make this non-optional.
 	func substring(in range: TextRange) throws -> String?
 
 	/// Measure the length of a string.
