@@ -100,7 +100,6 @@ public struct ConsecutiveCharacterRecognizer<Interface: TextSystemInterface> {
 	public mutating func processMutation(_ mutation: TextMutation<Interface>) throws -> Bool {
 		try updateState(mutation)
 
-		print(state)
 		switch state {
 		case .triggered:
 			return true
