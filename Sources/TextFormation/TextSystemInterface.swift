@@ -5,13 +5,15 @@ public enum Direction: Hashable, Sendable {
 	case trailing
 }
 
+enum TextSystemInterfaceError: Error {
+	case invalidRange
+}
+
 public protocol TextSystemInterface: TextRangeCalculating {
 	typealias Output = MutationOutput<TextRange>
 
 	/// Retrieve a substring from the content by range.
-	///
-	/// The long-term goal is to make this non-optional.
-	func substring(in range: TextRange) throws -> String?
+	func substring(in range: TextRange) throws -> String
 
 	/// Measure the length of a string.
 	///
@@ -29,12 +31,12 @@ public protocol TextSystemInterface: TextRangeCalculating {
 }
 
 extension TextSystemInterface {
-	func substring(from position: Position, length: Int) throws -> String? {
+	func substring(from position: Position, length: Int) throws -> String {
 		guard
 			let end = self.position(from: position, offset: length),
 			let range = self.textRange(from: position, to: end)
 		else {
-			return nil
+			throw TextSystemInterfaceError.invalidRange
 		}
 		
 		return try substring(in: range)

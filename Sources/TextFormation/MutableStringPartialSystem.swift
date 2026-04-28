@@ -37,7 +37,7 @@ extension MutableStringPartialSystem {
 		NSRange(start..<end)
 	}
 
-	func substring(in range: NSRange) -> String? {
+	func substring(in range: NSRange) -> String {
 		content.attributedSubstring(from: range).string
 	}
 

@@ -31,7 +31,7 @@ final class MockSystem: TextSystemInterface {
 		content.length
 	}
 
-	func substring(in range: NSRange) throws -> String? {
+	func substring(in range: NSRange) throws -> String {
 		guard validRange(range) else {
 			throw MockSystemError.invalidRange(range, content.length)
 		}
